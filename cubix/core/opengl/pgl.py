@@ -34,13 +34,18 @@ def glGetInteger(pname):
 def glShaderSource(shader, string):
     count = 1
     cStrLife = []
-    if is_sequence(string):
-        count = len(string)
+    # if is_sequence(string):
+    #     count = len(string)
+    #     maxStrLen = 0
 
-        strings = (ct.POINTER(ct.c_char) * count)
-        for i, item in enumerate(string):
-            strings[i] = typeutils.to_c_str(item, cStrLife, True)
-        cString = ct.cast(ct.pointer(strings), ct.POINTER(ct.c_char))
+    #     for item in string:
+    #         if len(item) > maxStrLen:
+    #             maxStrLen = len(item)
+
+    #     strings = (ct.c_char * maxStrLen * count)
+    #     for i, item in enumerate(string):
+    #         strings[i] = typeutils.to_c_str(item, cStrLife, True)
+    #     cString = ct.cast(strings, ct.POINTER(ct.c_char))
 
     cString = typeutils.to_c_str(string, cStrLife, True)
     
@@ -52,14 +57,19 @@ def glShaderSource(shader, string):
 def glBufferData(target, data, usage):
 
     if is_sequence(data[0]):
-        cData = conv_list_2d(data)
+        cData = conv_list_2d(data, gl.GLfloat)
 
     else:
-        cData = conv_list(data)
+        cData = conv_list(data, gl.GLfloat)
 
-    cDataPtr = cast_ptr(ct.byref(data), gl.GLfloat)
+    cDataPtr = cast_ptr(ct.byref(cData), gl.GLfloat)
 
-    gl.glBufferData(target, ct.sizeof(cData), cDataPtr, usage)
+    dataSize = ct.sizeof(cData)
+    print (dataSize)
+
+    gl.glBufferData(target, dataSize, cDataPtr, usage)
+
+
 glTypeMap = {
     gl.GL_BYTE: gl.GLbyte,
     gl.GL_UNSIGNED_BYTE: gl.GLubyte,
@@ -70,28 +80,40 @@ glTypeMap = {
     gl.GL_FLOAT: gl.GLfloat,
     gl.GL_DOUBLE: gl.GLdouble,
 }
+
+
 # index, size, type, normalized, stride, pointer
 def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
 
     castType = glTypeMap[ptype]
-    if is_sequence(data[0]):
-        cData = conv_list_2d(data)
+    print (data)
+    if data is not None:
+        if is_sequence(data[0]):
+            cData = conv_list_2d(data, castType)
+        else:
+            cData = conv_list(data, castType)
     else:
-        cData = conv_list(data)
+        cData = ct.c_uint(0)
 
     cDataPtr = cast_ptr(ct.byref(cData), castType)
 
-    glVertexAttribPointer(index, size, ptype, normalized, stride, cDataPtr)
+    gl.glVertexAttribPointer(index, size, ptype, normalized, stride, cDataPtr)
 
 # n, arrays
-def glGenVertexArrays(n, arrays):
-
-    if is_sequence(arrays[0]):
-        cData = conv_list_2d(arrays)
+def glGenVertexArrays(n):
+    if n > 1:
+        arrays = (gl.GLuint * n)
     else:
-        cData = conv_list(arrays)
+        arrays = gl.GLuint(0)
 
-    cDataPtr = cast_ptr(ct.byref(cData), gl.GLuint)
+    gl.glGenVertexArrays(n, arrays)
+    return arrays
 
-    gl.glGenVertexArrays(n, cDataPtr)
-
+# (GLsizei n, GLuint *buffers);
+def glGenBuffers(n):
+    if n > 1:
+        buffers = (gl.GLuint * n)
+    else:
+        buffers = gl.GLuint(0)
+    gl.glGenBuffers(n, ct.pointer(buffers))
+    return buffers
