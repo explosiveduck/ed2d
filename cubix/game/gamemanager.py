@@ -63,7 +63,7 @@ class GameManager(object):
 
         self.vao = pgl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.vao)
-        self.vertLoc = self.program.get_attribute('position')
+        self.vertLoc = self.program.get_attribute(b'position')
 
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
@@ -85,7 +85,7 @@ class GameManager(object):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         gl.glBindVertexArray(self.vao)
-        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 2)
+        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 3)
 
     def do_run(self):
         ''' Process a single loop '''

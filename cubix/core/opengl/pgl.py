@@ -89,10 +89,12 @@ def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
             cData = conv_list_2d(data, castType)
         else:
             cData = conv_list(data, castType)
-    else:
-        cData = ct.c_uint(0)
 
-    cDataPtr = cast_ptr(ct.byref(cData), castType)
+        cDataPtr = cast_ptr(ct.byref(cData), castType)
+        
+    else:
+        cDataPtr = 0
+
 
     gl.glVertexAttribPointer(index, size, ptype, normalized, stride, cDataPtr)
 

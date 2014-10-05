@@ -145,6 +145,8 @@ def init():
 
     gl.glEnableVertexAttribArray = glext_func('glEnableVertexAttribArray', None, (GLuint,))
 
+    gl.glDisableVertexAttribArray = glext_func('glDisableVertexAttribArray', None, (GLuint,))
+
     _glVertexAttribPointerParams = (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p)
     gl.glVertexAttribPointer = glext_func('glVertexAttribPointer', None, _glVertexAttribPointerParams)
 
