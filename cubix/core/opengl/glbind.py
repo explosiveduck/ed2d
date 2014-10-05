@@ -25,3 +25,18 @@ def gl_func(name, returnType, paramTypes):
     address = getattr(lib, name)
 
     return ct.cast(address, function)
+
+def glext_func(name, returnType, paramTypes):
+    ''' Define and load an opengl extension function '''
+
+    osName = platform.system()
+
+    # Convert the name to bytes
+    name.encode(encoding='UTF-8')
+
+    if osName == 'Windows':
+        function = ct.WINFUNCTYPE(returnType, *paramTypes)
+    if osName == 'Linux' or osName == 'Darwin':
+        function = ct.CFUNCTYPE(returnType, *paramTypes)
+
+    return ct.cast(SDL_GL_GetProcAddress(name), function)
