@@ -8,5 +8,6 @@ if PYTHON_3:
     unicode = str
 else:
     range = xrange
+    unicode = unicode
 
 __all__ = ['PYTHON_3', 'range', 'unicode']
