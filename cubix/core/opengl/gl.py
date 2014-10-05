@@ -123,11 +123,15 @@ def init():
 
     gl.glClear = gl_func( 'glClear', None, (GLbitfield,))
 
-    gl.glDrawArrays = glext_func('glDrawArrays', None, (GLenum, GLint, GLsizei))
+    gl.glDrawArrays = gl_func('glDrawArrays', None, (GLenum, GLint, GLsizei))
+
+    gl.glViewport = gl_func('glViewport', None, (GLint, GLint, GLsizei, GLsizei))
+
+    gl.glGetError = gl_func('glGetError', GLenum, noParms)
 
     # OpenGL Extention Functions
 
-    gl.glGenBuffers = glext_func('glGenBuffers', None, (GLsizei, GLuint))
+    gl.glGenBuffers = glext_func('glGenBuffers', None, (GLsizei, ct.POINTER(GLuint)))
 
     gl.glBindBuffer = glext_func('glBindBuffer', None, (GLenum, GLuint))
 
