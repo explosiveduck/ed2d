@@ -17,6 +17,6 @@ def resolve_path(*location):
 
 def read_file(path):
     output = ''
-    with open(file, 'r') as f:
+    with open(path, 'r') as f:
         output = f.read()
     return output
