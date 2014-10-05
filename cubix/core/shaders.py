@@ -49,7 +49,7 @@ class ShaderProgram(object):
         gl.glUseProgram(prog)
 
     def get_attribute(self, name):
-        pass
+        return gl.glGetAttribLocation(self.program, name)
 
     def new_uniform(self, name):
         pass

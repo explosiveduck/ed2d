@@ -163,3 +163,5 @@ def init():
 
     gl.glUseProgram = glext_func('glUseProgram', None, (GLuint,))
 
+    gl.glGetAttribLocation = glext_func('glGetAttribLocation', GLint, (GLuint, ct.POINTER(GLchar)))
+

@@ -60,7 +60,9 @@ class GameManager(object):
 
         self.vao = pgl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.vao)
-        gl.glEnableVertexAttribArray(0)
+        self.vertLoc = self.program.get_attribute('position')
+
+        gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
         pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
         
