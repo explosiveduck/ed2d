@@ -41,5 +41,4 @@ def glext_func(name, returnType, paramTypes):
     if osName == 'Linux' or osName == 'Darwin':
         function = ct.CFUNCTYPE(returnType, *paramTypes)
 
-    print (name)
     return ct.cast(SDL_GL_GetProcAddress(name), function)

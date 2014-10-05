@@ -9,6 +9,7 @@ class ShaderBase(object):
         self.shader = gl.glCreateShader(self.shaderType)
         pgl.glShaderSource(self.shader, self.shaderData)
         gl.glCompileShader(self.shader)
+        print (pgl.glGetShaderInfoLog(self.shader))
 
         # Add error checking here need to define the functions in the gl binding
 
@@ -45,7 +46,7 @@ class ShaderProgram(object):
             prog = 0
         else:
             prog = self.program
-        print (type(self.program), self.program)
+
         gl.glUseProgram(prog)
 
     def get_attribute(self, name):

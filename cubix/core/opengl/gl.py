@@ -165,3 +165,4 @@ def init():
 
     gl.glGetAttribLocation = glext_func('glGetAttribLocation', GLint, (GLuint, ct.POINTER(GLchar)))
 
+    gl.glGetShaderInfoLog = glext_func('glGetShaderInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))

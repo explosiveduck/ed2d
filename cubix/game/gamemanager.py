@@ -10,6 +10,7 @@ from cubix.core import files
 from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
+import OpenGL.GL as gl2
 
 
 class GameManager(object):
@@ -48,6 +49,8 @@ class GameManager(object):
 
         self.program = shaders.ShaderProgram(vertex, fragment)
 
+        self.program.use()
+
         self.data = [
              0.0,  0.5,
              0.5, -0.5,
@@ -65,9 +68,10 @@ class GameManager(object):
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
         pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
-        
-        self.program.use()
-        print (gl.glGetError())
+
+        glerr = gl.glGetError()
+        if glerr != 0:
+            print (glerr)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':

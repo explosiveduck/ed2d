@@ -63,10 +63,8 @@ def glBufferData(target, data, usage):
         cData = conv_list(data, gl.GLfloat)
 
     cDataPtr = cast_ptr(ct.byref(cData), gl.GLfloat)
-
     dataSize = ct.sizeof(cData)
-    print (dataSize)
-
+    
     gl.glBufferData(target, dataSize, cDataPtr, usage)
 
 
@@ -86,7 +84,6 @@ glTypeMap = {
 def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
 
     castType = glTypeMap[ptype]
-    print (data)
     if data is not None:
         if is_sequence(data[0]):
             cData = conv_list_2d(data, castType)
@@ -117,3 +114,11 @@ def glGenBuffers(n):
         buffers = gl.GLuint(0)
     gl.glGenBuffers(n, ct.pointer(buffers))
     return buffers
+
+def glGetShaderInfoLog(shader):
+
+    length = gl.GLsizei(0)
+    infoLog = (gl.GLchar * 2048)()
+    infoLogPtr = cast_ptr(infoLog, gl.GLchar)
+    gl.glGetShaderInfoLog (shader, 2048, ct.pointer(length), infoLogPtr)
+    return infoLog.value
