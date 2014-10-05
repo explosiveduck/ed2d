@@ -41,14 +41,14 @@ class Events(object):
 
             if event.type == sdl.SDL_QUIT:
                 eventName = 'quit'
-                data = tuple()
+                data = ()
             if event.type == sdl.SDL_WINDOWEVENT:
                 winEvent = event.window.event
                 # For now this will only support one window
                 # If we want two later on then we can do it then.
                 if winEvent == sdl.SDL_WINDOWEVENT_CLOSE:
                     eventName = 'window_close'
-                    data = tuple()
+                    data = ()
             else:
                 # Will add more event types later
                 pass
