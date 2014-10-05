@@ -1,6 +1,7 @@
 from cubix.core.pycompat import *
 from cubix.core.opengl import gl, pgl
 from cubix.core import files
+#import OpenGL.GL as gl2
 
 
 class ShaderBase(object):
@@ -40,10 +41,11 @@ class ShaderProgram(object):
         # TODO - add some error checking here
 
     def use(self, using=True):
-        if using == False:
+        if using is False:
             prog = 0
         else:
             prog = self.program
+        print (type(self.program), self.program)
         gl.glUseProgram(prog)
 
     def get_attribute(self, name):

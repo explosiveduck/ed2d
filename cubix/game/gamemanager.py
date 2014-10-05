@@ -11,14 +11,6 @@ from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
 
-class Triangle(object):
-    def __init__(self):
-        self.data = [
-             0.0,  0.5,
-             0.5, -0.5,
-            -0.5, -0.5
-        ]
-
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -46,11 +38,34 @@ class GameManager(object):
         minor = pgl.glGetInteger(gl.GL_MINOR_VERSION)
         print ('OpenGL Version: {}.{}'.format(major, minor))
 
+        gl.glViewport(0, 0, self.width, self.height)
+
         vsPath = files.resolve_path('data', 'shaders', 'main.vs')
         fsPath = files.resolve_path('data', 'shaders', 'main.fs')
 
         vertex = shaders.VertexShader(vsPath)
         fragment = shaders.FragmentShader(fsPath)
+
+        self.program = shaders.ShaderProgram(vertex, fragment)
+
+        self.data = [
+             0.0,  0.5,
+             0.5, -0.5,
+            -0.5, -0.5
+        ]
+
+        self.vbo = pgl.glGenBuffers(1)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
+        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.data, gl.GL_STATIC_DRAW)
+
+        self.vao = pgl.glGenVertexArrays(1)
+        gl.glBindVertexArray(self.vao)
+        gl.glEnableVertexAttribArray(0)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
+        pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        
+        self.program.use()
+        print (gl.glGetError())
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
@@ -61,7 +76,10 @@ class GameManager(object):
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+
+        gl.glBindVertexArray(self.vao)
+        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 2)
 
     def do_run(self):
         ''' Process a single loop '''

@@ -16,6 +16,7 @@ def to_c_str(text, hackRef=[], extList=False):
     if not extList and len(hackRef) != 0:
         hackRef.remove(hackRef[0])
     cStr = ct.create_string_buffer(text.encode(encoding='UTF-8'))
+    print(cStr.value)
     hackRef.append(cStr)
     return ct.cast(ct.pointer(cStr), ct.POINTER(ct.c_char))
 
