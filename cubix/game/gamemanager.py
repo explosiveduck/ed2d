@@ -4,6 +4,7 @@ import sdl2 as sdl
 from cubix.core import window
 from cubix.core import events
 from cubix.core import context
+from cubix.core import timing
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
 
@@ -18,6 +19,9 @@ class GameManager(object):
         self.running = False
 
         window.init_video()
+
+        self.fpsTimer = timing.FpsCounter()
+        self.fpsEstimate = 0
 
         self.events = events.Events()
         self.window = window.Window(self.title, self.width, self.height, False)
@@ -48,6 +52,10 @@ class GameManager(object):
         self.update()
         self.render()
         self.window.flip()
+        self.fpsTimer.tick()
+        if self.fpsTimer.fpsTime >= 2000:
+            self.fpsEstimate = self.fpsTimer.get_fps()
+            print ("{:.2f} fps".format(self.fpsEstimate))
 
     def run(self):
         ''' Called from launcher doesnt exit until the game is quit '''
