@@ -9,7 +9,7 @@ def is_sequence(arg):
 def cast_ptr(obj, ptrType):
     return ct.cast(obj, ct.POINTER(ptrType))
 
-def to_c_str(text, cStr, hackRef=[], extList=False):
+def to_c_str(text, hackRef=[], extList=False):
     ''' Convert python strings to null terminated c strings. '''
     # We only want to keep the cString data around for 1 call
     # This is a pretty terrible hack but oh well :(
