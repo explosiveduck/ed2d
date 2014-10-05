@@ -4,6 +4,8 @@ from sdl2 import SDL_GL_GetProcAddress
 
 import platform
 
+from cubix.core.pycompat import *
+
 def gl_func(name, returnType, paramTypes):
     ''' Define and load an opengl function '''
 
@@ -32,11 +34,12 @@ def glext_func(name, returnType, paramTypes):
     osName = platform.system()
 
     # Convert the name to bytes
-    name.encode(encoding='UTF-8')
+    name = name.encode(encoding='UTF-8')
 
     if osName == 'Windows':
         function = ct.WINFUNCTYPE(returnType, *paramTypes)
     if osName == 'Linux' or osName == 'Darwin':
         function = ct.CFUNCTYPE(returnType, *paramTypes)
 
+    print (name)
     return ct.cast(SDL_GL_GetProcAddress(name), function)

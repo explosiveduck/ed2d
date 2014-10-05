@@ -1,12 +1,23 @@
 import ctypes as ct
 import sdl2 as sdl
 
+from cubix.core.pycompat import *
 from cubix.core import window
 from cubix.core import events
 from cubix.core import context
 from cubix.core import timing
+from cubix.core import files
+from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
+
+class Triangle(object):
+    def __init__(self):
+        self.data = [
+             0.0,  0.5,
+             0.5, -0.5,
+            -0.5, -0.5
+        ]
 
 
 class GameManager(object):
@@ -34,6 +45,12 @@ class GameManager(object):
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
         minor = pgl.glGetInteger(gl.GL_MINOR_VERSION)
         print ('OpenGL Version: {}.{}'.format(major, minor))
+
+        vsPath = files.resolve_path('data', 'shaders', 'main.vs')
+        fsPath = files.resolve_path('data', 'shaders', 'main.fs')
+
+        vertex = shaders.VertexShader(vsPath)
+        fragment = shaders.FragmentShader(fsPath)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':

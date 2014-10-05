@@ -1,9 +1,10 @@
 import sys
-import
+import ctypes as ct
 
-from cubix.core.opengl.glbind import gl_func
+from cubix.core.pycompat import *
+from cubix.core.opengl.glbind import gl_func, glext_func
 
-c_ptrdiff_t = c_ssize_t
+c_ptrdiff_t = ct.c_ssize_t
 
 # OpenGL types
 GLenum = ct.c_uint
@@ -22,6 +23,7 @@ GLclampf = ct.c_float
 GLdouble = ct.c_double
 GLclampd = ct.c_double
 GLsizeiptr = c_ptrdiff_t
+GLchar = ct.c_char
 GLvoid = None
 
 
@@ -33,6 +35,20 @@ GL_MINOR_VERSION = 0x821C
 GL_COLOR_BUFFER_BIT = 0x00004000
 GL_DEPTH_BUFFER_BIT = 0x00000100
 GL_STENCIL_BUFFER_BIT = 0x00000400
+
+# glDrawArrays 
+GL_POINTS = 0x0000
+GL_LINE_STRIP = 0x0003
+GL_LINE_LOOP = 0x0002
+GL_LINES = 0x0001
+GL_LINE_STRIP_ADJACENCY = 0x000B
+GL_LINES_ADJACENCY = 0x000A
+GL_TRIANGLE_STRIP = 0x0005
+GL_TRIANGLE_FAN = 0x0006
+GL_TRIANGLES = 0x0004
+GL_TRIANGLE_STRIP_ADJACENCY = 0x000D
+GL_TRIANGLES_ADJACENCY = 0x000C
+GL_PATCHES = 0x000E
 
 # glCreateShader
 GL_COMPUTE_SHADER = 0x91B9
@@ -58,7 +74,25 @@ GL_TEXTURE_BUFFER = 0x8C2A
 GL_TRANSFORM_FEEDBACK_BUFFER = 0x8C8E
 GL_UNIFORM_BUFFER = 0x8A11
 
+# glBufferData
+GL_STREAM_DRAW = 0x88E0
+GL_STREAM_READ = 0x88E1
+GL_STREAM_COPY = 0x88E2
+GL_STATIC_DRAW = 0x88E4
+GL_STATIC_READ = 0x88E5
+GL_STATIC_COPY = 0x88E6
+GL_DYNAMIC_DRAW = 0x88E8
+GL_DYNAMIC_READ = 0x88E9
+GL_DYNAMIC_COPY = 0x88EA
+
+GL_BYTE = 0x1400
+GL_UNSIGNED_BYTE = 0x1401
+GL_SHORT = 0x1402
+GL_UNSIGNED_SHORT = 0x1403
+GL_INT = 0x1404
+GL_UNSIGNED_INT = 0x1405
 GL_FLOAT = 0x1406
+GL_DOUBLE = 0x140A
 
 GL_FALSE = 0
 GL_TRUE = 1
@@ -67,7 +101,8 @@ def init():
     '''
     This is basically a hack to allow me to load the opengl functions after
     import time. That way the functions can be loaded after the opengl context
-    has been created. This is only required for opengl extension, however we
+    has been created. This is only required for opengl extension
+    however we
     might as well do it for all of them.
 
     Basically the idea is to grab the module object from sys.modules, and then
@@ -78,6 +113,8 @@ def init():
 
     noParms = ()
 
+    # Regular OpenGL functions
+
     _glGetIntergervParams = (GLenum, ct.POINTER(GLint))
     gl.glGetIntegerv = gl_func( 'glGetIntegerv', None, _glGetIntergervParams)
     
@@ -85,6 +122,10 @@ def init():
     gl.glClearColor = gl_func( 'glClearColor', None, _glClearColorParams)
 
     gl.glClear = gl_func( 'glClear', None, (GLbitfield,))
+
+    gl.glDrawArrays = glext_func('glDrawArrays', None, (GLenum, GLint, GLsizei))
+
+    # OpenGL Extention Functions
 
     gl.glGenBuffers = glext_func('glGenBuffers', None, (GLsizei, GLuint))
 
@@ -98,7 +139,7 @@ def init():
 
     gl.glBindVertexArray = glext_func('glBindVertexArray', None, (GLuint,))
 
-    gl.glEnableVertexAttribArray = glext_func('glEnableVertexAttribArray', (GLuint,))
+    gl.glEnableVertexAttribArray = glext_func('glEnableVertexAttribArray', None, (GLuint,))
 
     _glVertexAttribPointerParams = (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p)
     gl.glVertexAttribPointer = glext_func('glVertexAttribPointer', None, _glVertexAttribPointerParams)
@@ -116,4 +157,5 @@ def init():
 
     gl.glLinkProgram = glext_func('glLinkProgram', None, (GLuint,))
 
-    
+    gl.glUseProgram = glext_func('glUseProgram', None, (GLuint,))
+

@@ -2,6 +2,8 @@ import platform
 import time
 import sys
 
+from cubix.core.pycompat import *
+
 pyVer = sys.version_info
 
 # Choose best time function for what we are running on

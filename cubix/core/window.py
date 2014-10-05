@@ -1,5 +1,6 @@
 
 import sdl2 as sdl
+from cubix.core.pycompat import *
 
 def init_video():
     ''' Prepare sdl for subsystem initialization, and init sdl video. '''

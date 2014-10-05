@@ -1,4 +1,5 @@
 import sdl2 as sdl
+from cubix.core.pycompat import *
 
 class Context(object):
     ''' An OpenGL rendering context '''

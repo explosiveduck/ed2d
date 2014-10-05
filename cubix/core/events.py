@@ -2,6 +2,8 @@ import ctypes as ct
 
 import sdl2 as sdl
 
+from cubix.core.pycompat import *
+
 class Events(object):
     ''' Handles Event stuff... '''
     def __init__(self):
