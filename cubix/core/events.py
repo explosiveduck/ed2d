@@ -45,12 +45,16 @@ class Events(object):
                 eventName = 'quit'
                 data = ()
             if event.type == sdl.SDL_WINDOWEVENT:
-                winEvent = event.window.event
+                winEvent = event.window
+                wEventName = event.window.event
                 # For now this will only support one window
                 # If we want two later on then we can do it then.
-                if winEvent == sdl.SDL_WINDOWEVENT_CLOSE:
+                if wEventName == sdl.SDL_WINDOWEVENT_CLOSE:
                     eventName = 'window_close'
-                    data = ()
+                    data = (winEvent.windowID)
+                elif wEventName == sdl.SDL_WINDOWEVENT_RESIZED:
+                    eventName = 'window_resized'
+                    data = (winEvent.windowID, winEvent.data1, winEvent.data2)
             else:
                 # Will add more event types later
                 pass
