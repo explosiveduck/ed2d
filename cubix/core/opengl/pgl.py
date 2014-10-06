@@ -91,7 +91,7 @@ def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
             cData = conv_list(data, castType)
 
         cDataPtr = cast_ptr(ct.byref(cData), castType)
-        
+
     else:
         cDataPtr = 0
 
@@ -124,3 +124,15 @@ def glGetShaderInfoLog(shader):
     infoLogPtr = cast_ptr(infoLog, gl.GLchar)
     gl.glGetShaderInfoLog (shader, 2048, ct.pointer(length), infoLogPtr)
     return infoLog.value
+
+def glGetShaderiv(shader, pname):
+    params = gl.GLint(-1)
+    gl.glGetShaderiv(shader, pname, ct.byref(params))
+    return params
+
+def glGetProgramiv(program, pname):
+    params = gl.GLint(-1)
+    gl.glGetProgramiv(program, pname, ct.byref(params))
+    return params
+
+GLAPI void APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint *params);

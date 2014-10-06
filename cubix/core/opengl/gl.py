@@ -85,6 +85,13 @@ GL_DYNAMIC_DRAW = 0x88E8
 GL_DYNAMIC_READ = 0x88E9
 GL_DYNAMIC_COPY = 0x88EA
 
+# glGetShaderiv
+GL_SHADER_TYPE = 0x8B4F
+GL_DELETE_STATUS = 0x8B80
+GL_COMPILE_STATUS = 0x8B81
+GL_INFO_LOG_LENGTH = 0x8B84
+GL_SHADER_SOURCE_LENGTH = 0x8B88
+
 GL_BYTE = 0x1400
 GL_UNSIGNED_BYTE = 0x1401
 GL_SHORT = 0x1402
@@ -168,3 +175,7 @@ def init():
     gl.glGetAttribLocation = glext_func('glGetAttribLocation', GLint, (GLuint, ct.POINTER(GLchar)))
 
     gl.glGetShaderInfoLog = glext_func('glGetShaderInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))
+
+    gl.glGetShaderiv = glext_func('glGetShaderiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
+
+    gl.glGetProgramiv = glext_func('glGetProgramiv', None, (GLuint, GLenum, ct.POINTER(GLint)))

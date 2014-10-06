@@ -9,19 +9,28 @@ class ShaderBase(object):
         self.shader = gl.glCreateShader(self.shaderType)
         pgl.glShaderSource(self.shader, self.shaderData)
         gl.glCompileShader(self.shader)
-        print (pgl.glGetShaderInfoLog(self.shader))
 
-        # Add error checking here need to define the functions in the gl binding
+        status = pgl.glGetShaderiv(self.shader, gl.GL_COMPILE_STATUS)
+
+        if not status:
+            print (self.shaderErrorMessage)
+            print (pgl.glGetShaderInfoLog(self.shader))
+        else:
+            print (self.shaderSuccessMessage)
 
 class VertexShader(ShaderBase):
     def __init__(self, path):
         self.shaderData = files.read_file(path)
         self.shaderType = gl.GL_VERTEX_SHADER
+        self.shaderErrorMessage = "Vertex Shader compilation error."
+        self.shaderSuccessMessage = "Vertex Shader compiled successfully."
 
 class FragmentShader(ShaderBase):
     def __init__(self, path):
         self.shaderData = files.read_file(path)
         self.shaderType = gl.GL_FRAGMENT_SHADER
+        self.shaderErrorMessage = "Fragment Shader compilation error."
+        self.shaderSuccessMessage = "Fragment Shader compiled successfully."
 
 class ShaderProgram(object):
     def __init__(self, vertex, fragment):
