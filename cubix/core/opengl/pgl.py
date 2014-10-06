@@ -122,7 +122,15 @@ def glGetShaderInfoLog(shader):
     length = gl.GLsizei(0)
     infoLog = (gl.GLchar * 2048)()
     infoLogPtr = cast_ptr(infoLog, gl.GLchar)
-    gl.glGetShaderInfoLog (shader, 2048, ct.pointer(length), infoLogPtr)
+    gl.glGetShaderInfoLog(shader, 2048, ct.pointer(length), infoLogPtr)
+    return infoLog.value
+
+def glGetProgramInfoLog(program):
+
+    length = gl.GLsizei(0)
+    infoLog = (gl.GLchar * 2048)()
+    infoLogPtr = cast_ptr(infoLog, gl.GLchar)
+    gl.glGetProgramInfoLog(program, 2048, ct.pointer(length), infoLogPtr)
     return infoLog.value
 
 def glGetShaderiv(shader, pname):

@@ -22,15 +22,15 @@ class VertexShader(ShaderBase):
     def __init__(self, path):
         self.shaderData = files.read_file(path)
         self.shaderType = gl.GL_VERTEX_SHADER
-        self.shaderErrorMessage = "Vertex Shader compilation error."
-        self.shaderSuccessMessage = "Vertex Shader compiled successfully."
+        self.shaderErrorMessage = 'Vertex Shader compilation error.'
+        self.shaderSuccessMessage = 'Vertex Shader compiled successfully.'
 
 class FragmentShader(ShaderBase):
     def __init__(self, path):
         self.shaderData = files.read_file(path)
         self.shaderType = gl.GL_FRAGMENT_SHADER
-        self.shaderErrorMessage = "Fragment Shader compilation error."
-        self.shaderSuccessMessage = "Fragment Shader compiled successfully."
+        self.shaderErrorMessage = 'Fragment Shader compilation error.'
+        self.shaderSuccessMessage = 'Fragment Shader compiled successfully.'
 
 class ShaderProgram(object):
     def __init__(self, vertex, fragment):
@@ -48,7 +48,13 @@ class ShaderProgram(object):
 
         gl.glLinkProgram(self.program)
 
-        # TODO - add some error checking here
+        status = pgl.glGetProgramiv(self.program, gl.GL_LINK_STATUS)
+
+        if not status:
+            print ('Linking error:')
+            print (pgl.glGetProgramInfoLog(self.program))
+        else:
+            print ('Program Linked successfully.')
 
     def use(self, using=True):
         if using is False:

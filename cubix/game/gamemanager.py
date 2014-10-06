@@ -70,7 +70,7 @@ class GameManager(object):
 
         glerr = gl.glGetError()
         if glerr != 0:
-            print (glerr)
+            print ('GLError:', glerr)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
