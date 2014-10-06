@@ -1,5 +1,7 @@
 import ctypes as ct
+
 import sdl2 as sdl
+from PIL import Image
 
 from cubix.core.pycompat import *
 from cubix.core import window
@@ -34,6 +36,18 @@ class GameManager(object):
 
         self.events.add_listener(self.process_event)
 
+        imagePath = files.resolve_path('data', 'images', 'cubix.png')
+
+        # Load in an image with PIL/pillow
+        pilImage = Image.open(imagePath)
+
+        # Verify that the image is in RGBA format
+        if ''.join(pilImage.getbands()) != 'RGBA':
+            pilImage = pilImage.convert('RGBA')
+
+        # Get image data as a list
+        self.cubixData = list(pilImage.getdata())
+
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
         minor = pgl.glGetInteger(gl.GL_MINOR_VERSION)
@@ -59,6 +73,7 @@ class GameManager(object):
             -0.5,  0.5,
              0.5, -0.5,
             -0.5, -0.5,
+
             -0.5,  0.5,
              0.5,  0.5,
              0.5, -0.5
