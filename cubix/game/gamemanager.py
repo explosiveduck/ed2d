@@ -1,6 +1,3 @@
-import ctypes as ct
-
-import sdl2 as sdl
 from PIL import Image
 
 from cubix.core.pycompat import *
@@ -70,17 +67,17 @@ class GameManager(object):
         #self.program.new_uniform('model')
 
         self.data = [
-            -0.5,  0.5,
-             0.5, -0.5,
-            -0.5, -0.5,
+             0.0, 32.0,
+             32.0, 0.0,
+             0.0, 0.0,
 
-            -0.5,  0.5,
-             0.5,  0.5,
-             0.5, -0.5
+             0.0, 32.0,
+             32.0, 32.0,
+             32.0, 0.0
         ]
 
-        self.ortho = glmath.ortho(0.0, self.width/8, self.height/8, 0.0, -1.0, 1.0)
-        self.model = glmath.Matrix(4)
+        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        #self.model = glmath.Matrix(4)
 
         self.program.set_uniform(b'ortho', self.ortho)
         #self.program.set_uniform('model', self.model)
@@ -104,7 +101,7 @@ class GameManager(object):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
-        self.ortho = glmath.ortho(0.0, self.width/8, self.height/8, 0.0, -1.0, 1.0)
+        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
