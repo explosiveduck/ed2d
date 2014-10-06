@@ -41,6 +41,7 @@ def ortho(left, right, bottom, top, zNear, zFar):
     rtnMat[3][0] = -(right + left) / (right - left)
     rtnMat[3][1] = -(top + bottom) / (top - bottom)
     rtnMat[3][2] = - (zFar + zNear) / (zFar - zNear)
+    rtnMat[3][3] = 1
     return Matrix(4, data=rtnMat)
 
 class Vector(object):

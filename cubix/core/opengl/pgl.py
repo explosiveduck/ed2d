@@ -148,23 +148,23 @@ def glUniformMatrix2fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 2 * 2)()
+        cData = conv_list_2d(value, gl.GLfloat)
     else:
-        cValue = (gl.GLfloat * (2 * 2))()
+        cData = conv_list(value, gl.GLfloat)
 
-    cValuePtr = cast_ptr(cValue, gl.GLfloat)
+    cDataPtr = cast_ptr(cData, gl.GLfloat)
 
-    gl.glUniformMatrix2fv(location, count, transpose, cValuePtr)
+    gl.glUniformMatrix2fv(location, count, transpose, cDataPtr)
 
 def glUniformMatrix3fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 3 * 3)()
+        cData = conv_list_2d(value, gl.GLfloat)
     else:
-        cValue = (gl.GLfloat * (3 * 3))()
+        cData = conv_list(value, gl.GLfloat)
 
-    cValuePtr = cast_ptr(cValue, gl.GLfloat)
+    cDataPtr = cast_ptr(cData, gl.GLfloat)
 
     gl.glUniformMatrix3fv(location, count, transpose, cValuePtr)
 
@@ -172,10 +172,10 @@ def glUniformMatrix4fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 4 * 4)()
+        cData = conv_list_2d(value, gl.GLfloat)
     else:
-        cValue = (gl.GLfloat * (4 * 4))()
+        cData = conv_list(value, gl.GLfloat)
 
-    cValuePtr = cast_ptr(cValue, gl.GLfloat)
+    cDataPtr = cast_ptr(cData, gl.GLfloat)
 
-    gl.glUniformMatrix4fv(location, count, transpose, cValuePtr)
+    gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
