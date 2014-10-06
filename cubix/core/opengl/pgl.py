@@ -63,11 +63,10 @@ def glBufferData(target, data, usage):
     else:
         cData = conv_list(data, gl.GLfloat)
 
-    cDataPtr = cast_ptr(ct.byref(cData), gl.GLfloat)
+    cDataPtr = cast_ptr(cData, gl.GLfloat)
     dataSize = ct.sizeof(cData)
     
     gl.glBufferData(target, dataSize, cDataPtr, usage)
-
 
 glTypeMap = {
     gl.GL_BYTE: gl.GLbyte,
@@ -91,7 +90,7 @@ def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
         else:
             cData = conv_list(data, castType)
 
-        cDataPtr = cast_ptr(ct.byref(cData), castType)
+        cDataPtr = cast_ptr(cData, castType)
 
     else:
         cDataPtr = 0
@@ -179,3 +178,21 @@ def glUniformMatrix4fv(location, count, transpose, value):
     cDataPtr = cast_ptr(cData, gl.GLfloat)
 
     gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
+
+def glGenTextures(n):
+    textures = (gl.GLuint(0)* n)
+    texPtr = cast_ptr(textures, gl.GLint)
+    gl.glGenTextures(n, texPtr)
+    return textures
+
+
+def glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels):
+    castType = glTypeMap[type]
+    if is_sequence(pixels[0]):
+        cData = conv_list_2d(pixels, castType)
+    else:
+        cData = conv_list(pixels, castType)
+
+    cPixelPtr = cast_ptr(cData, castType)
+    gl.glTexImage2d(target, level, internalformat, width, height, border, format, type, cPixelPtr)
+
