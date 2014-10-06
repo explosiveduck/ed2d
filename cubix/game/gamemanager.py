@@ -10,6 +10,7 @@ from cubix.core import files
 from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
+from cubix.core import glmath
 
 
 class GameManager(object):
@@ -50,11 +51,24 @@ class GameManager(object):
 
         self.program.use()
 
+        self.vertLoc = self.program.get_attribute('position')
+        self.program.new_uniform('ortho')
+        #self.program.new_uniform('model')
+
         self.data = [
-             0.0,  0.5,
+            -0.5,  0.5,
              0.5, -0.5,
-            -0.5, -0.5
+            -0.5, -0.5,
+            -0.5,  0.5,
+             0.5,  0.5,
+             0.5, -0.5
         ]
+
+        self.ortho = glmath.ortho(0.0, 1.0, 1.0, 0.0, -1.0, 1.0)
+        self.model = glmath.Matrix(4)
+
+        self.program.set_uniform('ortho', self.ortho)
+        #self.program.set_uniform('model', self.model)
 
         self.vbo = pgl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
@@ -62,11 +76,12 @@ class GameManager(object):
 
         self.vao = pgl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.vao)
-        self.vertLoc = self.program.get_attribute(b'position')
 
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
         pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
+
 
         glerr = gl.glGetError()
         if glerr != 0:
@@ -84,7 +99,7 @@ class GameManager(object):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         gl.glBindVertexArray(self.vao)
-        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 3)
+        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
 
     def do_run(self):
         ''' Process a single loop '''

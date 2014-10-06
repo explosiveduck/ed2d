@@ -148,11 +148,11 @@ def glUniformMatrix2fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 2 * 2)
+        cValue = (gl.GLfloat * 2 * 2)()
     else:
-        cValue = (gl.GLfloat * (2 * 2))
+        cValue = (gl.GLfloat * (2 * 2))()
 
-    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+    cValuePtr = cast_ptr(cValue, gl.GLfloat)
 
     gl.glUniformMatrix2fv(location, count, transpose, cValuePtr)
 
@@ -160,11 +160,11 @@ def glUniformMatrix3fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 3 * 3)
+        cValue = (gl.GLfloat * 3 * 3)()
     else:
-        cValue = (gl.GLfloat * (3 * 3))
+        cValue = (gl.GLfloat * (3 * 3))()
 
-    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+    cValuePtr = cast_ptr(cValue, gl.GLfloat)
 
     gl.glUniformMatrix3fv(location, count, transpose, cValuePtr)
 
@@ -172,10 +172,10 @@ def glUniformMatrix4fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
     if is_sequence(value[0]):
-        cValue = (gl.GLfloat * 4 * 4)
+        cValue = (gl.GLfloat * 4 * 4)()
     else:
-        cValue = (gl.GLfloat * (4 * 4))
+        cValue = (gl.GLfloat * (4 * 4))()
 
-    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+    cValuePtr = cast_ptr(cValue, gl.GLfloat)
 
     gl.glUniformMatrix4fv(location, count, transpose, cValuePtr)

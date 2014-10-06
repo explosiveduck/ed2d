@@ -2,6 +2,7 @@ from cubix.core.pycompat import *
 from cubix.core.opengl import gl, pgl
 from cubix.core import files
 from cubix.core.opengl import typeutils
+from cubix.core import glmath
 #import OpenGL.GL as gl2
 
 
@@ -71,7 +72,7 @@ class ShaderProgram(object):
         return gl.glGetAttribLocation(self.program, name)
 
     def new_uniform(self, name):
-        self.uniforms[name] = gl.getUniformLocation(self.program, bytes(name))
+        self.uniforms[name] = gl.glGetUniformLocation(self.program, bytes(name))
 
     def set_uniform(self, name, value):
         
@@ -79,7 +80,20 @@ class ShaderProgram(object):
 
         # Need to imeplement the matrix uniforms after I
         # Implement the matrix math library
-        if typeutils.is_sequence(value):
+        if isinstance(value, glmath.Vector):
+            value = value.vector
+        elif isinstance(value, glmath.Matrix):
+            size = value.size
+            data = value.matrix
+
+            if size == 4:
+                pgl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, data)
+            if size == 3:
+                pgl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, data)
+            if size == 2:
+                pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, data)
+
+        elif typeutils.is_sequence(value):
             size = len(value)
             if isinstance(value[0], int):
                 if size == 4:

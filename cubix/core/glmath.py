@@ -33,13 +33,14 @@ def matrix_vector_multiply(matrix, vector):
             vecOut[i] += vector[j] * matrix[i][j]
     return vecOut
 
-def ortho(left, right, bottom, top):
+def ortho(left, right, bottom, top, zNear, zFar):
     rtnMat = zero_matrix(4)
     rtnMat[0][0] = 2.0 / (right - left)
     rtnMat[1][1] = 2.0 / (top - bottom)
-    rtnMat[2][2] = -1
+    rtnMat[2][2] = -2.0 / (zFar - zNear)
     rtnMat[3][0] = -(right + left) / (right - left)
     rtnMat[3][1] = -(top + bottom) / (top - bottom)
+    rtnMat[3][2] = - (zFar + zNear) / (zFar - zNear)
     return Matrix(4, data=rtnMat)
 
 class Vector(object):
