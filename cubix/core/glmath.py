@@ -154,9 +154,7 @@ def ortho(left, right, bottom, top, zNear, zFar):
 
 def inverse3(mat):
     ''' Inverse of a 3x3 matrix.'''
-    det = mat[0][0] * (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) - 
-          mat[0][1] * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) +
-          mat[0][2] * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0])
+    det = mat[0][0] * (mat[1][1] * mat[2][2] - mat[2][1] * mat[1][2]) - mat[0][1] * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) + mat[0][2] * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0])
 
     invDet = 1 /det;
 
