@@ -10,7 +10,6 @@ from cubix.core import files
 from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
-import OpenGL.GL as gl2
 
 
 class GameManager(object):
