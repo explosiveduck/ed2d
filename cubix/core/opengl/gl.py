@@ -267,8 +267,6 @@ def init():
 
     gl.glGetError = gl_func('glGetError', GLenum, noParms)
 
-    gl.glGetUniformLocation = gl_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
-
     gl.glGenTextures = gl_func('glGenTextures', None, (GLsizei, ct.POINTER(GLuint)))
 
     gl.glBindTexture = gl_func('glBindTexture', None, (GLenum, GLuint))
@@ -340,3 +338,5 @@ def init():
     gl.glUniform3f = glext_func('glUniform3f', None, (GLint, GLfloat, GLfloat, GLfloat))
 
     gl.glUniform4f = glext_func('glUniform4f', None, (GLint, GLfloat, GLfloat, GLfloat, GLfloat))
+
+    gl.glGetUniformLocation = glext_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
