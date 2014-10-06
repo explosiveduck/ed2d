@@ -51,8 +51,8 @@ class GameManager(object):
 
         self.program.use()
 
-        self.vertLoc = self.program.get_attribute('position')
-        self.program.new_uniform('ortho')
+        self.vertLoc = self.program.get_attribute(b'position')
+        self.program.new_uniform(b'ortho')
         #self.program.new_uniform('model')
 
         self.data = [
@@ -67,7 +67,7 @@ class GameManager(object):
         self.ortho = glmath.ortho(0.0, 1.0, 1.0, 0.0, -1.0, 1.0)
         self.model = glmath.Matrix(4)
 
-        self.program.set_uniform('ortho', self.ortho)
+        self.program.set_uniform(b'ortho', self.ortho)
         #self.program.set_uniform('model', self.model)
 
         self.vbo = pgl.glGenBuffers(1)
