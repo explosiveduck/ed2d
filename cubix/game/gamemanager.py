@@ -102,6 +102,7 @@ class GameManager(object):
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.program.set_uniform(b'ortho', self.ortho)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
