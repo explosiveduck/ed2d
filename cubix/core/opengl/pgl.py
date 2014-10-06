@@ -7,8 +7,8 @@ from cubix.core.opengl.typeutils import conv_list_2d, is_sequence
 from cubix.core.opengl.typeutils import conv_list, cast_ptr
 
 '''
-Python GL Wrapper for opengl for cleaner access.
-Similar to PyOpenGL in some cases.
+Python GL Wrapper for opengl, gives cleaner access to the opengl api.
+Aims to be similar PyOpenGL where it makes sense.
 '''
 
 def glGetInteger(pname):
@@ -34,6 +34,7 @@ def glGetInteger(pname):
 def glShaderSource(shader, string):
     count = 1
     cStrLife = []
+    # TODO - fix this to allow an array of shader source to be used
     # if is_sequence(string):
     #     count = len(string)
     #     maxStrLen = 0
@@ -142,3 +143,39 @@ def glGetProgramiv(program, pname):
     params = gl.GLint(-1)
     gl.glGetProgramiv(program, pname, ct.byref(params))
     return params
+
+def glUniformMatrix2fv(location, count, transpose, value):
+
+    # Check if its 2d or 1d
+    if is_sequence(value[0]):
+        cValue = (gl.GLfloat * 2 * 2)
+    else:
+        cValue = (gl.GLfloat * (2 * 2))
+
+    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+
+    gl.glUniformMatrix2fv(location, count, transpose, cValuePtr)
+
+def glUniformMatrix3fv(location, count, transpose, value):
+
+    # Check if its 2d or 1d
+    if is_sequence(value[0]):
+        cValue = (gl.GLfloat * 3 * 3)
+    else:
+        cValue = (gl.GLfloat * (3 * 3))
+
+    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+
+    gl.glUniformMatrix3fv(location, count, transpose, cValuePtr)
+
+def glUniformMatrix4fv(location, count, transpose, value):
+
+    # Check if its 2d or 1d
+    if is_sequence(value[0]):
+        cValue = (gl.GLfloat * 4 * 4)
+    else:
+        cValue = (gl.GLfloat * (4 * 4))
+
+    cValuePtr = cast_ptr(ct.byref(cValue), gl.GLfloat)
+
+    gl.glUniformMatrix4fv(location, count, transpose, cValuePtr)

@@ -161,11 +161,9 @@ def init():
 
     gl.glBindBuffer = glext_func('glBindBuffer', None, (GLenum, GLuint))
 
-    _glBufferDataParams = (GLenum, GLsizeiptr, ct.c_void_p, GLenum)
-    gl.glBufferData = glext_func('glBufferData', None, _glBufferDataParams)
+    gl.glBufferData = glext_func('glBufferData', None, (GLenum, GLsizeiptr, ct.c_void_p, GLenum))
 
-    _ggvapar = (GLsizei, ct.POINTER(GLuint)) 
-    gl.glGenVertexArrays = glext_func('glGenVertexArrays', None, _ggvapar)
+    gl.glGenVertexArrays = glext_func('glGenVertexArrays', None, (GLsizei, ct.POINTER(GLuint)) )
 
     gl.glBindVertexArray = glext_func('glBindVertexArray', None, (GLuint,))
 
@@ -173,13 +171,11 @@ def init():
 
     gl.glDisableVertexAttribArray = glext_func('glDisableVertexAttribArray', None, (GLuint,))
 
-    _glVertexAttribPointerParams = (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p)
-    gl.glVertexAttribPointer = glext_func('glVertexAttribPointer', None, _glVertexAttribPointerParams)
+    gl.glVertexAttribPointer = glext_func('glVertexAttribPointer', None, (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p))
 
     gl.glCreateShader = glext_func('glCreateShader', GLuint, (GLenum,))
 
-    _glShaderSourceParam = (GLuint, GLsizei, ct.POINTER(ct.POINTER(GLchar)), ct.POINTER(GLint))
-    gl.glShaderSource = glext_func('glShaderSource', None, _glShaderSourceParam)
+    gl.glShaderSource = glext_func('glShaderSource', None, (GLuint, GLsizei, ct.POINTER(ct.POINTER(GLchar)), ct.POINTER(GLint)))
 
     gl.glCompileShader = glext_func('glCompileShader', None, (GLuint,))
 
@@ -200,3 +196,27 @@ def init():
     gl.glGetShaderiv = glext_func('glGetShaderiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
 
     gl.glGetProgramiv = glext_func('glGetProgramiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
+
+    gl.glUniformMatrix2fv = glext_func('glUniformMatrix2fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+
+    gl.glUniformMatrix3fv = glext_func('glUniformMatrix3fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+
+    gl.glUniformMatrix4fv = glext_func('glUniformMatrix4fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+
+    gl.glUniform1i = glext_func('glUniform1i', None, (GLint, GLint))
+
+    gl.glUniform2i = glext_func('glUniform2i', None, (GLint, GLint, GLint))
+
+    gl.glUniform3i = glext_func('glUniform3i', None, (GLint, GLint, GLint, GLint))
+
+    gl.glUniform4i = glext_func('glUniform4i', None, (GLint, GLint, GLint, GLint, GLint))
+
+    gl.glUniform1f = glext_func('glUniform1f', None, (GLint, GLfloat))
+
+    gl.glUniform2f = glext_func('glUniform2f', None, (GLint, GLfloat, GLfloat))
+
+    gl.glUniform3f = glext_func('glUniform3f', None, (GLint, GLfloat, GLfloat, GLfloat))
+
+    gl.glUniform4f = glext_func('glUniform4f', None, (GLint, GLfloat, GLfloat, GLfloat, GLfloat))
+
+    gl.glGetUniformLocation = glext_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
