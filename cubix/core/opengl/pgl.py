@@ -134,5 +134,3 @@ def glGetProgramiv(program, pname):
     params = gl.GLint(-1)
     gl.glGetProgramiv(program, pname, ct.byref(params))
     return params
-
-GLAPI void APIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint *params);
