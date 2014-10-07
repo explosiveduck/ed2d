@@ -2,10 +2,7 @@ import math
 
 from cubix.core.pycompat import *
 
-from cubix.core.glmath.vector import Vector
-
-def zero_vector(size):
-    ''' Return a zero filled vector list of the requested size '''
+from cubix.core.glmath import vector
 
 def zero_matrix(size):
     ''' Return zero filled matrix list of the requested size'''
@@ -109,33 +106,33 @@ def rotate3(axis, theta):
 
     oneMinusCos = (1.0 - c)
 
-    nAxis = axis.normalize()
+    nAxis = vector.normalize(axis)
 
-    x2 = nAxis.vector[0] * nAxis.vector[0]
-    y2 = nAxis.vector[1] * nAxis.vector[1]
-    z2 = nAxis.vector[2] * nAxis.vector[2]
+    x2 = nAxis[0] * nAxis[0]
+    y2 = nAxis[1] * nAxis[1]
+    z2 = nAxis[2] * nAxis[2]
 
-    container = [[c + x2 * oneMinusCos, ((nAxis.vector[1] * nAxis.vector[0]) * oneMinusCos) + (nAxis.vector[2] * s), ((nAxis.vector[2] * nAxis.vector[0]) * oneMinusCos) - (nAxis.vector[1] * s)],
-                [((nAxis.vector[0] * nAxis.vector[1]) * oneMinusCos) - (nAxis.vector[2] * s), c + y2 * oneMinusCos, ((nAxis.vector[2] * nAxis.vector[1]) * oneMinusCos) + (nAxis.vector[0] * s)],
-                [((nAxis.vector[0] * nAxis.vector[2]) * oneMinusCos) + (nAxis.vector[1] * s), ((nAxis.vector[1] * nAxis.vector[2]) * oneMinusCos) - (nAxi.vectors[0] * s), c + z2 * oneMinusCos]]
+    container = [[c + x2 * oneMinusCos, ((nAxis[1] * nAxis[0]) * oneMinusCos) + (nAxis[2] * s), ((nAxis[2] * nAxis[0]) * oneMinusCos) - (nAxis[1] * s)],
+                [((nAxis[0] * nAxis[1]) * oneMinusCos) - (nAxis[2] * s), c + y2 * oneMinusCos, ((nAxis[2] * nAxis[1]) * oneMinusCos) + (nAxis[0] * s)],
+                [((nAxis[0] * nAxis[2]) * oneMinusCos) + (nAxis[1] * s), ((nAxis[1] * nAxis[2]) * oneMinusCos) - (nAxis[0] * s), c + z2 * oneMinusCos]]
     return container
 
 def rotate4(axis, theta):
     ''' Rotate around an axis.'''
     c = math.cos(math.radians(theta))
-    s = math.sin(tmath.radians(theta))
+    s = math.sin(math.radians(theta))
 
     oneMinusCos = (1.0 - c)
 
-    nAxis = axis.normalize()
+    nAxis = vector.normalize(axis)
 
-    x2 = nAxis.vector[0] * nAxis.vector[0]
-    y2 = nAxis.vector[1] * nAxis.vector[1]
-    z2 = nAxis.vector[2] * nAxis.vector[2]
+    x2 = nAxis[0] * nAxis[0]
+    y2 = nAxis[1] * nAxis[1]
+    z2 = nAxis[2] * nAxis[2]
 
-    container = [[c + x2 * oneMinusCos, ((nAxis.vector[1] * nAxis.vector[0]) * oneMinusCos) + (nAxis.vector[2] * s), ((nAxis.vector[2] * nAxis.vector[0]) * oneMinusCos) - (nAxis.vector[1] * s), 0.0],
-                 [((nAxis.vector[0] * nAxis.vector[1]) * oneMinusCos) - (nAxis.vector[2] * s), c + y2 * oneMinusCos, ((nAxis[2] * nAxis.vector[1]) * oneMinusCos) + (nAxis.vector[0] * s), 0.0],
-                 [((nAxis.vector[0] * nAxis.vector[2]) * oneMinusCos) + (nAxis.vector[1] * s), ((nAxis.vector[1] * nAxis.vector[2]) * oneMinusCos) - (nAxis.vector[0] * s), c + z2 * oneMinusCos, 0.0],
+    container = [[c + x2 * oneMinusCos, ((nAxis[1] * nAxis[0]) * oneMinusCos) + (nAxis[2] * s), ((nAxis[2] * nAxis[0]) * oneMinusCos) - (nAxis[1] * s), 0.0],
+                 [((nAxis[0] * nAxis[1]) * oneMinusCos) - (nAxis[2] * s), c + y2 * oneMinusCos, ((nAxis[2] * nAxis[1]) * oneMinusCos) + (nAxis[0] * s), 0.0],
+                 [((nAxis[0] * nAxis[2]) * oneMinusCos) + (nAxis[1] * s), ((nAxis[1] * nAxis[2]) * oneMinusCos) - (nAxis[0] * s), c + z2 * oneMinusCos, 0.0],
                  [0.0, 0.0, 0.0, 1.0]]
     return container
 
@@ -253,17 +250,19 @@ class Matrix(object):
 
 
     def __mul__(self, other):
-        if isinstance(other, Vector):
+        if isinstance(other, vector.Vector):
             result = matrix_vector_multiply(self.matrix, other.vector)
-            return Vector(len(result), data=result)
+            return vector.Vector(len(result), data=result)
 
         elif isinstance(other, Matrix):
             if other.size != self.size:
                 errText = 'size {}, expected {}'.format(other.size, self.size)
                 raise ValueError(errText)
             else:
-                result = matrix_multiply(self.matrix, self.other.matrix)
+                result = matrix_multiply(self.matrix, other.matrix)
                 return Matrix(self.size, data=result)
+        else:
+            return NotImplemented
 
 
     def __imul__(self, other):
@@ -272,16 +271,16 @@ class Matrix(object):
                 errText = 'size {}, expected {}'.format(other.size, self.size)
                 raise ValueError(errText)
             else:
-                self.matrix = matrix_multiply(self.matrix, self.other.matrix)
+                self.matrix = matrix_multiply(self.matrix, other.matrix)
                 return self
         else:
             return NotImplemented
 
     def i_scale(self, value):
         ''' Scale matrix instance in-place by Vector. '''
-        if not isinstance(value, Vector):
+        if not isinstance(value, vector.Vector):
             raise TypeError('Expected Vector, got {}.'.format(type(value)))
-        if isinstance(value, Vector):
+        if isinstance(value, vector.Vector):
             scaleMatlst = scale(self.size, value.vector)
             self *= Matrix(self.size, data=scaleMatlst)
             return self
@@ -290,9 +289,9 @@ class Matrix(object):
 
     def scale(self, value):
         ''' Scale matrix instance by Vector, and return new matrix. '''
-        if not isinstance(value, Vector):
+        if not isinstance(value, vector.Vector):
             raise TypeError('Expected Vector, got {}.'.format(type(value)))
-        if isinstance(value, Vector):
+        if isinstance(value, vector.Vector):
             scaleMatlst = scale(self.size, value.vector)
             return self * Matrix(self.size, data=scaleMatlst)
         else:
@@ -324,15 +323,15 @@ class Matrix(object):
 
     def i_rotate(self, axis, theta):
         ''' Rotate Matrix instance in-place. '''
-        if not isinstance(axis, Vector):
+        if not isinstance(axis, vector.Vector):
             raise TypeError('Expected Vector, got {}.'.format(type(axis)))
 
         if self.size == 2:
-            rotMatList = rotate2(axis, theta)
+            rotMatList = rotate2(axis.vector, theta)
         elif self.size == 3:
-            rotMatList = rotate3(axis, theta)
+            rotMatList = rotate3(axis.vector, theta)
         elif self.size == 4:
-            rotMatList = rotate4(axis, theta)
+            rotMatList = rotate4(axis.vector, theta)
         else:
             raise NotImplementedError('Matrix rotate of size {} not implemented.'.format(self.size))
         self *= Matrix(self.size, data=rotMatList)
@@ -340,46 +339,46 @@ class Matrix(object):
 
     def rotate(self, axis, theta):
         ''' Rotate Matrix instance and return new Matrix. '''
-        if not isinstance(axis, Vector):
+        if not isinstance(axis, vector.Vector):
             raise TypeError('Expected Vector, got {}.'.format(type(axis)))
 
         if self.size == 2:
-            rotMatList = rotate2(axis, theta)
+            rotMatList = rotate2(axis.vector, theta)
         elif self.size == 3:
-            rotMatList = rotate3(axis, theta)
+            rotMatList = rotate3(axis.vector, theta)
         elif self.size == 4:
-            rotMatList = rotate4(axis, theta)
+            rotMatList = rotate4(axis.vector, theta)
         else:
             raise NotImplementedError('Matrix rotate of size {} not implemented.'.format(self.size))
         return self * Matrix(self.size, data=rotMatList)
 
-    def i_translate(self, vector):
+    def i_translate(self, vecA):
         ''' Translate Matrix instance in-place. '''
-        if not isinstance(vector, Vector):
-            raise TypeError('Expected Vector, got {}.'.format(type(vector)))
+        if not isinstance(vecA, vector.Vector):
+            raise TypeError('Expected Vector, got {}.'.format(type(vecA)))
 
         if self.size == 2:
-            transMatList = translate2(vector)
+            transMatList = translate2(vecA.vector)
         elif self.size == 3:
-            transMatList = translate3(vector)
+            transMatList = translate3(vecA.vector)
         elif self.size == 4:
-            transMatList = translate4(vector)
+            transMatList = translate4(vecA.vector)
         else:
             raise NotImplementedError('Matrix translate of size {} not implemented.'.format(self.size))
         self *= Matrix(self.size, data=transMatList)
         return self
 
-    def translate(self, vector):
+    def translate(self, vecA):
         ''' Translate Matrix instance and return new Matrix. '''
-        if not isinstance(vector, Vector):
-            raise TypeError('Expected Vector, got {}.'.format(type(vector)))
+        if not isinstance(vecA, vector.Vector):
+            raise TypeError('Expected Vector, got {}.'.format(type(vecA)))
 
         if self.size == 2:
-            transMatList = translate2(vector)
+            transMatList = translate2(vecA.vector)
         elif self.size == 3:
-            transMatList = translate3(vector)
+            transMatList = translate3(vecA.vector)
         elif self.size == 4:
-            transMatList = translate4(vector)
+            transMatList = translate4(vecA.vector)
         else:
             raise NotImplementedError('Matrix translate of size {} not implemented.'.format(self.size))
         return self * Matrix(self.size, data=transMatList)
