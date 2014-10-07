@@ -180,10 +180,10 @@ def glUniformMatrix4fv(location, count, transpose, value):
     gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
 
 def glGenTextures(n):
-    textures = (gl.GLuint(0)* n)
-    texPtr = cast_ptr(textures, gl.GLint)
+    textures = (gl.GLuint * n)()
+    texPtr = cast_ptr(textures, gl.GLuint)
     gl.glGenTextures(n, texPtr)
-    return textures
+    return textures[0]
 
 
 def glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels):
@@ -194,5 +194,5 @@ def glTexImage2D(target, level, internalformat, width, height, border, format, t
         cData = conv_list(pixels, castType)
 
     cPixelPtr = cast_ptr(cData, castType)
-    gl.glTexImage2d(target, level, internalformat, width, height, border, format, type, cPixelPtr)
+    gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, cPixelPtr)
 

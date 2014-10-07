@@ -44,6 +44,7 @@ class GameManager(object):
 
         # Get image data as a list
         self.cubixData = list(pilImage.getdata())
+        self.cubixWidth, self.cubixHeight = pilImage.size
 
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
@@ -93,6 +94,26 @@ class GameManager(object):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
         pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
 
+        self.texID = pgl.glGenTextures(1)
+
+        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
+
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, self.cubixData)
+
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
+        self.uvCoord = [
+             0.0, 1.0,
+             1.0, 0.0,
+             0.0, 0.0,
+
+             0.0, 1.0,
+             1.0, 1.0,
+             1.0, 0.0
+        ]
+        #self.uvCoord = [0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0]
+        self.program.new_uniform(b'textureSampler')
+
         glerr = gl.glGetError()
         if glerr != 0:
             print ('GLError:', glerr)
@@ -118,6 +139,10 @@ class GameManager(object):
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+
+        gl.glActiveTexture(gl.GL_TEXTURE0)
+        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
+        self.program.set_uniform(b'textureSampler', 0)
 
         gl.glBindVertexArray(self.vao)
         gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
