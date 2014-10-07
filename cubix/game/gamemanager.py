@@ -62,10 +62,24 @@ class GameManager(object):
         self.program = shaders.ShaderProgram(vertex, fragment)
 
         self.program.use()
-
         self.vertLoc = self.program.get_attribute(b'position')
+        self.UVLoc = self.program.get_attribute(b'vertexUV')
         self.program.new_uniform(b'ortho')
-        #self.program.new_uniform('model')
+        self.program.new_uniform(b'model')
+        self.program.new_uniform(b'textureSampler')
+
+        self.vao = pgl.glGenVertexArrays(1)
+        gl.glBindVertexArray(self.vao)
+
+        # Create new texture
+        self.texID = pgl.glGenTextures(1)
+
+        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
+
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, self.cubixData)
+
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
 
         self.data = [
              0.0, 32.0,
@@ -77,31 +91,6 @@ class GameManager(object):
              32.0, 0.0
         ]
 
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        #self.model = glmath.Matrix(4)
-
-        self.program.set_uniform(b'ortho', self.ortho)
-        #self.program.set_uniform('model', self.model)
-
-        self.vbo = pgl.glGenBuffers(1)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.data, gl.GL_STATIC_DRAW)
-
-        self.vao = pgl.glGenVertexArrays(1)
-        gl.glBindVertexArray(self.vao)
-
-        gl.glEnableVertexAttribArray(self.vertLoc)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
-
-        self.texID = pgl.glGenTextures(1)
-
-        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
-
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, self.cubixData)
-
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
         self.uvCoord = [
              0.0, 1.0,
              1.0, 0.0,
@@ -111,8 +100,22 @@ class GameManager(object):
              1.0, 1.0,
              1.0, 0.0
         ]
+
+        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.model = glmath.Matrix(4).i_translate(glmath.Vector(3, data=(100.0,100.0,0.0)))
+
+        self.program.set_uniform(b'ortho', self.ortho)
+        self.program.set_uniform(b'model', self.model)
+
+        self.vbo = pgl.glGenBuffers(1)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
+        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.data, gl.GL_STATIC_DRAW)
+
+        self.uvbo = pgl.glGenBuffers(1)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
+        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.uvCoord, gl.GL_STATIC_DRAW)
+
         #self.uvCoord = [0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0]
-        self.program.new_uniform(b'textureSampler')
 
         glerr = gl.glGetError()
         if glerr != 0:
@@ -131,6 +134,10 @@ class GameManager(object):
         elif event == 'window_resized':
             winID, x, y = data
             self.resize(x, y)
+        elif event == 'mouse_move':
+            x, y = data
+            self.model = glmath.Matrix(4).i_translate(glmath.Vector(3, data=(x,y,0.0)))
+            self.program.set_uniform(b'model', self.model)
 
 
     def update(self):
@@ -144,8 +151,19 @@ class GameManager(object):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
         self.program.set_uniform(b'textureSampler', 0)
 
-        gl.glBindVertexArray(self.vao)
+        gl.glEnableVertexAttribArray(self.vertLoc)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
+        pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        
+        #gl.glEnableVertexAttribArray(self.UVLoc)
+        #gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
+        #pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
         gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
+        #print ('test')
+
+        gl.glDisableVertexAttribArray(self.vertLoc)
+        gl.glDisableVertexAttribArray(self.UVLoc)
 
     def do_run(self):
         ''' Process a single loop '''

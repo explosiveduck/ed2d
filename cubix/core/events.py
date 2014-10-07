@@ -44,7 +44,10 @@ class Events(object):
             if event.type == sdl.SDL_QUIT:
                 eventName = 'quit'
                 data = ()
-            if event.type == sdl.SDL_WINDOWEVENT:
+            elif event.type == sdl.SDL_MOUSEMOTION:
+                eventName = 'mouse_move'
+                data = (event.motion.x, event.motion.y)
+            elif event.type == sdl.SDL_WINDOWEVENT:
                 winEvent = event.window
                 wEventName = event.window.event
                 # For now this will only support one window
