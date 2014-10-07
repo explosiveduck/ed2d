@@ -33,19 +33,6 @@ class GameManager(object):
 
         self.events.add_listener(self.process_event)
 
-        imagePath = files.resolve_path('data', 'images', 'cubix.png')
-
-        # Load in an image with PIL/pillow
-        pilImage = Image.open(imagePath)
-
-        # Verify that the image is in RGBA format
-        if ''.join(pilImage.getbands()) != 'RGBA':
-            pilImage = pilImage.convert('RGBA')
-
-        # Get image data as a list
-        self.cubixData = list(pilImage.getdata())
-        self.cubixWidth, self.cubixHeight = pilImage.size
-
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
         minor = pgl.glGetInteger(gl.GL_MINOR_VERSION)
@@ -71,34 +58,46 @@ class GameManager(object):
         self.vao = pgl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.vao)
 
+        # Load character image into new opengl texture
+        imagePath = files.resolve_path('data', 'images', 'cubix.png')
+        pilImage = Image.open(imagePath)
+
+        # Verify that the image is in RGBA format
+        if ''.join(pilImage.getbands()) != 'RGBA':
+            pilImage = pilImage.convert('RGBA')
+
+        # Get image data as a list
+        self.cubixData = list(pilImage.getdata())
+        self.cubixWidth, self.cubixHeight = pilImage.size
+
         # Create new texture
         self.texID = pgl.glGenTextures(1)
 
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
 
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, self.cubixData)
-
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
 
-        self.data = [
-             0.0, 32.0,
-             32.0, 0.0,
-             0.0, 0.0,
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, self.cubixData)
 
-             0.0, 32.0,
-             32.0, 32.0,
-             32.0, 0.0
+        self.data = [
+             [0.0, 32.0],
+             [32.0, 0.0],
+             [0.0, 0.0],
+
+             [0.0, 32.0],
+             [32.0, 32.0],
+             [32.0, 0.0]
         ]
 
         self.uvCoord = [
-             0.0, 1.0,
-             1.0, 0.0,
-             0.0, 0.0,
+             [0.0, 1.0],
+             [1.0, 0.0],
+             [0.0, 0.0],
 
-             0.0, 1.0,
-             1.0, 1.0,
-             1.0, 0.0
+             [0.0, 1.0],
+             [1.0, 1.0],
+             [1.0, 0.0]
         ]
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
@@ -153,17 +152,17 @@ class GameManager(object):
 
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
         
-        #gl.glEnableVertexAttribArray(self.UVLoc)
-        #gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        #pgl.glVertexAttribPointer(0, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        gl.glEnableVertexAttribArray(self.UVLoc)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
+        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
 
         gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
         #print ('test')
 
-        gl.glDisableVertexAttribArray(self.vertLoc)
         gl.glDisableVertexAttribArray(self.UVLoc)
+        gl.glDisableVertexAttribArray(self.vertLoc)
 
     def do_run(self):
         ''' Process a single loop '''
