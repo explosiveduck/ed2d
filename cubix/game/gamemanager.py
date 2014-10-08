@@ -63,6 +63,10 @@ class GameManager(object):
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform(b'ortho', self.ortho)
+        
+        glerr = gl.glGetError()
+        if glerr != 0:
+            print ('GLError:', glerr)
 
     def resize(self, width, height):
         self.width = width
