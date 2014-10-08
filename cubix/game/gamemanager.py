@@ -82,22 +82,16 @@ class GameManager(object):
 
         self.data = [
              [0.0, 32.0],
-             [32.0, 0.0],
-             [0.0, 0.0],
-
-             [0.0, 32.0],
              [32.0, 32.0],
-             [32.0, 0.0]
+             [0.0, 0.0],
+             [32.0, 0.0],
         ]
 
-        self.uvCoord = [
-             [0.0, 1.0],
-             [1.0, 0.0],
-             [0.0, 0.0],
-
+        self.uvCoord =  [
              [0.0, 1.0],
              [1.0, 1.0],
-             [1.0, 0.0]
+             [0.0, 0.0],
+             [1.0, 0.0],
         ]
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
@@ -158,7 +152,7 @@ class GameManager(object):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
         pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
 
-        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 6)
+        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         #print ('test')
 
         gl.glDisableVertexAttribArray(self.UVLoc)
