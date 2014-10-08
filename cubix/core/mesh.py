@@ -62,10 +62,11 @@ class Mesh(object):
         vecScale = glmath.Vector(3, data=(self._scale, self._scale, 0.0))
 
         self.modelMatrix = glmath.Matrix(4).i_scale(vecScale).i_translate(vecTrans)
-        self.program.set_uniform(b'model', self.modelMatrix)
 
 
     def render(self):
+        
+        self.program.set_uniform(b'model', self.modelMatrix)
 
         gl.glBindVertexArray(self.vao)
         self.texture.bind()

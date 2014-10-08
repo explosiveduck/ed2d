@@ -47,9 +47,7 @@ class GameManager(object):
 
         vertex = shaders.VertexShader(vsPath)
         fragment = shaders.FragmentShader(fsPath)
-
         self.program = shaders.ShaderProgram(vertex, fragment)
-
         self.program.use()
         self.program.new_uniform(b'ortho')
 
@@ -59,6 +57,9 @@ class GameManager(object):
 
         self.meshTest = mesh.Mesh(self.program, self.cubixTex)
         self.meshTest.scale(32)
+
+        self.meshTest2 = mesh.Mesh(self.program, self.cubixTex)
+        self.meshTest2.scale(32)
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
@@ -88,13 +89,15 @@ class GameManager(object):
 
     def update(self):
         self.meshTest.update()
-
+        self.meshTest2.update()
+    
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
-        self.cubixTex.bind()
         self.meshTest.render()
+        self.meshTest2.render()
+
 
     def do_run(self):
         ''' Process a single loop '''
