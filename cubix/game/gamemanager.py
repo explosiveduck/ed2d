@@ -58,9 +58,19 @@ class GameManager(object):
         self.meshTest = mesh.Mesh(self.program, self.cubixTex)
         self.meshTest.scale(32)
 
-        self.meshTest2 = mesh.Mesh(self.program, self.cubixTex)
-        self.meshTest2.scale(32)
+        self.meshes = []
 
+        rowx = 0
+        rowy = 0
+        for i in range(int((self.width/37) * (self.height/37))):
+            self.meshes.append(mesh.Mesh(self.program, self.cubixTex))
+            self.meshes[i].scale(32)
+            if i % (self.width//32) == 24:
+                rowx += 1
+                rowy = 0
+            self.meshes[i].translate(rowy*32 + rowy * 5, rowx * 37)
+            rowy += 1
+        print (len(self.meshes))
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform(b'ortho', self.ortho)
@@ -89,14 +99,16 @@ class GameManager(object):
 
     def update(self):
         self.meshTest.update()
-        self.meshTest2.update()
+        for i in range(len(self.meshes)):
+            self.meshes[i].update()
     
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         self.meshTest.render()
-        self.meshTest2.render()
+        for i in range(len(self.meshes)):
+            self.meshes[i].render()
 
 
     def do_run(self):

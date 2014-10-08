@@ -31,8 +31,11 @@ class Mesh(object):
 
         self.xPos = 0
         self.yPos = 0
+        self.xPosDelta = 0
+        self.yPosDelta = 0
 
         self._scale = 1
+        self.scaleDelta = 0
 
         self.modelMatrix = glmath.Matrix(4)
 
@@ -50,18 +53,30 @@ class Mesh(object):
         self.buffer_objects()
 
     def scale(self, value):
+        self.scaleDelta = value / self._scale
         self._scale = value
 
     def translate(self, x, y):
+        print (x, y, self.xPos, self.yPos, self.xPosDelta)
+        self.xPosDelta = x - self.xPos
+        self.yPosDelta = y - self.yPos
         self.xPos = x
         self.yPos = y
+        print (x, y, self.xPos, self.yPos, self.xPosDelta, '\n\n')
 
     def update(self):
 
-        vecTrans = glmath.Vector(3, data=(self.xPos, self.yPos, 0.0))
-        vecScale = glmath.Vector(3, data=(self._scale, self._scale, 0.0))
+        if self.scaleDelta:
+            vecScale = glmath.Vector(3, data=(self.scaleDelta, self.scaleDelta, 0.0))
+            self.modelMatrix.i_scale(vecScale)
+            self.scaleDelta = 0
+        elif self.xPosDelta or self.yPosDelta:
+            vecTrans = glmath.Vector(3, data=(self.xPosDelta, self.yPosDelta, 0.0))
+            self.modelMatrix.i_translate(vecTrans)
+            self.xPosDelta = 0
+            self.yPosDelta = 0
 
-        self.modelMatrix = glmath.Matrix(4).i_scale(vecScale).i_translate(vecTrans)
+        #self.mo
 
 
     def render(self):
