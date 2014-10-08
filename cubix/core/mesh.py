@@ -68,11 +68,11 @@ class Mesh(object):
     def update(self):
 
         if self.scaleDelta:
-            vecScale = glmath.Vector(3, data=(self.scaleDelta, self.scaleDelta, 0.0))
+            vecScale = glmath.Vector(3, data=[self.scaleDelta, self.scaleDelta, 0.0])
             self.modelMatrix.i_scale(vecScale)
             self.scaleDelta = 0
         if self.xPosDelta or self.yPosDelta:
-            vecTrans = glmath.Vector(3, data=(self.xPosDelta, self.yPosDelta, 0.0))
+            vecTrans = glmath.Vector(3, data=[self.xPosDelta, self.yPosDelta, 0.0])
             self.modelMatrix.i_translate(vecTrans)
             self.xPosDelta = 0
             self.yPosDelta = 0

@@ -15,7 +15,7 @@ def identity(size):
 
 def scale(size, value):
     if size == 4:
-        value = value + (1.0,)
+        value = value + [1.0,]
     return [[value[x] if x==y else 0.0 for y in range(size)] for x in range(size)]
 
 def matrix_multiply(matrixA, matrixB):
