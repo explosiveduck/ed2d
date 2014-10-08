@@ -11,6 +11,7 @@ from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
 from cubix.core import glmath
 from cubix.core import texture
+from cubix.core import mesh
 
 
 class GameManager(object):
@@ -50,47 +51,18 @@ class GameManager(object):
         self.program = shaders.ShaderProgram(vertex, fragment)
 
         self.program.use()
-        self.vertLoc = self.program.get_attribute(b'position')
-        self.UVLoc = self.program.get_attribute(b'vertexUV')
         self.program.new_uniform(b'ortho')
-        self.program.new_uniform(b'model')
-
-        self.vao = pgl.glGenVertexArrays(1)
-        gl.glBindVertexArray(self.vao)
 
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
         self.cubixTex = texture.Texture(imagePath, self.program)
 
-        self.data = [
-             [0.0, 32.0],
-             [32.0, 32.0],
-             [0.0, 0.0],
-             [32.0, 0.0],
-        ]
-
-        self.uvCoord =  [
-             [0.0, 1.0],
-             [1.0, 1.0],
-             [0.0, 0.0],
-             [1.0, 0.0],
-        ]
+        self.meshTest = mesh.Mesh(self.program, self.cubixTex)
+        self.meshTest.scale(32)
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        self.model = glmath.Matrix(4).i_translate(glmath.Vector(3, data=(100.0,100.0,0.0)))
 
         self.program.set_uniform(b'ortho', self.ortho)
-        self.program.set_uniform(b'model', self.model)
-
-        self.vbo = pgl.glGenBuffers(1)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.data, gl.GL_STATIC_DRAW)
-
-        self.uvbo = pgl.glGenBuffers(1)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.uvCoord, gl.GL_STATIC_DRAW)
-
-        #self.uvCoord = [0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0]
 
     def resize(self, width, height):
         self.width = width
@@ -107,32 +79,18 @@ class GameManager(object):
             self.resize(x, y)
         elif event == 'mouse_move':
             x, y = data
-            self.model = glmath.Matrix(4).i_translate(glmath.Vector(3, data=(x,y,0.0)))
-            self.program.set_uniform(b'model', self.model)
+            self.meshTest.translate(x, y)
 
 
     def update(self):
-        pass
+        self.meshTest.update()
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         self.cubixTex.bind()
-
-        gl.glEnableVertexAttribArray(self.vertLoc)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
-        
-        gl.glEnableVertexAttribArray(self.UVLoc)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
-
-        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
-        #print ('test')
-
-        gl.glDisableVertexAttribArray(self.UVLoc)
-        gl.glDisableVertexAttribArray(self.vertLoc)
+        self.meshTest.render()
 
     def do_run(self):
         ''' Process a single loop '''
