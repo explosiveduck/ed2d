@@ -10,6 +10,7 @@ from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
 from cubix.core import glmath
+from cubix.core import texture
 
 
 class GameManager(object):
@@ -53,32 +54,13 @@ class GameManager(object):
         self.UVLoc = self.program.get_attribute(b'vertexUV')
         self.program.new_uniform(b'ortho')
         self.program.new_uniform(b'model')
-        self.program.new_uniform(b'textureSampler')
 
         self.vao = pgl.glGenVertexArrays(1)
         gl.glBindVertexArray(self.vao)
 
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
-        pilImage = Image.open(imagePath)
-
-        # Verify that the image is in RGBA format
-        if ''.join(pilImage.getbands()) != 'RGBA':
-            pilImage = pilImage.convert('RGBA')
-
-        # Get image data as a list
-        self.cubixData = list(pilImage.getdata())
-        self.cubixWidth, self.cubixHeight = pilImage.size
-
-        # Create new texture
-        self.texID = pgl.glGenTextures(1)
-
-        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
-
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
-
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.cubixWidth, self.cubixHeight, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, self.cubixData)
+        self.cubixTex = texture.Texture(imagePath, self.program)
 
         self.data = [
              [0.0, 32.0],
@@ -110,10 +92,6 @@ class GameManager(object):
 
         #self.uvCoord = [0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0]
 
-        glerr = gl.glGetError()
-        if glerr != 0:
-            print ('GLError:', glerr)
-
     def resize(self, width, height):
         self.width = width
         self.height = height
@@ -140,9 +118,7 @@ class GameManager(object):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
-        gl.glActiveTexture(gl.GL_TEXTURE0)
-        gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
-        self.program.set_uniform(b'textureSampler', 0)
+        self.cubixTex.bind()
 
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
