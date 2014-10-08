@@ -90,6 +90,10 @@ class GameManager(object):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
         pgl.glBufferData(gl.GL_ARRAY_BUFFER, self.uvCoord, gl.GL_STATIC_DRAW)
 
+        glerr = gl.glGetError()
+        if glerr != 0:
+            print ('GLError:', glerr)
+        
         #self.uvCoord = [0.0, 0.0,  1.0, 0.0,  1.0, 1.0,  0.0, 1.0]
 
     def resize(self, width, height):
