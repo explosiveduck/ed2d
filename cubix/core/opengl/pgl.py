@@ -146,10 +146,13 @@ def glGetProgramiv(program, pname):
 def glUniformMatrix2fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
-    if is_sequence(value[0]):
-        cData = conv_list_2d(value, gl.GLfloat)
-    else:
-        cData = conv_list(value, gl.GLfloat)
+    if isinstance(value, (list, tuple)):
+        if is_sequence(value[0]):
+            cData = conv_list_2d(value, gl.GLfloat)
+        else:
+            cData = conv_list(value, gl.GLfloat)
+    elif isinstance(value._type_, gl.GLfloat):
+        cData = value
 
     cDataPtr = cast_ptr(cData, gl.GLfloat)
 
@@ -158,10 +161,13 @@ def glUniformMatrix2fv(location, count, transpose, value):
 def glUniformMatrix3fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
-    if is_sequence(value[0]):
-        cData = conv_list_2d(value, gl.GLfloat)
-    else:
-        cData = conv_list(value, gl.GLfloat)
+    if isinstance(value, (list, tuple)):
+        if is_sequence(value[0]):
+            cData = conv_list_2d(value, gl.GLfloat)
+        else:
+            cData = conv_list(value, gl.GLfloat)
+    elif isinstance(value._type_, gl.GLfloat):
+        cData = value
 
     cDataPtr = cast_ptr(cData, gl.GLfloat)
 
@@ -170,10 +176,13 @@ def glUniformMatrix3fv(location, count, transpose, value):
 def glUniformMatrix4fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
-    if is_sequence(value[0]):
-        cData = conv_list_2d(value, gl.GLfloat)
+    if isinstance(value, (list, tuple)):
+        if is_sequence(value[0]):
+            cData = conv_list_2d(value, gl.GLfloat)
+        else:
+            cData = conv_list(value, gl.GLfloat)
     else:
-        cData = conv_list(value, gl.GLfloat)
+        cData = value
 
     cDataPtr = cast_ptr(cData, gl.GLfloat)
 

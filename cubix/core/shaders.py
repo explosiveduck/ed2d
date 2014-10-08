@@ -84,7 +84,7 @@ class ShaderProgram(object):
             value = value.vector
         elif isinstance(value, glmath.Matrix):
             size = value.size
-            data = value.matrix
+            data = value.c_matrix
 
             if size == 4:
                 pgl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, data)

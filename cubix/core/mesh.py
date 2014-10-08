@@ -57,12 +57,13 @@ class Mesh(object):
         self._scale = value
 
     def translate(self, x, y):
-        print (x, y, self.xPos, self.yPos, self.xPosDelta)
+        #print (x, y, self.xPos, self.yPos, self.xPosDelta)
+        # FIX it doesnt work quite right
         self.xPosDelta = x - self.xPos
         self.yPosDelta = y - self.yPos
         self.xPos = x
         self.yPos = y
-        print (x, y, self.xPos, self.yPos, self.xPosDelta, '\n\n')
+        #print (x, y, self.xPos, self.yPos, self.xPosDelta, '\n\n')
 
     def update(self):
 
@@ -70,7 +71,7 @@ class Mesh(object):
             vecScale = glmath.Vector(3, data=(self.scaleDelta, self.scaleDelta, 0.0))
             self.modelMatrix.i_scale(vecScale)
             self.scaleDelta = 0
-        elif self.xPosDelta or self.yPosDelta:
+        if self.xPosDelta or self.yPosDelta:
             vecTrans = glmath.Vector(3, data=(self.xPosDelta, self.yPosDelta, 0.0))
             self.modelMatrix.i_translate(vecTrans)
             self.xPosDelta = 0

@@ -3,6 +3,7 @@ import math
 from cubix.core.pycompat import *
 
 from cubix.core.glmath import vector
+from cubix.core.opengl import typeutils, gl
 
 def zero_matrix(size):
     ''' Return zero filled matrix list of the requested size'''
@@ -248,6 +249,8 @@ class Matrix(object):
         else:
             self.matrix = data
 
+        self.c_matrix = typeutils.conv_list_2d(self.matrix, gl.GLfloat)
+
 
     def __mul__(self, other):
         if isinstance(other, vector.Vector):
@@ -272,6 +275,7 @@ class Matrix(object):
                 raise ValueError(errText)
             else:
                 self.matrix = matrix_multiply(self.matrix, other.matrix)
+                self.c_matrix = typeutils.conv_list_2d(self.matrix, gl.GLfloat)
                 return self
         else:
             return NotImplemented
@@ -307,6 +311,8 @@ class Matrix(object):
             self.matrix = inverse4(self.matrix)
         else:
             raise NotImplementedError('Matrix inverse of size {} not implemented.'.format(self.size))
+
+        self.c_matrix = typeutils.conv_list_2d(self.matrix, gl.GLfloat)
         return self
 
     def inverse(self):
@@ -386,6 +392,8 @@ class Matrix(object):
     def i_transpose(self):
         ''' Transpose Matrix instance in-place. '''
         self.matrix = transpose(self.matrix)
+
+        self.c_matrix = typeutils.conv_list_2d(self.matrix, gl.GLfloat)
         return self
 
     def transpose(self):
