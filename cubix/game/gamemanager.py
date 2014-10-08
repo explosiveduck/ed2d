@@ -62,10 +62,11 @@ class GameManager(object):
 
         rowx = 0
         rowy = 0
-        for i in range(int((self.width/37) * (self.height/37))):
+        numPerRow = int(self.width/37)
+        for i in range(numPerRow * int(self.height/37)):
             self.meshes.append(mesh.Mesh(self.program, self.cubixTex))
             self.meshes[i].scale(32)
-            if i % (self.width//32) == 24:
+            if (rowy*32) + (rowy * 5) + 32 >= self.width:
                 rowx += 1
                 rowy = 0
             self.meshes[i].translate(rowy*32 + rowy * 5, rowx * 37)
@@ -79,12 +80,31 @@ class GameManager(object):
         if glerr != 0:
             print ('GLError:', glerr)
 
+    def resize_obj(self):
+        rowx = 0
+        rowy = 0
+        numPerRow = int(self.width/37)
+        newMesh = []
+        for i in range(numPerRow * int(self.height/37)):
+            if i > len(self.meshes) - 1:
+                newMesh.append(mesh.Mesh(self.program, self.cubixTex))
+                newMesh[i].scale(32)
+            else:
+                newMesh.append(self.meshes[i])
+            if (rowy*32) + (rowy * 5) + 32 >= self.width:
+                rowx += 1
+                rowy = 0
+            newMesh[i].translate(rowy*32 + rowy * 5, rowx * 37)
+            rowy += 1
+        self.meshes = newMesh
+
     def resize(self, width, height):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform(b'ortho', self.ortho)
+        self.resize_obj()
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
