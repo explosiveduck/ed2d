@@ -1,4 +1,6 @@
 
+from collections import OrderedDict
+
 from PIL import Image
 import sdl2 as sdl
 
@@ -37,7 +39,7 @@ class BaseTexture(object):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
         self.program.set_uniform(b'textureSampler', self.texUnitID)
 
-class Texture(baseTexture):
+class Texture(BaseTexture):
 
     def __init__(self, path, program, type=''):
 
@@ -61,3 +63,48 @@ class Texture(baseTexture):
         self.data = list(img.getdata())
 
         self.width, self.height = img.size
+
+class TextureAtlas(BaseTexture):
+    def __init__(self, program):
+
+        self.program = program
+
+        self._set_unit_id()
+
+        # Data format will be as follows:
+        #    dict key: identifier
+        #        - This be be user degined, probably a string or int
+        #    dict key value:
+        #        - a second dict with information about that texture
+        #            - Mainly x, y position in texture, width and height
+        #                - possibly others
+        self.textures = OrderedDict()
+        self.data = 0
+
+    def add_texture(self, identifier, width, height, texData):
+        self.textures[identifier] = {
+                'xpos':None, 
+                'ypos':None,
+                'width': width,
+                'height': height,
+                'texData': textData,
+                'uvCoords': None,
+        }
+
+
+    def calc_image(self):
+        self.width = 0
+        self.height = 0
+
+        # For loop to go through all registered textures
+        # and calculate the total image size for the atlas
+        # for i in range():
+
+
+    def gen_atlas(self):
+
+        self.calc_image()
+        self.load_gl()
+
+        # add data to blank gl texture with
+        # glTexSubImage2D here
