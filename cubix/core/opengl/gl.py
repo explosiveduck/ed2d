@@ -2,7 +2,7 @@ import sys
 import ctypes as ct
 
 from cubix.core.pycompat import *
-from cubix.core.opengl.glbind import gl_func, glext_func
+from cubix.core.opengl.glbind import gl_func
 
 c_ptrdiff_t = ct.c_ssize_t
 
@@ -329,70 +329,71 @@ def init():
     gl.glPixelStorei = gl_func('glPixelStorei', None, (GLenum, GLint))
 
 
+
     # OpenGL Extension Functions
 
-    gl.glGenBuffers = glext_func('glGenBuffers', None, (GLsizei, ct.POINTER(GLuint)))
+    gl.glGenBuffers = gl_func('glGenBuffers', None, (GLsizei, ct.POINTER(GLuint)))
 
-    gl.glBindBuffer = glext_func('glBindBuffer', None, (GLenum, GLuint))
+    gl.glBindBuffer = gl_func('glBindBuffer', None, (GLenum, GLuint))
 
-    gl.glBufferData = glext_func('glBufferData', None, (GLenum, GLsizeiptr, ct.c_void_p, GLenum))
+    gl.glBufferData = gl_func('glBufferData', None, (GLenum, GLsizeiptr, ct.c_void_p, GLenum))
 
-    gl.glGenVertexArrays = glext_func('glGenVertexArrays', None, (GLsizei, ct.POINTER(GLuint)) )
+    gl.glGenVertexArrays = gl_func('glGenVertexArrays', None, (GLsizei, ct.POINTER(GLuint)) )
 
-    gl.glBindVertexArray = glext_func('glBindVertexArray', None, (GLuint,))
+    gl.glBindVertexArray = gl_func('glBindVertexArray', None, (GLuint,))
 
-    gl.glEnableVertexAttribArray = glext_func('glEnableVertexAttribArray', None, (GLuint,))
+    gl.glEnableVertexAttribArray = gl_func('glEnableVertexAttribArray', None, (GLuint,))
 
-    gl.glDisableVertexAttribArray = glext_func('glDisableVertexAttribArray', None, (GLuint,))
+    gl.glDisableVertexAttribArray = gl_func('glDisableVertexAttribArray', None, (GLuint,))
 
-    gl.glVertexAttribPointer = glext_func('glVertexAttribPointer', None, (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p))
+    gl.glVertexAttribPointer = gl_func('glVertexAttribPointer', None, (GLuint, GLint, GLenum, GLboolean, GLsizei, ct.c_void_p))
 
-    gl.glCreateShader = glext_func('glCreateShader', GLuint, (GLenum,))
+    gl.glCreateShader = gl_func('glCreateShader', GLuint, (GLenum,))
 
-    gl.glShaderSource = glext_func('glShaderSource', None, (GLuint, GLsizei, ct.POINTER(ct.POINTER(GLchar)), ct.POINTER(GLint)))
+    gl.glShaderSource = gl_func('glShaderSource', None, (GLuint, GLsizei, ct.POINTER(ct.POINTER(GLchar)), ct.POINTER(GLint)))
 
-    gl.glCompileShader = glext_func('glCompileShader', None, (GLuint,))
+    gl.glCompileShader = gl_func('glCompileShader', None, (GLuint,))
 
-    gl.glCreateProgram = glext_func('glCreateProgram', GLuint, noParms)
+    gl.glCreateProgram = gl_func('glCreateProgram', GLuint, noParms)
 
-    gl.glAttachShader = glext_func('glAttachShader', None, (GLuint, GLuint))
+    gl.glAttachShader = gl_func('glAttachShader', None, (GLuint, GLuint))
 
-    gl.glLinkProgram = glext_func('glLinkProgram', None, (GLuint,))
+    gl.glLinkProgram = gl_func('glLinkProgram', None, (GLuint,))
 
-    gl.glUseProgram = glext_func('glUseProgram', None, (GLuint,))
+    gl.glUseProgram = gl_func('glUseProgram', None, (GLuint,))
 
-    gl.glGetAttribLocation = glext_func('glGetAttribLocation', GLint, (GLuint, ct.POINTER(GLchar)))
+    gl.glGetAttribLocation = gl_func('glGetAttribLocation', GLint, (GLuint, ct.POINTER(GLchar)))
 
-    gl.glGetShaderInfoLog = glext_func('glGetShaderInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))
+    gl.glGetShaderInfoLog = gl_func('glGetShaderInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))
 
-    gl.glGetProgramInfoLog = glext_func('glGetProgramInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))
+    gl.glGetProgramInfoLog = gl_func('glGetProgramInfoLog', None, (GLuint, GLsizei, ct.POINTER(GLsizei), ct.POINTER(GLchar)))
 
-    gl.glGetShaderiv = glext_func('glGetShaderiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
+    gl.glGetShaderiv = gl_func('glGetShaderiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
 
-    gl.glGetProgramiv = glext_func('glGetProgramiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
+    gl.glGetProgramiv = gl_func('glGetProgramiv', None, (GLuint, GLenum, ct.POINTER(GLint)))
 
-    gl.glUniformMatrix2fv = glext_func('glUniformMatrix2fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+    gl.glUniformMatrix2fv = gl_func('glUniformMatrix2fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
 
-    gl.glUniformMatrix3fv = glext_func('glUniformMatrix3fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+    gl.glUniformMatrix3fv = gl_func('glUniformMatrix3fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
 
-    gl.glUniformMatrix4fv = glext_func('glUniformMatrix4fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
+    gl.glUniformMatrix4fv = gl_func('glUniformMatrix4fv', None, (GLint, GLsizei, GLboolean, ct.POINTER(GLfloat)))
 
-    gl.glUniform1i = glext_func('glUniform1i', None, (GLint, GLint))
+    gl.glUniform1i = gl_func('glUniform1i', None, (GLint, GLint))
 
-    gl.glUniform2i = glext_func('glUniform2i', None, (GLint, GLint, GLint))
+    gl.glUniform2i = gl_func('glUniform2i', None, (GLint, GLint, GLint))
 
-    gl.glUniform3i = glext_func('glUniform3i', None, (GLint, GLint, GLint, GLint))
+    gl.glUniform3i = gl_func('glUniform3i', None, (GLint, GLint, GLint, GLint))
 
-    gl.glUniform4i = glext_func('glUniform4i', None, (GLint, GLint, GLint, GLint, GLint))
+    gl.glUniform4i = gl_func('glUniform4i', None, (GLint, GLint, GLint, GLint, GLint))
 
-    gl.glUniform1f = glext_func('glUniform1f', None, (GLint, GLfloat))
+    gl.glUniform1f = gl_func('glUniform1f', None, (GLint, GLfloat))
 
-    gl.glUniform2f = glext_func('glUniform2f', None, (GLint, GLfloat, GLfloat))
+    gl.glUniform2f = gl_func('glUniform2f', None, (GLint, GLfloat, GLfloat))
 
-    gl.glUniform3f = glext_func('glUniform3f', None, (GLint, GLfloat, GLfloat, GLfloat))
+    gl.glUniform3f = gl_func('glUniform3f', None, (GLint, GLfloat, GLfloat, GLfloat))
 
-    gl.glUniform4f = glext_func('glUniform4f', None, (GLint, GLfloat, GLfloat, GLfloat, GLfloat))
+    gl.glUniform4f = gl_func('glUniform4f', None, (GLint, GLfloat, GLfloat, GLfloat, GLfloat))
 
-    gl.glGetUniformLocation = glext_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
+    gl.glGetUniformLocation = gl_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
 
-    gl.glActiveTexture = glext_func('glActiveTexture', None, (GLenum,))
+    gl.glActiveTexture = gl_func('glActiveTexture', None, (GLenum,))

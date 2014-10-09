@@ -6,39 +6,36 @@ import platform
 
 from cubix.core.pycompat import *
 
-def gl_func(name, returnType, paramTypes):
-    ''' Define and load an opengl function '''
+class BindGL(object):
+    def __init__(self):
+        self.osName = platform.system()
 
-    osName = platform.system()
+        if self.osName == 'Linux':
+            libFound = find_library('GL')
+            self.lib = ct.CDLL(libFound)
+        elif self.osName == 'Windows':
+            libFound = find_library('opengl32')
+            self.lib = ct.WinDLL(libFound)
+        elif self.osName == 'Darwin': # Mac OS X
+            libFound = find_library('/System/Library/Frameworks/OpenGL.framework')
+            self.lib = ct.CDLL(libFound)
 
-    if osName == 'Linux':
-        function = ct.CFUNCTYPE(returnType, *paramTypes)
-        libFound = find_library('GL')
-        lib = ct.CDLL(libFound)
-    elif osName == 'Windows':
-        function = ct.WINFUNCTYPE(returnType, *paramTypes)
-        libFound = find_library('opengl32')
-        lib = ct.WinDLL(libFound)
-    elif osName == 'Darwin': # Mac OS X
-        function = ct.CFUNCTYPE(returnType, *paramTypes)
-        libFound = find_library('/System/Library/Frameworks/OpenGL.framework')
-        lib = ct.CDLL(libFound)
+    def gl_func(self, name, returnType, paramTypes):
+        ''' Define and load an opengl function '''
 
-    address = getattr(lib, name)
+        if self.osName == 'Linux' or self.osName == 'Darwin':
+            function = ct.CFUNCTYPE(returnType, *paramTypes)
+        elif self.osName == 'Windows':
+            function = ct.WINFUNCTYPE(returnType, *paramTypes)
 
-    return ct.cast(address, function)
+        try:
+            address = getattr(self.lib, name)
+        except AttributeError:
+            address = SDL_GL_GetProcAddress(name)
 
-def glext_func(name, returnType, paramTypes):
-    ''' Define and load an opengl extension function '''
+        return ct.cast(address, function)
 
-    osName = platform.system()
+_glbind = BindGL()
+gl_func = _glbind.gl_func
 
-    # Convert the name to bytes
-    name = name.encode(encoding='UTF-8')
-
-    if osName == 'Windows':
-        function = ct.WINFUNCTYPE(returnType, *paramTypes)
-    if osName == 'Linux' or osName == 'Darwin':
-        function = ct.CFUNCTYPE(returnType, *paramTypes)
-
-    return ct.cast(SDL_GL_GetProcAddress(name), function)
+__all__ = ['gl_func']
