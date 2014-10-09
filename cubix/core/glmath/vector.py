@@ -24,35 +24,35 @@ def reflect(incidentVec, norm):
 
 def vec_add(vecA, vecB):
     size = len(vecA)
-    vecOut = zero_vector() 
+    vecOut = zero_vector(size) 
     for i in range(size):
         vecOut[i] = vecA[i] + vecB[i]
     return vecOut
 
 def vec_sub(vecA, vecB):
     size = len(vecA)
-    vecOut = zero_vector() 
+    vecOut = zero_vector(size) 
     for i in range(size):
         vecOut[i] = vecA[i] - vecB[i]
     return vecOut
 
 def vec_mul(vecA, scalar):
     size = len(vecA)
-    vecOut = zero_vector() 
+    vecOut = zero_vector(size) 
     for i in range(size):
         vecOut[i] = vecA[i] * scalar
     return vecOut
 
 def vec_div(vecA, vecB):
     size = len(vecA)
-    vecOut = zero_vector() 
+    vecOut = zero_vector(size) 
     for i in range(size):
         vecOut[i] = vecA[i] / scalar
     return vecOut
 
 def vec_neg(vecA):
     size = len(vecA)
-    vecOut = zero_vector() 
+    vecOut = zero_vector(size) 
     for i in range(size):
         vecOut[i] = -vecA[i]
     return vecOut
