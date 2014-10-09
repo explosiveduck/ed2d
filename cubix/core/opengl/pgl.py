@@ -151,7 +151,7 @@ def glUniformMatrix2fv(location, count, transpose, value):
             cData = conv_list_2d(value, gl.GLfloat)
         else:
             cData = conv_list(value, gl.GLfloat)
-    elif isinstance(value._type_, gl.GLfloat):
+    else:
         cData = value
 
     cDataPtr = cast_ptr(cData, gl.GLfloat)
@@ -166,7 +166,7 @@ def glUniformMatrix3fv(location, count, transpose, value):
             cData = conv_list_2d(value, gl.GLfloat)
         else:
             cData = conv_list(value, gl.GLfloat)
-    elif isinstance(value._type_, gl.GLfloat):
+    else:
         cData = value
 
     cDataPtr = cast_ptr(cData, gl.GLfloat)
@@ -175,16 +175,16 @@ def glUniformMatrix3fv(location, count, transpose, value):
 
 def glUniformMatrix4fv(location, count, transpose, value):
 
-    # Check if its 2d or 1d
-    if isinstance(value, (list, tuple)):
-        if is_sequence(value[0]):
-            cData = conv_list_2d(value, gl.GLfloat)
-        else:
+    try:
+        cDataPtr = cast_ptr(value, gl.GLfloat)
+    except:
+        try:
+            value[0][0]
+        except:
             cData = conv_list(value, gl.GLfloat)
-    else:
-        cData = value
-
-    cDataPtr = cast_ptr(cData, gl.GLfloat)
+        else:
+            cData = conv_list_2d(value, gl.GLfloat)
+        cDataPtr = cast_ptr(cData, gl.GLfloat)
 
     gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
 
