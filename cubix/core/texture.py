@@ -21,7 +21,7 @@ class BaseTexture(object):
 
     def load_gl(self):
 
-        self.program.new_uniform(b'textureSampler')
+        self.texSampID = self.program.new_uniform(b'textureSampler')
 
         # Load image into new opengl texture
         self.texID = pgl.glGenTextures(1)
@@ -37,7 +37,7 @@ class BaseTexture(object):
     def bind(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
-        self.program.set_uniform(b'textureSampler', self.texUnitID)
+        self.program.set_uniform(self.texSampID, self.texUnitID)
 
 class Texture(BaseTexture):
 

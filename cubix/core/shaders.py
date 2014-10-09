@@ -37,7 +37,7 @@ class FragmentShader(ShaderBase):
 class ShaderProgram(object):
     def __init__(self, vertex, fragment):
 
-        self.uniforms = {}
+        self.uniforms = []
         
         self.vertex = vertex
         self.fragment = fragment
@@ -72,11 +72,13 @@ class ShaderProgram(object):
         return gl.glGetAttribLocation(self.program, name)
 
     def new_uniform(self, name):
-        self.uniforms[name] = gl.glGetUniformLocation(self.program, bytes(name))
+        uniID = len(self.uniforms)
+        self.uniforms.append(gl.glGetUniformLocation(self.program, bytes(name)))
+        return uniID
 
-    def set_uniform(self, name, value):
+    def set_uniform(self, uniID, value):
         
-        uniform = self.uniforms[name]
+        uniform = self.uniforms[uniID]
 
         # Need to imeplement the matrix uniforms after I
         # Implement the matrix math library
@@ -93,7 +95,11 @@ class ShaderProgram(object):
             if size == 2:
                 pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, data)
 
-        elif typeutils.is_sequence(value):
+        elif isinstance(value, int):
+            gl.glUniform1i(uniform, value)
+        elif isinstance(value, float):
+            gl.glUniform1f(uniform, value)
+        else:
             size = len(value)
             if isinstance(value[0], int):
                 if size == 4:
@@ -109,8 +115,3 @@ class ShaderProgram(object):
                     gl.glUniform3f(uniform, *value)
                 if size == 2:
                     gl.glUniform2f(uniform, *value)
-
-        elif isinstance(value, int):
-            gl.glUniform1i(uniform, value)
-        elif isinstance(value, float):
-            gl.glUniform1f(uniform, value)

@@ -26,7 +26,7 @@ class Mesh(object):
         self.program = program
         self.vertLoc = self.program.get_attribute(b'position')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
-        self.program.new_uniform(b'model')
+        self.modelID = self.program.new_uniform(b'model')
         self.texture = texture
 
         self.xPos = 0
@@ -76,7 +76,7 @@ class Mesh(object):
 
     def render(self):
         
-        self.program.set_uniform(b'model', self.modelMatrix)
+        self.program.set_uniform(self.modelID, self.modelMatrix)
 
         gl.glBindVertexArray(self.vao)
         self.texture.bind()
