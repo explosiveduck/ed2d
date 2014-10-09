@@ -13,20 +13,20 @@ class BindGL(object):
         if self.osName == 'Linux':
             libFound = find_library('GL')
             self.lib = ct.CDLL(libFound)
+            self.funcType = ct.CFUNCTYPE
         elif self.osName == 'Windows':
             libFound = find_library('opengl32')
             self.lib = ct.WinDLL(libFound)
+            self.funcType = ct.WINFUNCTYPE
         elif self.osName == 'Darwin': # Mac OS X
             libFound = find_library('/System/Library/Frameworks/OpenGL.framework')
             self.lib = ct.CDLL(libFound)
+            self.funcType = ct.CFUNCTYPE
 
     def gl_func(self, name, returnType, paramTypes):
         ''' Define and load an opengl function '''
 
-        if self.osName == 'Linux' or self.osName == 'Darwin':
-            function = ct.CFUNCTYPE(returnType, *paramTypes)
-        elif self.osName == 'Windows':
-            function = ct.WINFUNCTYPE(returnType, *paramTypes)
+        function = self.funcType(returnType, *paramTypes)
 
         try:
             address = getattr(self.lib, name)
