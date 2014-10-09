@@ -1,10 +1,11 @@
 
 from PIL import Image
+import sdl2 as sdl
 
 from cubix.core.pycompat import *
 from cubix.core.opengl import gl, pgl
 
-class Texture(object):
+class BaseTexture(object):
     ''' Texture manager'''
     # Just for clarity
     # This is basically a static variable
@@ -16,29 +17,14 @@ class Texture(object):
         self.texUnitID = self.textureCount
         Texture.textureCount += 1
 
-    def __init__(self, path, program):
-
-        self.path = path
-        self.program = program
-
-        self._set_unit_id()
+    def load_gl(self):
 
         self.program.new_uniform(b'textureSampler')
-
-        img = Image.open(self.path)
-
-        # Verify that the image is in RGBA format
-        if ''.join(img.getbands()) != 'RGBA':
-            img = img.convert('RGBA')
-
-        # Get image data as a list
-        self.data = list(img.getdata())
-
-        self.width, self.height = img.size
 
         # Load image into new opengl texture
         self.texID = pgl.glGenTextures(1)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
+        gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
 
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
@@ -50,3 +36,28 @@ class Texture(object):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
         self.program.set_uniform(b'textureSampler', self.texUnitID)
+
+class Texture(baseTexture):
+
+    def __init__(self, path, program, type=''):
+
+        self.path = path
+        self.program = program
+
+        self._set_unit_id()
+
+        self.load_image()
+        self.load_gl()
+
+
+    def load_image(self):
+        img = Image.open(self.path)
+
+        # Verify that the image is in RGBA format
+        if ''.join(img.getbands()) != 'RGBA':
+            img = img.convert('RGBA')
+
+        # Get image data as a list
+        self.data = list(img.getdata())
+
+        self.width, self.height = img.size

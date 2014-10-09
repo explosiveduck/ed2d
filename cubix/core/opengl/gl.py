@@ -256,6 +256,24 @@ GL_TEXTURE29 = 0x84DD
 GL_TEXTURE30 = 0x84DE
 GL_TEXTURE31 = 0x84DF
 
+# glPixelStorei
+GL_PACK_SWAP_BYTES = 0x0D00
+GL_PACK_LSB_FIRST = 0x0D01
+GL_PACK_ROW_LENGTH = 0x0D02
+GL_PACK_IMAGE_HEIGHT = 0x806C
+GL_PACK_SKIP_ROWS = 0x0D03
+GL_PACK_SKIP_PIXELS = 0x0D04
+GL_PACK_SKIP_IMAGES = 0x806B
+GL_PACK_ALIGNMENT = 0x0D05
+GL_UNPACK_SWAP_BYTES = 0x0CF0
+GL_UNPACK_LSB_FIRST = 0x0CF1
+GL_UNPACK_ROW_LENGTH = 0x0CF2
+GL_UNPACK_IMAGE_HEIGHT = 0x806E
+GL_UNPACK_SKIP_ROWS = 0x0CF3
+GL_UNPACK_SKIP_PIXELS = 0x0CF4
+GL_UNPACK_SKIP_IMAGES = 0x806D
+GL_UNPACK_ALIGNMENT = 0x0CF5
+
 GL_BYTE = 0x1400
 GL_UNSIGNED_BYTE = 0x1401
 GL_SHORT = 0x1402
@@ -307,6 +325,9 @@ def init():
     gl.glTexImage2D = gl_func('glTexImage2D', None, (GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, ct.POINTER(GLvoid)))
 
     gl.glTexParameteri = gl_func('glTexParameteri', None, (GLenum, GLenum, GLint))
+
+    gl.glPixelStorei = gl_func('glPixelStorei', None, (GLenum, GLint))
+
 
     # OpenGL Extension Functions
 
