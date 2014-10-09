@@ -83,13 +83,14 @@ glTypeMap = {
 # index, size, type, normalized, stride, pointer
 def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
 
-    castType = glTypeMap[ptype]
-    if data is not None:
-        if is_sequence(data[0]):
-            cData = conv_list_2d(data, castType)
+    if not data is None:
+        castType = glTypeMap[ptype]
+        try:
+            data[0][0]
+        except:
+            cData = conv_list(data, gl.GLfloat)
         else:
-            cData = conv_list(data, castType)
-
+            cData = conv_list_2d(data, gl.GLfloat)
         cDataPtr = cast_ptr(cData, castType)
 
     else:
