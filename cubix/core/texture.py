@@ -72,24 +72,28 @@ class TextureAtlas(BaseTexture):
         self._set_unit_id()
 
         # Data format will be as follows:
-        #    dict key: identifier
-        #        - This be be user degined, probably a string or int
-        #    dict key value:
+        #    Indexed by textureID
+        #    value:
         #        - a second dict with information about that texture
-        #            - Mainly x, y position in texture, width and height
-        #                - possibly others
-        self.textures = OrderedDict()
+        #            - x, y position in texture, width and height, texture data/uvcoords
+        self.textures = []
         self.data = 0
 
-    def add_texture(self, identifier, width, height, texData):
-        self.textures[identifier] = {
-                'xpos':None, 
-                'ypos':None,
-                'width': width,
-                'height': height,
-                'texData': textData,
-                'uvCoords': None,
-        }
+    def add_texture(self, width, height, texData):
+        textureID = len(self.textures)
+
+        self.textures.append({
+                'xpos':None, 'ypos':None,       # Calculated by calc_image
+                'width': width, 'height': height,
+                'texData': textData, 'uvCoords': None, # uvCords Calculated by calc_image
+        })
+        return textureID
+
+    def get_uvcoords():
+        cordData = []
+        # This will return a list of all of the uvcoords indexed by textureID
+
+        return coordData
 
 
     def calc_image(self):
