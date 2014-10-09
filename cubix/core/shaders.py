@@ -2,7 +2,7 @@ from cubix.core.pycompat import *
 from cubix.core.opengl import gl, pgl
 from cubix.core import files
 from cubix.core.opengl import typeutils
-from cubix.core import glmath
+from cubix.core.glmath import Matrix, Vector
 #import OpenGL.GL as gl2
 
 
@@ -38,6 +38,7 @@ class ShaderProgram(object):
     def __init__(self, vertex, fragment):
 
         self.uniforms = []
+        self.uniformNames = {}
         
         self.vertex = vertex
         self.fragment = fragment
@@ -71,8 +72,12 @@ class ShaderProgram(object):
     def get_attribute(self, name):
         return gl.glGetAttribLocation(self.program, name)
 
+    def get_uniform_name(self, uniID):
+        return self.uniformNames[uniID]
+
     def new_uniform(self, name):
         uniID = len(self.uniforms)
+        self.uniformNames[uniID] = name
         self.uniforms.append(gl.glGetUniformLocation(self.program, bytes(name)))
         return uniID
 
@@ -82,9 +87,9 @@ class ShaderProgram(object):
 
         # Need to imeplement the matrix uniforms after I
         # Implement the matrix math library
-        if isinstance(value, glmath.Vector):
+        if isinstance(value, Vector):
             value = value.vector
-        elif isinstance(value, glmath.Matrix):
+        elif isinstance(value, Matrix):
             size = value.size
             data = value.c_matrix
 
