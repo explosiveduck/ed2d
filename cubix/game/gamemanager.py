@@ -74,7 +74,7 @@ class GameManager(object):
         print (len(self.meshes))
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
-        self.program.set_uniform(self.orthoID, self.ortho)
+        self.program.set_uniform_matrix(self.orthoID, self.ortho)
         
         glerr = gl.glGetError()
         if glerr != 0:
@@ -103,7 +103,7 @@ class GameManager(object):
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        self.program.set_uniform(self.orthoID, self.ortho)
+        self.program.set_uniform_matrix(self.orthoID, self.ortho)
         self.resize_obj()
 
     def process_event(self, event, data):

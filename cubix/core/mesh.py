@@ -76,7 +76,7 @@ class Mesh(object):
 
     def render(self):
         
-        self.program.set_uniform(self.modelID, self.modelMatrix)
+        self.program.set_uniform_matrix(self.modelID, self.modelMatrix)
 
         gl.glBindVertexArray(self.vao)
         self.texture.bind()

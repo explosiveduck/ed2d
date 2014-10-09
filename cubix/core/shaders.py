@@ -81,15 +81,9 @@ class ShaderProgram(object):
         self.uniforms.append(gl.glGetUniformLocation(self.program, bytes(name)))
         return uniID
 
-    def set_uniform(self, uniID, value):
-        
+    def set_uniform_matrix(self, uniID, value):
         uniform = self.uniforms[uniID]
-
-        # Need to imeplement the matrix uniforms after I
-        # Implement the matrix math library
-        if isinstance(value, Vector):
-            value = value.vector
-        elif isinstance(value, Matrix):
+        try:
             size = value.size
             data = value.c_matrix
 
@@ -99,12 +93,14 @@ class ShaderProgram(object):
                 pgl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, data)
             if size == 2:
                 pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, data)
+        except:
+            raise
+    def set_uniform_array(self, uniID, value):
+        uniform = self.uniforms[uniID]
+        try:
 
-        elif isinstance(value, int):
-            gl.glUniform1i(uniform, value)
-        elif isinstance(value, float):
-            gl.glUniform1f(uniform, value)
-        else:
+            if isinstance(value, Vector):
+                value = value.vector
             size = len(value)
             if isinstance(value[0], int):
                 if size == 4:
@@ -120,3 +116,18 @@ class ShaderProgram(object):
                     gl.glUniform3f(uniform, *value)
                 if size == 2:
                     gl.glUniform2f(uniform, *value)
+        except:
+            raise typeError
+
+    def set_uniform(self, uniID, value):
+        
+        uniform = self.uniforms[uniID]
+
+        # Need to imeplement the matrix uniforms after I
+        # Implement the matrix math library
+        if isinstance(value, int):
+            gl.glUniform1i(uniform, value)
+        elif isinstance(value, float):
+            gl.glUniform1f(uniform, value)
+        else:
+            raise TypeError
