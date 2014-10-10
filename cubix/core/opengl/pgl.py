@@ -197,13 +197,16 @@ def glGenTextures(n):
 
 
 def glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels):
-    castType = glTypeMap[type]
-    if is_sequence(pixels[0]):
-        cData = conv_list_2d(pixels, castType)
-    else:
-        cData = conv_list(pixels, castType)
+    if not (pixels == 0 or pixels is None):
+        castType = glTypeMap[type]
+        if is_sequence(pixels[0]):
+            cData = conv_list_2d(pixels, castType)
+        else:
+            cData = conv_list(pixels, castType)
 
-    cPixelPtr = cast_ptr(cData, castType)
+        cPixelPtr = cast_ptr(cData, castType)
+    else:
+        cPixelPtr = 0
     gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, cPixelPtr)
 
 def glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels):

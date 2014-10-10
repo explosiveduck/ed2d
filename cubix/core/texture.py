@@ -7,6 +7,19 @@ import sdl2 as sdl
 from cubix.core.pycompat import *
 from cubix.core.opengl import gl, pgl
 
+def load_image(path):
+    img = Image.open(path)
+
+    # Verify that the image is in RGBA format
+    if ''.join(img.getbands()) != 'RGBA':
+        img = img.convert('RGBA')
+
+    # Get image data as a list
+    data = list(img.getdata())
+
+    width, height = img.size
+    return width, height, data
+
 class BaseTexture(object):
     ''' Texture manager'''
     # Just for clarity
@@ -48,21 +61,8 @@ class Texture(BaseTexture):
 
         self._set_unit_id()
 
-        self.load_image()
+        self.width, self.height, self.data = load_image(self.path)
         self.load_gl()
-
-
-    def load_image(self):
-        img = Image.open(self.path)
-
-        # Verify that the image is in RGBA format
-        if ''.join(img.getbands()) != 'RGBA':
-            img = img.convert('RGBA')
-
-        # Get image data as a list
-        self.data = list(img.getdata())
-
-        self.width, self.height = img.size
 
 class TextureAtlas(BaseTexture):
     def __init__(self, program):
@@ -86,7 +86,7 @@ class TextureAtlas(BaseTexture):
         self.textures.append({
                 'x1':0, 'x2':0, 'y1':0, 'y2':0,      # Calculated by calc_image
                 'width': width, 'height': height,
-                'texData': textData, 'uvCoords': None, # uvCords Calculated by calc_image
+                'texData': texData, 'uvCoords': None,
         })
         return textureID
 
@@ -94,12 +94,11 @@ class TextureAtlas(BaseTexture):
         coordData = []
         # This will return a list of all of the uvcoords indexed by textureID
         for tex in self.textures:
-            x1 = tex['x1'] / self.width
-            x2 = tex['x2'] / self.width
-            y1 = tex['y1'] / self.height
-            y2 = tex['y2'] / self.height
-
-            coordData.append((x1, x2, y1, y2)) 
+            x1 = tex['x1'] / float(self.width)
+            x2 = tex['x2'] / float(self.width)
+            y1 = tex['y1'] / float(self.height)
+            y2 = tex['y2'] / float(self.height)
+            coordData.append((x1, x2, y1, y2))
 
         return coordData
 
@@ -116,19 +115,27 @@ class TextureAtlas(BaseTexture):
 
         return coordData
 
-    def get_vertex_coords(self):
+    def get_vertex_scale(self):
+        ''' Returns calculated vertex scaleing for textures by textureID '''
         coordData = []
         # This will return a list of all of the coord data indexed by textureID
+
+        vertScale = []
+
+        # This assumes that your vertex coords are:
+        #[0,1]
+        #[1,1]
+        #[0,0]
+        #[1,0]
+
         for tex in self.textures:
-            width = tex['width']
-            height = tex['height']
+            imgWidth = tex['width']
+            imgHeight = tex['height']
 
-            aspectRatio = width / height
+            vertScaleX = imgHeight / self.maxSubTextureHeight
+            vertScaleY = imgWidth / self.maxSubTextureHeight
 
-            y1 = tex['y1']
-            y2 = tex['y2']
-            
-            #coordData.append((x1, x2, y1, y2)) 
+            vertScale.append([vertScaleX, vertScaleY])
 
         return coordData
 
@@ -139,19 +146,23 @@ class TextureAtlas(BaseTexture):
 
         self.width = 0
         self.height = 0
-        cursorPosX = 0
         cursorPosY = 0
+        cursorPosX = 0
+        lineHeight = 0
+        self.maxSubTextureHeight = 0
 
         for tex in self.textures:
-            imgWidth = tex['width'] + 1
-            imgHeight = tex['height'] + 1
+            imgWidth = tex['width']
+            imgHeight = tex['height']
 
-            if cursorPosX + imgWidth >= self.maxWidth:
-
+            if cursorPosX + imgWidth  + 1 >= self.maxWidth:
+                
                 self.width = max(self.width, cursorPosX)
-                self.height += cursorPosY
+                cursorPosY += lineHeight
 
-                cursorPosY = 0
+                self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight)
+
+                lineHeight = 0
                 cursorPosX = 0
 
             tex['x1'] = cursorPosX
@@ -159,11 +170,14 @@ class TextureAtlas(BaseTexture):
             tex['y1'] = cursorPosY
             tex['y2'] = cursorPosY + imgHeight
 
-            cursorPosX += imgWidth
-            cursorPosY += max(cursorPosY, imgHeight)
+            cursorPosX += imgWidth + 1
+            lineHeight = max(lineHeight, imgHeight + 1)
 
+        cursorPosY += lineHeight
         self.width = max(self.width, cursorPosX)
-        self.height += cursorPosY
+        self.height = cursorPosY
+
+        self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight)
 
     def gen_atlas(self):
 
@@ -180,4 +194,4 @@ class TextureAtlas(BaseTexture):
 
             texData = tex['texData']
 
-            pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, GL_RGBA, GL_UNSIGNED_BYTE, texData)
+            pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, texData)

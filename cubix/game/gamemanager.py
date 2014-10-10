@@ -51,27 +51,33 @@ class GameManager(object):
         self.program.use()
         self.orthoID = self.program.new_uniform(b'ortho')
 
+        self.texAtlas = texture.TextureAtlas(self.program)
+
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
-        self.cubixTex = texture.Texture(imagePath, self.program)
+        wid, hei, dat = texture.load_image(imagePath)
 
-        self.meshTest = mesh.Mesh(self.program, self.cubixTex)
-        self.meshTest.scale(32)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.add_texture(wid, hei, dat)
+        self.texAtlas.gen_atlas()
 
-        self.meshes = []
+        self.meshTest = mesh.Mesh(self.program, self.texAtlas)
+        self.meshTest.scale(512)
 
-        rowx = 0
-        rowy = 0
-        numPerRow = int(self.width/37)
-        for i in range(numPerRow * int(self.height/37)):
-            self.meshes.append(mesh.Mesh(self.program, self.cubixTex))
-            self.meshes[i].scale(32)
-            if (rowy*32) + (rowy * 5) + 32 >= self.width:
-                rowx += 1
-                rowy = 0
-            self.meshes[i].translate(rowy*32 + rowy * 5, rowx * 37)
-            rowy += 1
-        print (len(self.meshes))
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
@@ -80,31 +86,12 @@ class GameManager(object):
         if glerr != 0:
             print ('GLError:', glerr)
 
-    def resize_obj(self):
-        rowx = 0
-        rowy = 0
-        numPerRow = int(self.width/37)
-        newMesh = []
-        for i in range(numPerRow * int(self.height/37)):
-            if i > len(self.meshes) - 1:
-                newMesh.append(mesh.Mesh(self.program, self.cubixTex))
-                newMesh[i].scale(32)
-            else:
-                newMesh.append(self.meshes[i])
-            if (rowy*32) + (rowy * 5) + 32 >= self.width:
-                rowx += 1
-                rowy = 0
-            newMesh[i].translate(rowy*32 + rowy * 5, rowx * 37)
-            rowy += 1
-        self.meshes = newMesh
-
     def resize(self, width, height):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
-        self.resize_obj()
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
@@ -114,21 +101,16 @@ class GameManager(object):
             self.resize(x, y)
         elif event == 'mouse_move':
             x, y = data
-            self.meshTest.translate(x, y)
 
 
     def update(self):
         self.meshTest.update()
-        for i in range(len(self.meshes)):
-            self.meshes[i].update()
     
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         self.meshTest.render()
-        for i in range(len(self.meshes)):
-            self.meshes[i].render()
 
 
     def do_run(self):

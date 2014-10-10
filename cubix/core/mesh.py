@@ -45,7 +45,14 @@ class Mesh(object):
              [0.0, 0.0],
              [1.0, 0.0],
         ]
-        self.texCoord = self.data
+        x1, x2, y1, y2 = self.texture.get_uvcoords()[8]
+
+        self.texCoord = [
+                [x1, y2],
+                [x2, y2],
+                [x1, y1],
+                [x2, y1],
+        ]
 
         self.nverts = 4
 
