@@ -103,6 +103,30 @@ class TextureAtlas(BaseTexture):
 
         return coordData
 
+    def get_coords():
+        coordData = []
+        # This will return a list of all of the coord data indexed by textureID
+        for tex in self.textures:
+            x1 = tex['x1']
+            x2 = tex['x2']
+            y1 = tex['y1']
+            y2 = tex['y2']
+
+            coordData.append((x1, x2, y1, y2)) 
+
+        return coordData
+    def get_vertex_coords():
+        coordData = []
+        # This will return a list of all of the coord data indexed by textureID
+        #for tex in self.textures:
+            #x1 = tex['x1']
+            #x2 = tex['x2']
+            #y1 = tex['y1']
+            #y2 = tex['y2']
+            
+            #coordData.append((x1, x2, y1, y2)) 
+
+        return coordData
 
     def calc_image(self):
 
