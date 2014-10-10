@@ -78,32 +78,64 @@ class TextureAtlas(BaseTexture):
         #            - x, y position in texture, width and height, texture data/uvcoords
         self.textures = []
         self.data = 0
+        self.maxWidth = 1024
 
     def add_texture(self, width, height, texData):
         textureID = len(self.textures)
 
         self.textures.append({
-                'xpos':None, 'ypos':None,       # Calculated by calc_image
+                'x1':0, 'x2':0, 'y1':0, 'y2':0,      # Calculated by calc_image
                 'width': width, 'height': height,
                 'texData': textData, 'uvCoords': None, # uvCords Calculated by calc_image
         })
         return textureID
 
     def get_uvcoords():
-        cordData = []
+        coordData = []
         # This will return a list of all of the uvcoords indexed by textureID
+        for tex in self.textures:
+            x1 = tex['x1'] / self.width
+            x2 = tex['x2'] / self.width
+            y1 = tex['y1'] / self.height
+            y2 = tex['y2'] / self.height
+
+            coordData.append((x1, x2, y1, y2)) 
 
         return coordData
 
 
     def calc_image(self):
+
+        # Go through all registered textures and calculate the total
+        # image size for the atlas plus the coords for image location.
+
         self.width = 0
         self.height = 0
+        cursorPosX = 0
+        cursorPosY = 0
 
-        # For loop to go through all registered textures
-        # and calculate the total image size for the atlas
-        # for i in range():
+        for tex in self.textures:
+            imgWidth = tex['width'] + 1
+            imgHeight = tex['height'] + 1
 
+            if cursorPosX + imgWidth >= self.maxWidth:
+
+                self.width = max(self.width, cursorPosX)
+                self.height += cursorPosY
+
+                cursorPosY = 0
+                cursorPosX = 0
+
+            tex['x1'] = cursorPosX
+            tex['x2'] = cursorPosX + imgWidth
+            tex['y1'] = cursorPosY
+            tex['y2'] = cursorPosY + imgHeight
+
+            cursorPosX += imgWidth
+            cursorPosY += max(cursorPosY, imgHeight)
+
+        self.width = max(self.width, cursorPosX)
+        self.height += cursorPosY
 
     def gen_atlas(self):
 
@@ -112,3 +144,12 @@ class TextureAtlas(BaseTexture):
 
         # add data to blank gl texture with
         # glTexSubImage2D here
+        for tex in self.textures:
+            x1 = tex['x1']
+            y1 = tex['y1']
+            width = tex['width']
+            height = tex['height']
+
+            texData = tex['texData']
+
+            pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, GL_RGBA, GL_UNSIGNED_BYTE, texData)

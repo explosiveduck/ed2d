@@ -328,7 +328,7 @@ def init():
 
     gl.glPixelStorei = gl_func('glPixelStorei', None, (GLenum, GLint))
 
-
+    gl.glTexSubImage2D = gl_func('glTexSubImage2D', None, (GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, ct.c_void_p))
 
     # OpenGL Extension Functions
 

@@ -206,3 +206,12 @@ def glTexImage2D(target, level, internalformat, width, height, border, format, t
     cPixelPtr = cast_ptr(cData, castType)
     gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, cPixelPtr)
 
+def glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels):
+    castType = glTypeMap[type]
+    if is_sequence(pixels[0]):
+        cData = conv_list_2d(pixels, castType)
+    else:
+        cData = conv_list(pixels, castType)
+
+    cPixelPtr = cast_ptr(cData, castType)
+    gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, cPixelPtr)
