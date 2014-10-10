@@ -14,10 +14,10 @@ class BaseTexture(object):
     # It will be for assigning each texture unit id easily.
     # We use the id for calculating GL_TEXTUREi. This value propagates
     # down into the class instances also, even as it is changed. :D
-    textureCount = 0
+    _textureCount = 0
     def _set_unit_id(self):
-        self.texUnitID = self.textureCount
-        Texture.textureCount += 1
+        self.texUnitID = self._textureCount
+        BaseTexture._textureCount += 1
 
     def load_gl(self):
 
@@ -119,7 +119,7 @@ class TextureAtlas(BaseTexture):
     def get_vertex_coords(self):
         coordData = []
         # This will return a list of all of the coord data indexed by textureID
-        #for tex in self.textures:
+        for tex in self.textures:
             width = tex['width']
             height = tex['height']
 
