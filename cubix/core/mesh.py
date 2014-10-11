@@ -45,7 +45,7 @@ class Mesh(object):
              [0.0, 0.0],
              [1.0, 0.0],
         ]
-        x1, x2, y1, y2 = self.texture.get_uvcoords()[8]
+        x1, x2, y1, y2 = self.texture.get_uvcoords()[3]
 
         self.texCoord = [
                 [x1, y2],
@@ -53,7 +53,6 @@ class Mesh(object):
                 [x1, y1],
                 [x2, y1],
         ]
-
         self.nverts = 4
 
         self.vao = pgl.glGenVertexArrays(1)

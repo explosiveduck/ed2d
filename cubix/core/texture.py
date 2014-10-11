@@ -65,7 +65,7 @@ class Texture(BaseTexture):
         self.load_gl()
 
 class TextureAtlas(BaseTexture):
-    def __init__(self, program):
+    def __init__(self, program, maxWidth=1024):
 
         self.program = program
 
@@ -78,7 +78,7 @@ class TextureAtlas(BaseTexture):
         #            - x, y position in texture, width and height, texture data/uvcoords
         self.textures = []
         self.data = 0
-        self.maxWidth = 1024
+        self.maxWidth = maxWidth
 
     def add_texture(self, width, height, texData):
         textureID = len(self.textures)
@@ -134,7 +134,6 @@ class TextureAtlas(BaseTexture):
 
             vertScaleX = imgHeight / float(self.maxSubTextureHeight)
             vertScaleY = imgWidth / float(self.maxSubTextureHeight)
-            print (vertScaleX, vertScaleY)
 
             vertScale.append([vertScaleX, vertScaleY])
 

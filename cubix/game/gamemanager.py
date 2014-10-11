@@ -1,5 +1,3 @@
-from PIL import Image
-
 from cubix.core.pycompat import *
 from cubix.core import window
 from cubix.core import events
@@ -9,9 +7,11 @@ from cubix.core import files
 from cubix.core import shaders
 from cubix.core.opengl import gl
 from cubix.core.opengl import pgl
+from cubix.core.opengl import typeutils
 from cubix.core import glmath
 from cubix.core import texture
 from cubix.core import mesh
+from cubix.core import text
 
 
 class GameManager(object):
@@ -24,6 +24,7 @@ class GameManager(object):
         self.running = False
 
         window.init_video()
+        text.init_text()
 
         self.fpsTimer = timing.FpsCounter()
         self.fpsEstimate = 0
@@ -34,6 +35,8 @@ class GameManager(object):
         self.context.window = self.window
 
         self.events.add_listener(self.process_event)
+
+        self.keys = []
 
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
@@ -51,24 +54,15 @@ class GameManager(object):
         self.program.use()
         self.orthoID = self.program.new_uniform(b'ortho')
 
-        self.texAtlas = texture.TextureAtlas(self.program)
+        self.texAtlas = texture.TextureAtlas(self.program, maxWidth=512)
+
+        fontPath = files.resolve_path('data', 'squarishsans.ttf')
+        #self.font = text.Text(70, fontPath)
 
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
         wid, hei, dat = texture.load_image(imagePath)
 
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
         self.texAtlas.add_texture(wid, hei, dat)
         self.texAtlas.add_texture(wid, hei, dat)
         self.texAtlas.add_texture(wid, hei, dat)
@@ -101,7 +95,11 @@ class GameManager(object):
             self.resize(x, y)
         elif event == 'mouse_move':
             x, y = data
-
+        elif event == 'key_down':
+            self.keys.append(data[0])
+            print (self.keys)
+        elif event == 'key_up':
+            self.keys.remove(data[0])
 
     def update(self):
         self.meshTest.update()
@@ -109,6 +107,8 @@ class GameManager(object):
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.meshTest.render()
 
