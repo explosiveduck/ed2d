@@ -3,6 +3,7 @@ import ctypes as ct
 import sdl2 as sdl
 
 from cubix.core.pycompat import *
+from cubix.core import keymap
 
 class Events(object):
     ''' Handles Event stuff... '''
@@ -58,6 +59,20 @@ class Events(object):
                 elif wEventName == sdl.SDL_WINDOWEVENT_RESIZED:
                     eventName = 'window_resized'
                     data = (winEvent.windowID, winEvent.data1, winEvent.data2)
+
+            elif event.type == sdl.SDL_KEYUP:
+                eventName = 'key_up'
+                keyID = keymap.keymap[event.key.keysym.scancode]
+                keyName = keymap.process_key_char(event.key.keysym.sym)
+                modKeys = keymap.process_modkeys(event.key.keysym.mod)
+                data = (keyName, keyID, modKeys)
+
+            elif event.type == sdl.SDL_KEYDOWN:
+                eventName = 'key_down'
+                keyID = keymap.keymap[event.key.keysym.scancode]
+                keyName = keymap.process_key_char(event.key.keysym.sym)
+                modKeys = keymap.process_modkeys(event.key.keysym.mod)
+                data = (keyName, keyID, modKeys)
             else:
                 # Will add more event types later
                 pass
