@@ -132,8 +132,9 @@ class TextureAtlas(BaseTexture):
             imgWidth = tex['width']
             imgHeight = tex['height']
 
-            vertScaleX = imgHeight / self.maxSubTextureHeight
-            vertScaleY = imgWidth / self.maxSubTextureHeight
+            vertScaleX = imgHeight / float(self.maxSubTextureHeight)
+            vertScaleY = imgWidth / float(self.maxSubTextureHeight)
+            print (vertScaleX, vertScaleY)
 
             vertScale.append([vertScaleX, vertScaleY])
 
@@ -156,11 +157,11 @@ class TextureAtlas(BaseTexture):
             imgHeight = tex['height']
 
             if cursorPosX + imgWidth  + 1 >= self.maxWidth:
-                
+
                 self.width = max(self.width, cursorPosX)
                 cursorPosY += lineHeight
 
-                self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight)
+                self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight - 1)
 
                 lineHeight = 0
                 cursorPosX = 0
@@ -177,7 +178,7 @@ class TextureAtlas(BaseTexture):
         self.width = max(self.width, cursorPosX)
         self.height = cursorPosY
 
-        self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight)
+        self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight - 1)
 
     def gen_atlas(self):
 
