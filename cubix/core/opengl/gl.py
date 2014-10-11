@@ -274,6 +274,31 @@ GL_UNPACK_SKIP_PIXELS = 0x0CF4
 GL_UNPACK_SKIP_IMAGES = 0x806D
 GL_UNPACK_ALIGNMENT = 0x0CF5
 
+# glBlendFunc
+#GL_ZERO
+#GL_ONE
+GL_SRC_COLOR = 0x0300
+GL_ONE_MINUS_SRC_COLOR = 0x0301
+GL_DST_COLOR = 0x0306
+GL_ONE_MINUS_DST_COLOR = 0x0307
+GL_SRC_ALPHA = 0x0302
+GL_ONE_MINUS_SRC_ALPHA = 0x0303
+GL_DST_ALPHA = 0x0304
+GL_ONE_MINUS_DST_ALPHA = 0x0305
+GL_CONSTANT_COLOR = 0x8001
+GL_ONE_MINUS_CONSTANT_COLOR = 0x8002
+GL_CONSTANT_ALPHA = 0x8003
+GL_ONE_MINUS_CONSTANT_ALPHA = 0x8004
+GL_SRC_ALPHA_SATURATE = 0x0308
+GL_SRC1_COLOR = 0x88F9
+GL_ONE_MINUS_SRC1_COLOR = 0x88FA
+GL_SRC1_ALPHA = 0x8589
+GL_ONE_MINUS_SRC1_ALPHA = 0x88FB
+
+# glEnable
+GL_BLEND = 0x0BE2
+GL_MULTISAMPLE = 0x809D
+
 GL_BYTE = 0x1400
 GL_UNSIGNED_BYTE = 0x1401
 GL_SHORT = 0x1402
@@ -330,7 +355,7 @@ def init():
 
     gl.glTexSubImage2D = gl_func('glTexSubImage2D', None, (GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, ct.c_void_p))
 
-    # OpenGL Extension Functions
+    # OpenGL Extension Functi ons
 
     gl.glGenBuffers = gl_func('glGenBuffers', None, (GLsizei, ct.POINTER(GLuint)))
 
@@ -397,3 +422,7 @@ def init():
     gl.glGetUniformLocation = gl_func('glGetUniformLocation', GLint, (GLuint, ct.POINTER(GLchar)))
 
     gl.glActiveTexture = gl_func('glActiveTexture', None, (GLenum,))
+
+    gl.glBlendFunc = gl_func('glBlendFunc', None, (GLenum, GLenum))
+
+    gl.glEnable = gl_func('glEnable', None, (GLenum,))
