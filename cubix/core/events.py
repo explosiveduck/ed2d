@@ -61,18 +61,20 @@ class Events(object):
                     data = (winEvent.windowID, winEvent.data1, winEvent.data2)
 
             elif event.type == sdl.SDL_KEYUP:
-                eventName = 'key_up'
-                keyID = keymap.keymap[event.key.keysym.scancode]
-                keyName = keymap.process_key_char(event.key.keysym.sym)
-                modKeys = keymap.process_modkeys(event.key.keysym.mod)
-                data = (keyName, keyID, modKeys)
+                if not event.key.repeat:
+                    eventName = 'key_up'
+                    keyID = keymap.keymap[event.key.keysym.scancode]
+                    keyName = keymap.process_key_char(event.key.keysym.sym)
+                    modKeys = keymap.process_modkeys(event.key.keysym.mod)
+                    data = (keyName, keyID, modKeys)
 
             elif event.type == sdl.SDL_KEYDOWN:
-                eventName = 'key_down'
-                keyID = keymap.keymap[event.key.keysym.scancode]
-                keyName = keymap.process_key_char(event.key.keysym.sym)
-                modKeys = keymap.process_modkeys(event.key.keysym.mod)
-                data = (keyName, keyID, modKeys)
+                if not event.key.repeat:
+                    eventName = 'key_down'
+                    keyID = keymap.keymap[event.key.keysym.scancode]
+                    keyName = keymap.process_key_char(event.key.keysym.sym)
+                    modKeys = keymap.process_modkeys(event.key.keysym.mod)
+                    data = (keyName, keyID, modKeys)
             else:
                 # Will add more event types later
                 pass
