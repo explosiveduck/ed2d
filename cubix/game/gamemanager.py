@@ -54,23 +54,17 @@ class GameManager(object):
         self.program.use()
         self.orthoID = self.program.new_uniform(b'ortho')
 
-        self.texAtlas = texture.TextureAtlas(self.program, maxWidth=512)
+        self.vao = pgl.glGenVertexArrays(1)
 
         fontPath = files.resolve_path('data', 'squarishsans.ttf')
-        #self.font = text.Text(70, fontPath)
+        self.font = text.Text(self.program, 70, fontPath)
 
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
-        wid, hei, dat = texture.load_image(imagePath)
-
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.add_texture(wid, hei, dat)
-        self.texAtlas.gen_atlas()
+        self.texAtlas = texture.Texture(imagePath, self.program)
 
         self.meshTest = mesh.Mesh(self.program, self.texAtlas)
-        self.meshTest.scale(512)
+        self.meshTest.scale(64)
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
@@ -109,8 +103,12 @@ class GameManager(object):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBindVertexArray(self.vao)
 
         self.meshTest.render()
+
+        self.font.draw_text("{:.2f} fps".format(self.fpsEstimate))
+
 
 
     def do_run(self):

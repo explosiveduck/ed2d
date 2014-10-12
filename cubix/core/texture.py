@@ -54,7 +54,7 @@ class BaseTexture(object):
 
 class Texture(BaseTexture):
 
-    def __init__(self, path, program, type=''):
+    def __init__(self, path, program):
 
         self.path = path
         self.program = program

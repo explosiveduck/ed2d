@@ -5,27 +5,85 @@ from sdl2 import sdlttf
 from cubix.core import texture
 from cubix.core import mesh
 from cubix.core import shaders
-from cubix.core.opengl import gl
+from cubix.core import files
+from cubix.core.opengl import typeutils 
+from cubix.core.opengl import gl, pgl
+from cubix.core import glmath
 
 def init_text():
     sdlttf.TTF_Init()
 
 class Text(object):
-    def __init__(self, size, fontPath):
+    def __init__(self, _program, size, fontPath):
+        self._program = _program
 
-        vsPath = files.resolve_path('data', 'shaders', 'text.vs')
-        fsPath = files.resolve_path('data', 'shaders', 'text.fs')
-
-        vertex = shaders.VertexShader(vsPath)
-        fragment = shaders.FragmentShader(fsPath)
-
-        self.program = shaders.ShaderProgram(vertex, fragment)
-        self.program.use()
-
-        self.texAtlas = texture.TextureAtlas(self.program)
-
-
+        self.texAtlas = texture.TextureAtlas(self._program)
         self.fontFile = sdlttf.TTF_OpenFont(typeutils.to_c_str(fontPath) , size )
+
+        self.vertLoc = self._program.get_attribute(b'position')
+
+        self.data = [
+             [0.0, 1.0],
+             [1.0, 1.0],
+             [0.0, 0.0],
+             [1.0, 0.0],
+        ]
+
+        self.chrMap = {}
+
+        for texVal in range(32, 128):
+            self.chrMap[chr(texVal)] = Glyph(self.texAtlas, self.fontFile, self._program, texVal, size)
+        self.texAtlas.gen_atlas()
+
+        uvcoord = self.texAtlas.get_uvcoords()
+        for i, uv in enumerate(uvcoord):
+            x1, x2, y1, y2 = uv
+
+            coord = [
+                    [x1, y2],
+                    [x2, y2],
+                    [x1, y1],
+                    [x2, y1],
+            ]
+            self.chrMap[chr(i+32)].uvCoords = coord
+
+        self.vbo = mesh.buffer_object(self.data)
+
+    def draw_text(self, text):
+
+        self.texAtlas.bind()
+
+        gl.glEnableVertexAttribArray(self.vertLoc)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
+        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
+        for i, c in enumerate(text):
+            self.chrMap[c].render(i)
+
+        gl.glDisableVertexAttribArray(self.vertLoc)
+
+        gl.glBindVertexArray(0)
+
+class Glyph(object):
+    def __init__(self, _atlas, _font, _program, glyphOrd, size):
+        self._atlas = _atlas
+        self._font = _font
+        self._program = _program
+        self._nverts = 4
+
+
+        self.modelLoc = self._program.new_uniform(b'model')
+        self.UVLoc = self._program.get_attribute(b'vertexUV')
+
+        self.modelMatrix = glmath.Matrix(4)
+
+        # Variables that will be used from this class elsewhere
+        self.ord = glyphOrd
+        self.textureID = None
+        self.textureWidth = None
+        self.textureHeight = None
+        self.pixelData = None
+        self._uvCoords = None
 
         # Color to render in we want white initialy
         color = sdl.SDL_Color()
@@ -34,27 +92,46 @@ class Text(object):
         color.b = 255
         color.a = 255
 
-        for item in range(128):
-            glyph = sdlttf.TTF_RenderGlyph_Blended(font, ord('u'), color)
+        glyph = sdlttf.TTF_RenderGlyph_Blended(self._font, self.ord, color)
 
-            dataType = (ct.c_ubyte * 4 * (glyph.contents.w * glyph.contents.h))
-            dataPython = [[0.0 for sub in range(4)]for x in range(glyph.contents.w * glyph.contents.h)]
+        self.textureWidth = glyph.contents.w
+        self.textureHeight = glyph.contents.h
 
-            obj = ct.cast(glyph.contents.pixels, ct.POINTER(dataType))
-            for item in range(glyph.contents.w * glyph.contents.h):
-                for item3 in range(4):
-                    dataPython[item][item3] = obj.contents[item][item3]
+        dataType = (ct.c_ubyte * 4 * (self.textureWidth * self.textureHeight))
+        pixObj = ct.cast(glyph.contents.pixels, ct.POINTER(dataType)).contents
 
-            self.texAtlas.add_texture(glyph.contents.w, glyph.contents.h, dataPython)
+        pixelData = [[0.0 for sub in range(4)] for x in range(self.textureWidth * self.textureHeight)]
 
-            sdl.SDL_FreeSurface(glyph)
+        for item in range(self.textureWidth * self.textureHeight):
+            pixelData[item] = list(pixObj[item])
 
+        del pixObj
+        sdl.SDL_FreeSurface(glyph)
 
-        self.orthoID = self.program.new_uniform(b'ortho')
+        self.textureID = self._atlas.add_texture(self.textureWidth, self.textureHeight, pixelData)
 
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+    @property
+    def uvCoords(self):
+        return self._uvCoords
+    @uvCoords.setter
+    def uvCoords(self, value):
+        self._uvCoords = value
+        self.uvbo = mesh.buffer_object(self._uvCoords)
+    
+    def render(self, pos):
+        self.modelMatrix = glmath.Matrix(4)
+        vecScale = glmath.Vector(3, data=[30.0, 30.0, 0.0])
+        self.modelMatrix.i_scale(vecScale)
+        vecScale = glmath.Vector(3, data=[pos*32, 0.0, 0.0])
+        self.modelMatrix.i_translate(vecScale)
 
-        self.program.set_uniform_matrix(self.orthoID, self.ortho)
+        self._program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
 
-    def render(self):
-        pass
+        gl.glEnableVertexAttribArray(self.UVLoc)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
+        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
+        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self._nverts)
+
+        gl.glDisableVertexAttribArray(self.UVLoc)
+
