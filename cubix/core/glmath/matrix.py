@@ -50,8 +50,8 @@ def matrix_div(mat, scalar):
 def transpose(mat):
     '''Transposes a NxN matrix.'''
     size = len(mat)
-    out = zero_matrix()
-    for i in range(size):
+    out = zero_matrix(size)
+    for i in range(sizesize):
         for j in range(size):
             out[i][j]= mat[j][i]
     return out
