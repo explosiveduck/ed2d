@@ -45,17 +45,9 @@ class Mesh(object):
              [0.0, 0.0],
              [1.0, 0.0],
         ]
-        x1, x2, y1, y2 = self.texture.get_uvcoords()[3]
-
-        self.texCoord = [
-                [x1, y2],
-                [x2, y2],
-                [x1, y1],
-                [x2, y1],
-        ]
+        self.texCoord = self.data
         self.nverts = 4
 
-        self.vao = pgl.glGenVertexArrays(1)
         self.buffer_objects()
 
     def scale(self, value):
@@ -84,7 +76,6 @@ class Mesh(object):
         
         self.program.set_uniform_matrix(self.modelID, self.modelMatrix)
 
-        gl.glBindVertexArray(self.vao)
         self.texture.bind()
 
         bind_object(self.vertLoc, self.vbo)
