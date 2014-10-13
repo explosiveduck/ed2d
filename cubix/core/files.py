@@ -7,13 +7,10 @@ def get_path():
     path1 = os.path.realpath(sys.path[1])
 
     pathtest = os.sep.join(path0.split(os.sep)[:-1])
-    print pathtest, path1, path0
 
     if pathtest == path1:
         return path1
     else:
-        #path = os.sep.join(path0.split(os.sep))
-        print path0, sys.path[1]
         return path0
 
 def resolve_path(*location):
