@@ -1,6 +1,7 @@
 import math
 
 from cubix.core.pycompat import *
+
 REFRENCE_VECTOR_2 = [0.0 for x in range(2)]
 REFRENCE_VECTOR_3 = [0.0 for x in range(3)]
 REFRENCE_VECTOR_4 = [0.0 for x in range(4)]
@@ -32,34 +33,19 @@ def reflect(incidentVec, norm):
     return incidentVec - (norm * (2.0 * incidentVec.dot(norm)))
 
 def vec_add(size, vecA, vecB):
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = vecA[i] + vecB[i]
-    return vecOut
+    return [(vecA[i] + vecB[i]) for i in range(size)]
 
 def vec_sub(size, vecA, vecB):
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = vecA[i] - vecB[i]
-    return vecOut
+    return [(vecA[i] - vecB[i]) for i in range(size)]
 
 def vec_mul(size, vecA, scalar):
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = vecA[i] * scalar
-    return vecOut
+    return [(vecA[i] * scalar) for i in range(size)]
 
 def vec_div(size, vecA, vecB):
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = vecA[i] / scalar
-    return vecOut
+    return [(vecA[i] / scalar) for i in range(size)]
 
 def vec_neg(size, vecA):
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = -vecA[i]
-    return vecOut
+    return [(-vecA[i]) for i in range(size)]
 
 def dot(size, vecA, vecB):
     dp = 0
@@ -82,22 +68,10 @@ def normalize(size, vecA):
     return temp
 
 def maxV(size, vecA, vecB):
-    result = Vector(size)
-    for i in range(size):
-        if vecA[i] > vecB[i]:
-            result.vector[i] = vecA[i]
-        else:
-            result.vector[i] = vecB[i]
-    return result
+    return [vecA[i] if vecA[i] > vecB[i] else vecB[i] for i in range(size)]
 
 def minV(size, vecA, vecB):
-    result = Vector(size)
-    for i in range(size):
-        if vecA[i] < vecB[i]:
-            result.vector[i] = vecA[i]
-        else:
-            result.vector[i] = vecB[i]
-    return result
+    return [vecA[i] if vecA[i] < vecB[i] else vecB[i] for i in range(size)]
 
 def maxS(size, vecA):
     mScalar = vecA[0]
@@ -183,13 +157,13 @@ class Vector(object):
         return Vector(self.size, data=vecList)
 
     def maxV(self, vecB):
-        return maxV(self.size, self.vector, vecB.vector)
+        return Vector(self.size, data=maxV(self.size, self.vector, vecB.vector))
 
     def maxS(self):
         return maxS(self.size, self.vector)
 
     def minV(self, vecB):
-        return maxV(self.size, self.vector, vecB.vector)
+        return Vector(self.size, data=maxV(self.size, self.vector, vecB.vector))
 
     def minS(self):
         return maxS(self.size, self.vector)
