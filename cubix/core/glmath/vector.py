@@ -80,6 +80,40 @@ def normalize(vecA):
             temp[i] = vecA[i] / length
     return temp
 
+def maxV(vecA, vecB):
+    size = len(vecA)
+    result = Vector(size)
+    for i in range(size):
+        if vecA[i] > vecB[i]:
+            result.vector[i] = vecA[i]
+        else:
+            result.vector[i] = vecB[i]
+    return result
+
+def minV(vecA, vecB):
+    size = len(vecA)
+    result = Vector(size)
+    for i in range(size):
+        if vecA[i] < vecB[i]:
+            result.vector[i] = vecA[i]
+        else:
+            result.vector[i] = vecB[i]
+    return result
+
+def maxS(vecA):
+    mScalar = vecA[0]
+    for i in range(len(vecA)):
+        if vecA[i] > mScalar:
+            mScalar = vecA[i]
+    return mScalar
+
+def minS(vecA):
+    mScalar = vecA[0]
+    for i in range(len(vecA)):
+        if vecA[i] < mScalar:
+            mScalar = vecA[i]
+    return mScalar
+
 class Vector(object):
     def __init__(self, size, data=None):
         self.size = size
@@ -149,6 +183,18 @@ class Vector(object):
         vecList = vec_neg(self.vector)
         return Vector(self.size, data=vecList)
 
+    def maxV(self, vecB):
+        return maxV(self.vector, vecB.vector)
+
+    def maxS(self):
+        return maxS(self.vector)
+
+    def minV(self, vecB):
+        return maxV(self.vector, vecB.vector)
+
+    def minS(self):
+        return maxS(self.vector)
+
     def magnitude(self):
         return magnitude(self.vector)
 
@@ -165,3 +211,6 @@ class Vector(object):
             return dot(self.vector, vecB)
         else:
             return NotImplemented
+
+    def xy(self):
+        return [self.vector[0], self.vector[1]]

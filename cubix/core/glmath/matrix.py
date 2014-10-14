@@ -28,14 +28,14 @@ def matrix_multiply(matrixA, matrixB):
                 matOut[i][j] += matrixA[i][k] * matrixB[k][j]
     return matOut
 
-def matrix_vector_multiply(matrix, vector):
+def matrix_vector_multiply(matrix, vec):
     ''' Multiply matrix with vector '''
     matSize = len(matrix)
-    vecSize = len(vector)
-    vecOut = zero_vector(vecSize)
+    vecSize = len(vec)
+    vecOut = vector.zero_vector(vecSize)
     for i in range(matSize):
         for j in range(matSize):
-            vecOut[i] += vector[j] * matrix[i][j]
+            vecOut[i] += vec[j] * matrix[i][j]
     return vecOut
 
 def matrix_div(mat, scalar):
@@ -51,7 +51,7 @@ def transpose(mat):
     '''Transposes a NxN matrix.'''
     size = len(mat)
     out = zero_matrix(size)
-    for i in range(sizesize):
+    for i in range(size):
         for j in range(size):
             out[i][j]= mat[j][i]
     return out
