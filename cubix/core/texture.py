@@ -117,7 +117,6 @@ class TextureAtlas(BaseTexture):
 
     def get_vertex_scale(self):
         ''' Returns calculated vertex scaleing for textures by textureID '''
-        coordData = []
         # This will return a list of all of the coord data indexed by textureID
 
         vertScale = []
@@ -132,12 +131,12 @@ class TextureAtlas(BaseTexture):
             imgWidth = tex['width']
             imgHeight = tex['height']
 
-            vertScaleX = imgHeight / float(self.maxSubTextureHeight)
-            vertScaleY = imgWidth / float(self.maxSubTextureHeight)
+            vertScaleY = imgHeight / float(self.maxSubTextureHeight)
+            vertScaleX = imgWidth / float(self.maxSubTextureHeight)
 
             vertScale.append([vertScaleX, vertScaleY])
 
-        return coordData
+        return vertScale
 
     def calc_image(self):
 
