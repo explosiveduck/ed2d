@@ -25,12 +25,12 @@ class BindGL(object):
 
     def gl_func(self, name, returnType, paramTypes):
         ''' Define and load an opengl function '''
-
         function = self.funcType(returnType, *paramTypes)
 
         try:
             address = getattr(self.lib, name)
         except AttributeError:
+            name = name.encode(encoding='UTF-8')
             address = SDL_GL_GetProcAddress(name)
 
         return ct.cast(address, function)

@@ -5,6 +5,11 @@ from cubix.core.pycompat import *
 def zero_vector(size):
     ''' Return a zero filled vector list of the requested size '''
     return [0.0 for x in range(size)]
+
+def one_vector(size):
+    ''' Return a one filled vector list of the requested size '''
+    return [1.0 for x in range(size)]
+
 # Vector Functions
 def lerp(vecA, vecB, time):
     '''Linear interpolation between two vectors.'''
@@ -21,6 +26,17 @@ def cross(vecA, vecB):
 def reflect(incidentVec, norm):
     '''Reflect a vector'''
     return incidentVec - (norm * (2.0 * incidentVec.dot(norm)))
+
+def refract(IOR, incidentVec, Norm):
+    ''' Refract a vector. '''
+    dotNI = normal.dot(incidentVec)
+    k = 1.0 - IOR * IOR * IOR * (1.0 - dotNI * dotNI)
+
+    if k < 0.0:
+        return Vector(len(Norm))
+    else:
+        scalar = IOR * DOTNI + math.sqrt(k)
+        return (IOR * incidentVec) - (scalar * normal)
 
 def vec_add(vecA, vecB):
     size = len(vecA)
@@ -179,38 +195,123 @@ class Vector(object):
         else:
             return NotImplemented
 
+    def __eq__(self, vecB):
+        if isinstance(vecB, Vector):
+            tempBool = False
+            for i in range(self.size):
+                if self.vector[i] == vecB.vector[i]:
+                    tempBool = True
+                else:
+                    tempBool = False
+            return tempBool
+        else:
+            return NotImplemented
+
     def __neg__(self):
         vecList = vec_neg(self.vector)
         return Vector(self.size, data=vecList)
 
     def maxV(self, vecB):
-        return maxV(self.vector, vecB.vector)
-
-    def maxS(self):
-        return maxS(self.vector)
+        ''' Return the biggest vector of the two. '''
+        if isinstance(vecB, Vector):
+            return maxV(self.vector, vecB.vector)
+        else:
+            return NotImplemented
 
     def minV(self, vecB):
-        return maxV(self.vector, vecB.vector)
+        ''' Return the smallest vector of the two. '''
+        if isinstance(vecB, Vector):
+            return maxV(self.vector, vecB.vector)
 
     def minS(self):
+        ''' Return the smallest numeric value of the component of the vector. '''
+        return maxS(self.vector)
+
+    def maxS(self):
+        ''' Return the biggest numeric value of the component of the vector. '''
         return maxS(self.vector)
 
     def magnitude(self):
+        ''' Return the magnitude of the vector. '''
         return magnitude(self.vector)
 
     def i_normalize(self):
+        ''' Normalize the vector in place. '''
         self.vector = normalize(self.vector)
         return self
 
     def normalize(self):
+        ''' Return a new normalized vector. '''
         vecList = normalize(self.vector)
         return Vector(self.size, data=vecList)
         
     def dot(self, vecB):
+        ''' Return the dot product between two vectors. '''
         if isinstance(vecB, Vector):
             return dot(self.vector, vecB)
         else:
             return NotImplemented
 
+    def isInSameDirection(self, otherVec):
+        ''' Return a boolean if the input vector if is in the same direction as the one it's compared against. '''
+        if isinstance(otherVec, Vector):
+            return self.vector.dot(otherVec) > 0
+        else:
+            return NotImplemented
+
+    def isInOppositeDirection(self, otherVec):
+        ''' Return a boolean if the input vector if is in the opposite direction as the one it's compared against. '''
+        if isinstance(otherVec, Vector):
+            return self.vector.dot(otherVec) < 0
+        else:
+            return NotImplemented
+
+    # Return common components of the vector as a group
     def xy(self):
         return [self.vector[0], self.vector[1]]
+
+    def yz(self):
+        return [self.vector[1], self.vector[2]]
+
+    def xz(self):
+        return [self.vector[0], self.vector[2]]
+
+    def xw(self):
+        return [self.vector[0], self.vector[3]]
+
+    def yw(self):
+        return [self.vector[1], self.vector[3]]
+
+    def zw(self):
+        return [self.vector[2], self.vector[3]]
+
+    def xyw(self):
+        return [self.vector[0], self.vector[1], self.vector[3]]
+
+    def yzw(self):
+        return [self.vector[1], self.vector[2], self.vector[3]]
+
+    def xzw(self):
+        return [self.vector[0], self.vector[2], self.vector[3]]
+
+    def xyz(self):
+        return [self.vector[0], self.vector[1], self.vector[2]]
+
+    # 3D vector identities
+    def right(self):
+        return [ 1.0, 0.0, 0.0]
+
+    def left(self):
+        return [-1.0, 0.0, 0.0]
+
+    def front(self):
+        return [0.0, 0.0, -1.0]
+
+    def back(self):
+        return [ 0.0, 0.0, 1.0]
+
+    def up(self):
+        return [ 0.0, 1.0, 0.0]
+
+    def down(self):
+        return [0.0, -1.0, 0.0]

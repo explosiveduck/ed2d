@@ -19,7 +19,7 @@ class cModel(object):
                 for j in range(4):
                     ctemp = self.cmodel[i].IntersectAABB(cother.getCModel()[j])
                     if ctemp.getState():
-                        print 'Collision:', 'Dist:', ctemp.getDistance(), 'Dir:', ctemp.getDirection().vector
+                        print('Collision:', 'Dist:', ctemp.getDistance(), 'Dir:', ctemp.getDirection().vector)
         else:
             return NotImplemented
 

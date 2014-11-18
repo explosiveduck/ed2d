@@ -14,7 +14,7 @@ class AABB(object):
 
         maxDistance = distance3.maxS()
 
-        return CollisionData(maxDistance <= 0, distance3)
+        return CollisionData(maxDistance < 0, distance3)
 
     def getMinEdges(self):
         return self.minEdge2D

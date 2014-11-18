@@ -78,6 +78,7 @@ class GameManager(object):
         # Create a mesh object to render
         self.cModelTest = cmodel.cModel(self.cModelTestRect)
         self.physicsObjectTest = physobj.PhysObj(self.cModelTest, glmath.Vector(3, data=[0.0, 0.0, 1.0]))
+        self.physicsEngineTest.addObject(self.physicsObjectTest)
         self.meshObjectTest = mesh.Mesh(self.program, self.physicsObjectTest, self.texAtlas)
         '''End Player'''
 
@@ -86,12 +87,12 @@ class GameManager(object):
         # We need some sort of rendering engine class
         self.meshObjects = []
 
-        for i in range(10):
+        for i in range(20):
             xRND = rnd.randrange(0, (self.width-32))
             yRND = rnd.randrange(0, (self.height-32))
             # The creating object stuff from above... One Liner... Yes I know. :|
             self.physicsEngineTest.addObject(physobj.PhysObj(cmodel.cModel(rectangle.Rectangle(xRND, yRND, width=32.0, height=32.0)), glmath.Vector(3, data=[0.0, 0.0, 1.0])))
-            tempObj = self.physicsEngineTest.getObject(i)
+            tempObj = self.physicsEngineTest.getObject(i+1)
             tempObj.getCollisionModel().getModel().scale(32, 32)
             tempObj.getCollisionModel().getModel().update()
             self.meshObjects.append(mesh.Mesh(self.program, tempObj, self.texAtlas))
@@ -129,7 +130,7 @@ class GameManager(object):
             self.keys.remove(data[0])
 
     def update(self):
-        self.physicsEngineTest.collisions(self.physicsObjectTest)
+        self.physicsEngineTest.simulate(self.fpsTimer.tick())
     
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)

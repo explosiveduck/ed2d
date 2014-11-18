@@ -14,7 +14,7 @@ class PhysEngine(object):
         '''Update all the objects'''
         # Update the quad tree
         self.quadTree.clear()
-        for item in self.pObject:
+        for item in self.pObjects:
             self.quadTree.insert(item)
 
         # Pass this for a while, this basically add velocity to objects
@@ -24,11 +24,19 @@ class PhysEngine(object):
             self.pObjects[i].update(delta)
         '''
 
-    def collisions(self, object):
-        self.returnObjects = self.quadTree.retrive(object)
-        for item in self.returnObjects:
-            object.getCollisionModel().intersect(item.getCollisionModel())
-        del self.returnObjects[:]
+        # Run collision check
+        self.collisions()
+
+    def collisions(self):
+        objects = []
+        self.quadTree.retriveAll(objects)
+        for x in range(len(objects)):
+            obj = []
+            self.quadTree.findObjects(obj, objects[x])
+            for y in range(len(obj)):
+                objects[x].getCollisionModel().intersect(obj[y].getCollisionModel())
+            del obj[:]
+        del objects[:]
 
     def addObject(self, p_object):
         self.quadTree.insert(p_object)
