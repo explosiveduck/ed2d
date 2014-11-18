@@ -36,7 +36,9 @@ class Text(object):
         self.texAtlas.gen_atlas()
 
         uvcoord = self.texAtlas.get_uvcoords()
+        vertscale = self.texAtlas.get_vertex_scale()
         for i, uv in enumerate(uvcoord):
+            glyph = self.chrMap[chr(i+32)]
             x1, x2, y1, y2 = uv
 
             coord = [
@@ -45,7 +47,9 @@ class Text(object):
                     [x1, y1],
                     [x2, y1],
             ]
-            self.chrMap[chr(i+32)].uvCoords = coord
+            glyph.uvCoords = coord
+            glyph.vertexScale = vertscale[i]
+
 
         self.vbo = mesh.buffer_object(self.data)
 
@@ -71,7 +75,6 @@ class Glyph(object):
         self._program = _program
         self._nverts = 4
 
-
         self.modelLoc = self._program.new_uniform(b'model')
         self.UVLoc = self._program.get_attribute(b'vertexUV')
 
@@ -83,6 +86,7 @@ class Glyph(object):
         self.textureWidth = None
         self.textureHeight = None
         self.pixelData = None
+        self.vertexScale = None
         self._uvCoords = None
 
         # Color to render in we want white initialy
@@ -120,6 +124,8 @@ class Glyph(object):
     
     def render(self, pos):
         self.modelMatrix = glmath.Matrix(4)
+        vecScale = glmath.Vector(3, data=[self.vertexScale[0], self.vertexScale[1], 0.0])
+        self.modelMatrix.i_scale(vecScale)
         vecScale = glmath.Vector(3, data=[30.0, 30.0, 0.0])
         self.modelMatrix.i_scale(vecScale)
         vecScale = glmath.Vector(3, data=[pos*32, 0.0, 0.0])
