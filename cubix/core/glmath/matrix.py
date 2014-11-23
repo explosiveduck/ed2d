@@ -31,11 +31,11 @@ def matrix_multiply(matrixA, matrixB):
 def matrix_vector_multiply(matrix, vec):
     ''' Multiply matrix with vector '''
     matSize = len(matrix)
-    vecSize = len(vec)
-    vecOut = vector.zero_vector(vecSize)
+    vecSize = vec.size
+    vecOut = vector.Vector(vecSize)
     for i in range(matSize):
         for j in range(matSize):
-            vecOut[i] += vec[j] * matrix[i][j]
+            vecOut.vector[i] += vec.vector[j] * matrix[j][i]
     return vecOut
 
 def matrix_div(mat, scalar):
@@ -355,8 +355,8 @@ class Matrix(object):
 
     def __mul__(self, other):
         if isinstance(other, vector.Vector):
-            result = matrix_vector_multiply(self.matrix, other.vector)
-            return vector.Vector(len(result), data=result)
+            result = matrix_vector_multiply(self.matrix, other)
+            return result
 
         elif isinstance(other, Matrix):
             if other.size != self.size:

@@ -5,15 +5,9 @@ from cubix.core.pycompat import *
 REFRENCE_VECTOR_2 = [0.0 for x in range(2)]
 REFRENCE_VECTOR_3 = [0.0 for x in range(3)]
 REFRENCE_VECTOR_4 = [0.0 for x in range(4)]
+
 def zero_vector(size):
     ''' Return a zero filled vector list of the requested size '''
-<<<<<<< HEAD
-    return [0.0 for x in range(size)]
-
-def one_vector(size):
-    ''' Return a one filled vector list of the requested size '''
-    return [1.0 for x in range(size)]
-=======
     # Return a copy of the reference vector, this is faster than making a new one
     if size == 2:
         return REFRENCE_VECTOR_2[:]
@@ -21,7 +15,24 @@ def one_vector(size):
         return REFRENCE_VECTOR_3[:]
     if size == 4:
         return REFRENCE_VECTOR_4[:]
->>>>>>> origin/master
+    else:
+        return [0.0 for x in range(size)]
+
+IREFRENCE_VECTOR_2 = [1.0 for x in range(2)]
+IREFRENCE_VECTOR_3 = [1.0 for x in range(3)]
+IREFRENCE_VECTOR_4 = [1.0 for x in range(4)]
+
+def one_vector(size):
+    ''' Return a one filled vector list of the requested size '''
+    # Return a copy of the reference vector, this is faster than making a new one
+    if size == 2:
+        return IREFRENCE_VECTOR_2[:]
+    if size == 3:
+        return IREFRENCE_VECTOR_3[:]
+    if size == 4:
+        return IREFRENCE_VECTOR_4[:]
+    else:
+        return [1.0 for x in range(size)]
 
 # Vector Functions
 def lerp(vecA, vecB, time):
@@ -40,7 +51,6 @@ def reflect(incidentVec, norm):
     '''Reflect a vector'''
     return incidentVec - (norm * (2.0 * incidentVec.dot(norm)))
 
-<<<<<<< HEAD
 def refract(IOR, incidentVec, Norm):
     ''' Refract a vector. '''
     dotNI = normal.dot(incidentVec)
@@ -52,24 +62,22 @@ def refract(IOR, incidentVec, Norm):
         scalar = IOR * DOTNI + math.sqrt(k)
         return (IOR * incidentVec) - (scalar * normal)
 
-def vec_add(vecA, vecB):
-    size = len(vecA)
-    vecOut = zero_vector(size) 
-    for i in range(size):
-        vecOut[i] = vecA[i] + vecB[i]
-    return vecOut
-=======
 def vec_add(size, vecA, vecB):
     return [(vecA[i] + vecB[i]) for i in range(size)]
->>>>>>> origin/master
+
+def s_vec_add(size, vecA, scalar):
+    return [(vecA[i] + scalar) for i in range(size)]
 
 def vec_sub(size, vecA, vecB):
     return [(vecA[i] - vecB[i]) for i in range(size)]
 
+def s_vec_sub(size, vecA, scalar):
+    return [(vecA[i] - scalar) for i in range(size)]
+
 def vec_mul(size, vecA, scalar):
     return [(vecA[i] * scalar) for i in range(size)]
 
-def vec_div(size, vecA, vecB):
+def vec_div(size, vecA, scalar):
     return [(vecA[i] / scalar) for i in range(size)]
 
 def vec_neg(size, vecA):
@@ -124,30 +132,42 @@ class Vector(object):
         else:
             self.vector = data
 
-    def __add__(self, vecB):
-        if isinstance(vecB, Vector):
-            vecList = vec_add(self.size, self.vector, vecB.vector)
+    def __add__(self, other):
+        if isinstance(other, Vector):
+            vecList = vec_add(self.size, self.vector, other.vector)
+            return Vector(self.size, data=vecList)
+        elif isinstance(other, int) or isinstance(other, float):
+            vecList = s_vec_add(self.size, self.vector, other)
             return Vector(self.size, data=vecList)
         else:
             return NotImplemented
 
-    def __iadd__(self, vecB):
-        if isinstance(vecB, Vector):
-            self.vector = vec_add(self.size, self.vector, vecB.vector)
+    def __iadd__(self, other):
+        if isinstance(other, Vector):
+            self.vector = vec_add(self.size, self.vector, other.vector)
+            return self
+        elif isinstance(other, int) or isinstance(other, float):
+            self.vector = s_vec_add(self.size, self.vector, other)
             return self
         else:
             return NotImplemented
 
-    def __sub__(self, vecB):
-        if isinstance(vecB, Vector):
-            vecList = vec_sub(self.size, self.vector, vecB.vector)
+    def __sub__(self, other):
+        if isinstance(other, Vector):
+            vecList = vec_sub(self.size, self.vector, other.vector)
+            return Vector(self.size, data=vecList)
+        elif isinstance(other, int) or isinstance(other, float):
+            vecList = s_vec_sub(self.size, self.vector, other)
             return Vector(self.size, data=vecList)
         else:
             return NotImplemented
 
     def __isub__(self, vecB):
-        if isinstance(vecB, Vector):
-            self.vector = vec_sub(self.size, self.vector, vecB.vector)
+        if isinstance(other, Vector):
+            self.vector = vec_sub(self.size, self.vector, other.vector)
+            return self
+        elif isinstance(other, int) or isinstance(other, float):
+            self.vector = s_vec_sub(self.size, self.vector, other)
             return self
         else:
             return NotImplemented
@@ -196,78 +216,53 @@ class Vector(object):
         vecList = vec_neg(self.size, self.vector)
         return Vector(self.size, data=vecList)
 
+    def one(self):
+        self.vector = one_vector(self.size)
+        return self
+
     def maxV(self, vecB):
-<<<<<<< HEAD
-        ''' Return the biggest vector of the two. '''
-        if isinstance(vecB, Vector):
-            return maxV(self.vector, vecB.vector)
-        else:
-            return NotImplemented
-
-    def minV(self, vecB):
-        ''' Return the smallest vector of the two. '''
-        if isinstance(vecB, Vector):
-            return maxV(self.vector, vecB.vector)
-
-    def minS(self):
-        ''' Return the smallest numeric value of the component of the vector. '''
-        return maxS(self.vector)
-
-    def maxS(self):
-        ''' Return the biggest numeric value of the component of the vector. '''
-        return maxS(self.vector)
-
-    def magnitude(self):
-        ''' Return the magnitude of the vector. '''
-        return magnitude(self.vector)
-=======
         return Vector(self.size, data=maxV(self.size, self.vector, vecB.vector))
 
     def maxS(self):
         return maxS(self.size, self.vector)
 
     def minV(self, vecB):
-        return Vector(self.size, data=maxV(self.size, self.vector, vecB.vector))
+        return Vector(self.size, data=minV(self.size, self.vector, vecB.vector))
 
     def minS(self):
-        return maxS(self.size, self.vector)
+        return minS(self.size, self.vector)
 
     def magnitude(self):
         return magnitude(self.size, self.vector)
->>>>>>> origin/master
 
     def i_normalize(self):
         ''' Normalize the vector in place. '''
-        self.vector = normalize(self.vector)
+        self.vector = normalize(self.size, self.vector)
         return self
 
     def normalize(self):
-<<<<<<< HEAD
         ''' Return a new normalized vector. '''
-        vecList = normalize(self.vector)
-=======
         vecList = normalize(self.size, self.vector)
->>>>>>> origin/master
         return Vector(self.size, data=vecList)
         
     def dot(self, vecB):
         ''' Return the dot product between two vectors. '''
         if isinstance(vecB, Vector):
-            return dot(self.size, self.vector, vecB)
+            return dot(self.size, self.vector, vecB.vector)
         else:
             return NotImplemented
 
     def isInSameDirection(self, otherVec):
         ''' Return a boolean if the input vector if is in the same direction as the one it's compared against. '''
         if isinstance(otherVec, Vector):
-            return self.vector.dot(otherVec) > 0
+            return self.dot(otherVec) > 0
         else:
             return NotImplemented
 
     def isInOppositeDirection(self, otherVec):
         ''' Return a boolean if the input vector if is in the opposite direction as the one it's compared against. '''
         if isinstance(otherVec, Vector):
-            return self.vector.dot(otherVec) < 0
+            return self.dot(otherVec) < 0
         else:
             return NotImplemented
 
@@ -304,19 +299,19 @@ class Vector(object):
 
     # 3D vector identities
     def right(self):
-        return [ 1.0, 0.0, 0.0]
+        return Vector(3, data=[ 1.0, 0.0, 0.0, 1.0])
 
     def left(self):
-        return [-1.0, 0.0, 0.0]
+        return Vector(3, data=[-1.0, 0.0, 0.0, 1.0])
 
     def front(self):
-        return [0.0, 0.0, -1.0]
+        return Vector(3, data=[0.0, 0.0, -1.0, 1.0])
 
     def back(self):
-        return [ 0.0, 0.0, 1.0]
+        return Vector(3, data=[ 0.0, 0.0, 1.0, 1.0])
 
     def up(self):
-        return [ 0.0, 1.0, 0.0]
+        return Vector(3, data=[ 0.0, 1.0, 0.0, 1.0])
 
     def down(self):
-        return [0.0, -1.0, 0.0]
+        return Vector(3, data=[0.0, -1.0, 0.0, 1.0])

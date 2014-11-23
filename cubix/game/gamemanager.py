@@ -16,6 +16,8 @@ from cubix.core.physics import rectangle
 from cubix.core.physics import cmodel
 from cubix.core.physics import physobj
 from cubix.core.physics import physengine
+from cubix.core.physics import primitives
+from cubix.core.physics import gjk
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -96,6 +98,38 @@ class GameManager(object):
             tempObj.getCollisionModel().getModel().scale(32, 32)
             tempObj.getCollisionModel().getModel().update()
             self.meshObjects.append(mesh.Mesh(self.program, tempObj, self.texAtlas))
+        '''End Scene Objects'''
+
+        # Create the collider
+        gjkTest = gjk.GJK()
+
+        # Box A and Box B collistion test, should return False
+        # Substract the origins and add the two rectangles together to form a bigger one
+        # If it include the origin, collision happens
+        boxTestA = primitives.Box(glmath.Vector(3, data=[50, 50, 49]), 1, 1, 1, glmath.Matrix(4))
+        boxTestB = primitives.Box(glmath.Vector(3, data=[50, 50, 51]), 2, 2, 2, glmath.Matrix(4))
+
+        # Rectangle A and Rectangle B collision test, should return False
+        # Substract the origins and add the two boxes together to form a bigger one
+        # If it include the origin, collision happens
+        rectTestA = primitives.Rectangle(glmath.Vector(3, data=[10, 10, 0]), 2, 2, glmath.Matrix(4))
+        rectTestB = primitives.Rectangle(glmath.Vector(3, data=[50, 50, 50]), 2, 2, glmath.Matrix(4))
+
+        # Circle A and Cirlce B collision test, should return False
+        # Substract the origins and add the radii
+        # If the new circle includes the origin, collision happens
+        circleTestA = primitives.Circle(glmath.Vector(3, data=[50, 50, 50]), 1)
+        circleTestB = primitives.Circle(glmath.Vector(3, data=[50, 50, 53]), 1)
+
+        print("Box A and Box B collision:", gjkTest.intersects(boxTestA, boxTestB))
+        print("Rect A and Rect B collision:", gjkTest.intersects(rectTestA, rectTestB))
+        print("Circle A and Circle B collision:", gjkTest.intersects(circleTestA, circleTestB))
+
+        # Circle A and Box/Rect B collision detection, 2D object with a 3D/2D object, it combines the two different shapes
+        # If the new shape includes the origin, collision happens
+        # Should return true because they are touching, if not interesting each other at a depth
+        print("Circle A and Box B collision:", gjkTest.intersects(circleTestA, boxTestB))
+        print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 

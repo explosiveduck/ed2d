@@ -1,17 +1,20 @@
 from cubix.core.glmath import vector
 from cubix.core.glmath import matrix
+import math
 
 class Simplex(object):
     def __init__(self, vertices):
         self.vertices = []
-        for i in range(len(self.vertices)):
-            self.vertices.appened(vertices[i])
+        self.vertices.append(vertices)
+
+    def __getitem__(self, key):
+        return self.vertices[key]
 
     def count(self):
         return len(self.vertices)
 
     def add(self, vertex):
-        self.vertices.appened(vertex)
+        self.vertices.append(vertex)
 
     def remove(self, vertex):
         index = 0
@@ -21,7 +24,7 @@ class Simplex(object):
         #Trash the value
         del self.vertices[index]
 
-def Support(self, regionOne, regionTwo, direction):
+def Support(regionOne, regionTwo, direction):
     '''Makes use of the primities. Each primitive has its own getFurthestPoint function. '''
     return regionOne.getFurthestPoint(direction) - regionTwo.getFurthestPoint(-direction)
 
@@ -31,7 +34,7 @@ class GJK(object):
 
     def intersects(self, regionOne, regionTwo):
         # Get initial point on the Minkowski difference
-        s = Support(regionOne, RegionTwo, vector.one_vector(3))
+        s = Support(regionOne, regionTwo, vector.Vector(3).one())
 
         # Create the inital simplex
         simplex = Simplex(s)
@@ -67,9 +70,9 @@ class GJK(object):
 
     def processSimplex(self, simplex):
         '''Either finds a collision or the closest feature of the simplex to the origin, and updates the simplex and direction'''
-        if (simplex.count == 2):
+        if (simplex.count() == 2):
             return self.processLine(simplex)
-        elif (simplex.count == 3):
+        elif (simplex.count() == 3):
             return self.processTriangle(simplex)
         else:
             return self.processTetrehedron(simplex)
@@ -83,8 +86,8 @@ class GJK(object):
         aO = -a
 
         if(ab.isInSameDirection(aO)):
-            dot = vector.dot(ab, aO)
-            angle = math.acos(dot / ab.magnitude() * aO.magnitude())
+            dot = ab.dot(aO)
+            #angle = math.acos(dot / ab.magnitude() * aO.magnitude())
             self.direction = vector.cross(vector.cross(ab, aO), ab)
         else:
             simplex.remove(b)
@@ -130,10 +133,10 @@ class GJK(object):
                 if(abc.isInSameDirection(aO)):
                     self.direction = vector.cross(vector.cross(abc, aO), abc)
                 else:
-                    self.direction = vector.cross(vector.corss(-abc, aO), -abc)
+                    self.direction = vector.cross(vector.cross(-abc, aO), -abc)
         return False
 
-    def processTetrehedron(simplex):
+    def processTetrehedron(self, simplex):
         '''Determines which Veronoi region of a tetrehedron the origin is in, utilizing the preserved winding of the simplex to eliminate certain regions'''
         a = simplex[3]
         b = simplex[2]
