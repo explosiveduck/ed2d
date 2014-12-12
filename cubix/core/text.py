@@ -65,8 +65,7 @@ class Text(object):
             self.chrMap[c].render(i)
 
         gl.glDisableVertexAttribArray(self.vertLoc)
-
-        gl.glBindVertexArray(0)
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
 
 class Glyph(object):
     def __init__(self, _atlas, _font, _program, glyphOrd, size):
