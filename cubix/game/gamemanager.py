@@ -81,7 +81,7 @@ class GameManager(object):
         self.cModelTest = cmodel.cModel(self.cModelTestRect)
         self.physicsObjectTest = physobj.PhysObj(self.cModelTest, glmath.Vector(3, data=[0.0, 0.0, 1.0]))
         self.physicsEngineTest.addObject(self.physicsObjectTest)
-        self.meshObjectTest = mesh.Mesh(self.program, self.physicsObjectTest, self.texAtlas)
+        self.meshObjectTest = mesh.PhysMesh(self.program, self.physicsObjectTest, self.texAtlas)
         '''End Player'''
 
         '''Scene objects'''
@@ -97,7 +97,7 @@ class GameManager(object):
             tempObj = self.physicsEngineTest.getObject(i+1)
             tempObj.getCollisionModel().getModel().scale(32, 32)
             tempObj.getCollisionModel().getModel().update()
-            self.meshObjects.append(mesh.Mesh(self.program, tempObj, self.texAtlas))
+            self.meshObjects.append(mesh.PhysMesh(self.program, tempObj, self.texAtlas))
         '''End Scene Objects'''
 
         # Create the collider
