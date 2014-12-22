@@ -20,26 +20,14 @@ def unbind_object(dataLoc):
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
     gl.glDisableVertexAttribArray(dataLoc)
 
-class Mesh(object):
+class MeshBase(object):
 
-    def __init__(self, program, physicsObject, texture):
+    def __init__(self, program, texture):
         self.program = program
         self.vertLoc = self.program.get_attribute(b'position')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
         self.modelID = self.program.new_uniform(b'model')
         self.texture = texture
-
-        self.nverts = 4
-        self.rect = physicsObject.getCollisionModel().getModel()
-        self.data = self.rect.getVertices()
-        self.texCoord = self.rect.getVertices()
-        self.modelMatrix = self.rect.getModelMatrix()
-
-        self.buffer_objects()
-
-    def update(self, physicsObject):
-        self.rect = physicsObject.getCollisionModel().getModel()
-        self.modelMatrix = self.rect.getModelMatrix()
 
     def render(self):
         
@@ -58,3 +46,74 @@ class Mesh(object):
     def buffer_objects(self):
         self.vbo = buffer_object(self.data)
         self.uvbo = buffer_object(self.texCoord)
+
+class PhysMesh(MeshBase):
+    def __init__(self, program, physObj, texture):
+        super(PhysMesh, self).__init__(program, texture)
+
+        self.nverts = 4
+
+        self.rect = physObj.getCollisionModel().getModel()
+        self.data = self.rect.getVertices()
+        self.texCoord = self.rect.getVertices()
+        self.modelMatrix = self.rect.getModelMatrix()
+
+        self.buffer_objects()
+
+
+    def update(self, physObj):
+        self.rect = physObj.getCollisionModel().getModel()
+        self.modelMatrix = self.rect.getModelMatrix()
+
+
+class Mesh(MeshBase):
+
+    def __init__(self, program, texture):
+        super(Mesh, self).__init__(program, texture)
+
+        self.xPos = 0
+        self.yPos = 0
+        self.xPosDelta = 0
+        self.yPosDelta = 0
+
+        self._scale = 1
+        self.scaleDelta = 0
+
+        self.modelMatrix = glmath.Matrix(4)
+
+        self.data = [
+             [0.0, 1.0],
+             [1.0, 1.0],
+             [0.0, 0.0],
+             [1.0, 0.0],
+        ]
+        self.texCoord = self.data
+        self.nverts = 4
+
+        self.buffer_objects()
+
+    def scale(self, value):
+        self.scaleDelta = value / self._scale
+        self._scale = value
+
+    def translate(self, x, y):
+        self.xPosDelta += x - self.xPos
+        self.yPosDelta += y - self.yPos
+        self.xPos = x
+        self.yPos = y
+
+    def update(self):
+
+        if self.scaleDelta:
+            vecScale = glmath.Vector(3, data=[self.scaleDelta,
+                self.scaleDelta, 0.0])
+            self.modelMatrix.i_scale(vecScale)
+            self.scaleDelta = 0
+        if self.xPosDelta or self.yPosDelta:
+            vecTrans = glmath.Vector(3, data=[self.xPosDelta,
+                self.yPosDelta, 0.0])
+            self.modelMatrix.i_translate(vecTrans)
+            self.xPosDelta = 0
+            self.yPosDelta = 0
+
+
