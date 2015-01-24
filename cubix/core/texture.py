@@ -27,6 +27,11 @@ class BaseTexture(object):
     # It will be for assigning each texture unit id easily.
     # We use the id for calculating GL_TEXTUREi. This value propagates
     # down into the class instances also, even as it is changed. :D
+    #
+    # edit: decide if this would be better off as an __init__ method that
+    # the subclasses call via super. Would be the best thing if we want to
+    # have external subclasses of the BaseTexture.
+
     _textureCount = 0
     def _set_unit_id(self):
         self.texUnitID = self._textureCount
@@ -116,7 +121,10 @@ class TextureAtlas(BaseTexture):
         return coordData
 
     def get_vertex_scale(self):
-        ''' Returns calculated vertex scaleing for textures by textureID '''
+        '''
+        Returns calculated vertex scaleing for textures by textureID
+        This nomalizes all fonts to the height of the tallest glyph.
+        '''
         # This will return a list of all of the coord data indexed by textureID
 
         vertScale = []
