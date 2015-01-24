@@ -1,6 +1,8 @@
 import ctypes as ct
+import atexit
+
 import sdl2 as sdl
-from sdl2 import sdlttf
+import freetype.raw as ft
 
 from cubix.core import texture
 from cubix.core import mesh
@@ -10,17 +12,119 @@ from cubix.core.opengl import typeutils
 from cubix.core.opengl import gl, pgl
 from cubix.core import glmath
 
-def init_text():
-    sdlttf.TTF_Init()
+def init_freetype():
+    handle = ft.FT_Library() 
+
+    if ft.FT_Init_FreeType(ct.byref(handle)):
+        raise Exception('FreeType failed to initialize.')  
+
+    return handle
+
+freetype = init_freetype()
+
+def del_freetype():
+    # delete the freetype instance
+    ft.FT_Done_FreeType(freetype)
+
+# Register callback to destroy freetype at python exit
+atexit.register(del_freetype)
+
+# These are the usable fields of FT_GlyphSlotRec
+#   field:            data type:
+# library           FT_Library
+# face              FT_Face
+# next              FT_GlyphSlot
+# generic           FT_Generic
+# metrics           FT_Glyph_Metrics
+# linearHoriAdvance FT_Fixed
+# linearVertAdvance FT_Fixed
+# advance           FT_Vector
+# format            FT_Glyph_Format
+# bitmap            FT_Bitmap
+# bitmap_left       FT_Int
+# bitmap_top        FT_Int
+# outline           FT_Outline
+# num_subglyphs     FT_UInt
+# subglyphs         FT_SubGlyph
+# control_data      void*
+# control_len       long
+# lsb_delta         FT_Pos
+# rsb_delta         FT_Pos
+
+class Font(object):
+    def __init__(self, size, fontPath):
+        
+        self.size = size
+        self.path = fontPath
+
+        self.face = ft.FT_Face()
+        
+        # here is the general structure of the char data dict.
+        #
+        # It has 
+        self.charDataCache = {}
+
+        # load font face
+        if ft.FT_New_Face(freetype, typeutils.to_c_str(fontPath), 0, ct.byref(self.face)):
+            raise Exception('Error loading font.')
+
+        # For now the device dpi will be hard coded to 72
+        # later on if we want to do mobile stuff, or have dpi scaling
+        # for high-dpi monitors this will need to be changed.
+        if ft.FT_Set_Char_Size(self.face, 0, size*64, 72, 72):
+            raise Exception('Error setting character size.')
+
+    def load_glyph(self, char):
+        '''
+        Loads glyph, and returns a dictionary containing glyph data.
+        
+        '''
+        try:
+            return self.charDataCache[char]
+
+        except:
+            index = ft.FT_Get_Char_Index(self.face, ord(char))
+
+            if ft.FT_Load_Glyph(self.face, index, ft.FT_LOAD_RENDER):
+                raise Exception('Error loading glyph')
+
+            glyphSlot = self.face.contents.glyph 
+
+            charData = {}
+            bitmapStruct = glyphSlot.contents.bitmap
+            texWidth = bitmapStruct.width
+            texHeight = bitmapStruct.rows
+
+            pixelData = [0.0 for x in range(texWidth * texHeight)]
+
+            for item in range(texWidth * texHeight):
+                pixelData[item] = [bitmapStruct.buffer[item]] * 4
+
+            if not pixelData:
+                pixelData = [0]
+
+            charData['pixelData'] = pixelData
+            charData['texWidth'] = texWidth
+            charData['texHeight'] = texHeight
+            charData['advance'] = glyphSlot.contents.advance
+            
+            self.charDataCache[char] = charData
+
+            return charData
+
+    def __del__(self):
+        '''Delete the freetype face'''
+        ft.FT_Done_Face(self.face)
+
 
 class Text(object):
-    def __init__(self, _program, size, fontPath):
-        self._program = _program
+    def __init__(self, program, font):
+        self.program = program
+        self.texAtlas = texture.TextureAtlas(self.program)
 
-        self.texAtlas = texture.TextureAtlas(self._program)
-        self.fontFile = sdlttf.TTF_OpenFont(typeutils.to_c_str(fontPath) , size )
+        self.font = font
 
-        self.vertLoc = self._program.get_attribute(b'position')
+        self.vertLoc = self.program.get_attribute(b'position')
 
         self.data = [
              [0.0, 1.0],
@@ -32,7 +136,11 @@ class Text(object):
         self.chrMap = {}
 
         for texVal in range(32, 128):
-            self.chrMap[chr(texVal)] = Glyph(self.texAtlas, self.fontFile, self._program, texVal, size)
+            char = chr(texVal) 
+            fontData = self.font.load_glyph(char)
+            self.chrMap[char] = Glyph(self.program, self.texAtlas,
+                    fontData, char)
+
         self.texAtlas.gen_atlas()
 
         uvcoord = self.texAtlas.get_uvcoords()
@@ -57,9 +165,15 @@ class Text(object):
 
         self.texAtlas.bind()
 
+        # When you can dynamically add textures to an Atlas
+        # this is where the glyph objects will be created.
+        # Instead of taking a while on init to generate all
+        # normal characters.
+
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT,
+                gl.GL_FALSE,0, None)
 
         for i, c in enumerate(text):
             self.chrMap[c].render(i)
@@ -67,51 +181,33 @@ class Text(object):
         gl.glDisableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
 
-class Glyph(object):
-    def __init__(self, _atlas, _font, _program, glyphOrd, size):
-        self._atlas = _atlas
-        self._font = _font
-        self._program = _program
-        self._nverts = 4
 
-        self.modelLoc = self._program.new_uniform(b'model')
-        self.UVLoc = self._program.get_attribute(b'vertexUV')
+class Glyph(object):
+    def __init__(self, program, atlas, fontData, char):
+        self.atlas = atlas
+        self.fontData = fontData
+        self.program = program
+        self.nverts = 4
+
+        self.modelLoc = self.program.new_uniform(b'model')
+        self.UVLoc = self.program.get_attribute(b'vertexUV')
 
         self.modelMatrix = glmath.Matrix(4)
 
-        # Variables that will be used from this class elsewhere
-        self.ord = glyphOrd
-        self.textureID = None
-        self.textureWidth = None
-        self.textureHeight = None
-        self.pixelData = None
+        self.char = char
+
+        # These gets set from the Text class
         self.vertexScale = None
         self._uvCoords = None
+        
 
-        # Color to render in we want white initialy
-        color = sdl.SDL_Color()
-        color.r = 255
-        color.g = 255
-        color.b = 255
-        color.a = 255
+        self.pixelData = self.fontData['pixelData']
 
-        glyph = sdlttf.TTF_RenderGlyph_Blended(self._font, self.ord, color)
+        self.textureWidth = self.fontData['texWidth']
+        self.textureHeight = self.fontData['texHeight']
 
-        self.textureWidth = glyph.contents.w
-        self.textureHeight = glyph.contents.h
-
-        dataType = (ct.c_ubyte * 4 * (self.textureWidth * self.textureHeight))
-        pixObj = ct.cast(glyph.contents.pixels, ct.POINTER(dataType)).contents
-
-        pixelData = [[0.0 for sub in range(4)] for x in range(self.textureWidth * self.textureHeight)]
-
-        for item in range(self.textureWidth * self.textureHeight):
-            pixelData[item] = list(pixObj[item])
-
-        del pixObj
-        sdl.SDL_FreeSurface(glyph)
-
-        self.textureID = self._atlas.add_texture(self.textureWidth, self.textureHeight, pixelData)
+        self.textureID = self.atlas.add_texture(self.textureWidth,
+                self.textureHeight, self.pixelData)
 
     @property
     def uvCoords(self):
@@ -123,20 +219,25 @@ class Glyph(object):
     
     def render(self, pos):
         self.modelMatrix = glmath.Matrix(4)
-        vecScale = glmath.Vector(3, data=[self.vertexScale[0], self.vertexScale[1], 0.0])
+
+        vecScale = glmath.Vector(3, data=[self.vertexScale[0],
+                self.vertexScale[1], 0.0])
         self.modelMatrix.i_scale(vecScale)
+
         vecScale = glmath.Vector(3, data=[30.0, 30.0, 0.0])
         self.modelMatrix.i_scale(vecScale)
-        vecScale = glmath.Vector(3, data=[pos*32, 0.0, 0.0])
+
+        vecScale = glmath.Vector(3, data=[pos*20, 0.0, 0.0])
         self.modelMatrix.i_translate(vecScale)
 
-        self._program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
+        self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
 
         gl.glEnableVertexAttribArray(self.UVLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT,
+                gl.GL_FALSE, 0, None)
 
-        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self._nverts)
+        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
 
         gl.glDisableVertexAttribArray(self.UVLoc)
 
