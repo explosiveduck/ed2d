@@ -98,7 +98,7 @@ class Font(object):
             pixelData = [0.0 for x in range(texWidth * texHeight)]
 
             for item in range(texWidth * texHeight):
-                pixelData[item] = [bitmapStruct.buffer[item]] * 4
+                pixelData[item] = [255, 255, 255, bitmapStruct.buffer[item]]
 
             if not pixelData:
                 pixelData = [0]
@@ -106,7 +106,7 @@ class Font(object):
             charData['pixelData'] = pixelData
             charData['texWidth'] = texWidth
             charData['texHeight'] = texHeight
-            charData['advance'] = glyphSlot.contents.advance
+            charData['advance'] = glyphSlot.contents.advance.x >> 6
             
             self.charDataCache[char] = charData
 
@@ -175,8 +175,11 @@ class Text(object):
         pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT,
                 gl.GL_FALSE,0, None)
 
+        penPosX = 0
         for i, c in enumerate(text):
-            self.chrMap[c].render(i)
+            char = self.chrMap[c]
+            char.render(penPosX)
+            penPosX += char.advance
 
         gl.glDisableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
@@ -206,6 +209,8 @@ class Glyph(object):
         self.textureWidth = self.fontData['texWidth']
         self.textureHeight = self.fontData['texHeight']
 
+        self.advance = self.fontData['advance']
+
         self.textureID = self.atlas.add_texture(self.textureWidth,
                 self.textureHeight, self.pixelData)
 
@@ -220,14 +225,15 @@ class Glyph(object):
     def render(self, pos):
         self.modelMatrix = glmath.Matrix(4)
 
-        vecScale = glmath.Vector(3, data=[self.vertexScale[0],
-                self.vertexScale[1], 0.0])
+        vecScale = glmath.Vector(3, data=[self.atlas.maxSubTextureHeight, self.atlas.maxSubTextureHeight, 0.0])
         self.modelMatrix.i_scale(vecScale)
 
-        vecScale = glmath.Vector(3, data=[30.0, 30.0, 0.0])
+        vecScale = glmath.Vector(3, data=[self.vertexScale[0], self.vertexScale[1], 0.0])
         self.modelMatrix.i_scale(vecScale)
 
-        vecScale = glmath.Vector(3, data=[pos*20, 0.0, 0.0])
+
+
+        vecScale = glmath.Vector(3, data=[pos, 0.0, 0.0])
         self.modelMatrix.i_translate(vecScale)
 
         self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
