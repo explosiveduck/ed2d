@@ -1,5 +1,4 @@
 import ctypes as ct
-import atexit
 
 import sdl2 as sdl
 import freetype.raw as ft
@@ -12,8 +11,25 @@ from cubix.core.opengl import typeutils
 from cubix.core.opengl import gl, pgl
 from cubix.core import glmath
 
+# Hack to verify that freetype is properly destructed after everything
+# this code was also commited to freetype-py
+
+class _FT_Library_Wrapper(ft.FT_Library):
+    '''Subclass of FT_Library to help with calling FT_Done_FreeType'''
+    # for some reason this doesn't get carried over and ctypes complains
+    _type_ = ft.FT_Library._type_
+
+    # Store ref to FT_Done_FreeType otherwise it will be deleted before needed.
+    _ft_done_freetype = ft.FT_Done_FreeType
+
+    def __del__(self):
+        # call FT_Done_FreeType
+        print ('test')
+        self._ft_done_freetype(self)
+        print ('test2')
+
 def init_freetype():
-    handle = ft.FT_Library() 
+    handle = _FT_Library_Wrapper()
 
     if ft.FT_Init_FreeType(ct.byref(handle)):
         raise Exception('FreeType failed to initialize.')  
@@ -22,12 +38,6 @@ def init_freetype():
 
 freetype = init_freetype()
 
-def del_freetype():
-    # delete the freetype instance
-    ft.FT_Done_FreeType(freetype)
-
-# Register callback to destroy freetype at python exit
-atexit.register(del_freetype)
 
 # These are the usable fields of FT_GlyphSlotRec
 #   field:            data type:
@@ -112,7 +122,7 @@ class Font(object):
 
             return charData
 
-    def __del__(self):
+    def delete(self):
         '''Delete the freetype face'''
         ft.FT_Done_Face(self.face)
 

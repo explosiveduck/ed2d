@@ -134,6 +134,7 @@ class GameManager(object):
     def update(self):
         for obj in self.meshes:
             obj.update()
+
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
@@ -146,7 +147,10 @@ class GameManager(object):
 
         self.text.draw_text('Hello World!, FPS: %.2f' % self.fpsEstimate)
         gl.glBindVertexArray(0)
-        
+
+    def exit(self):
+        '''Commands to run before exit.'''
+        self.font.delete()
 
     def do_run(self):
         ''' Process a single loop '''
@@ -164,3 +168,4 @@ class GameManager(object):
         self.running = True
         while self.running:
             self.do_run()
+        self.exit()
