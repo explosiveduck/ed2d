@@ -85,11 +85,39 @@ class TextureAtlas(BaseTexture):
         self.data = 0
         self.maxWidth = maxWidth
 
+        self.width = 0
+        self.height = 0
+        self.cursorPosY = 0
+        self.cursorPosX = 0
+        self.lineHeight = 0
+        self.maxSubTextureHeight = 0
+
     def add_texture(self, width, height, texData):
         textureID = len(self.textures)
 
+        imgWidth = width
+        imgHeight = height
+
+        if self.cursorPosX + imgWidth  + 1 >= self.maxWidth:
+
+            self.width = max(self.width, self.cursorPosX)
+            self.cursorPosY += self.lineHeight
+
+            self.maxSubTextureHeight = max(self.maxSubTextureHeight, self.lineHeight - 1)
+
+            self.lineHeight = 0
+            self.cursorPosX = 0
+
+        x1 = self.cursorPosX
+        x2 = self.cursorPosX + imgWidth
+        y1 = self.cursorPosY
+        y2 = self.cursorPosY + imgHeight
+
+        self.cursorPosX += imgWidth + 1
+        self.lineHeight = max(self.lineHeight, imgHeight + 1)
+
         self.textures.append({
-                'x1':0, 'x2':0, 'y1':0, 'y2':0,      # Calculated by calc_image
+                'x1':x1, 'x2':x2, 'y1':y1, 'y2':y2,
                 'width': width, 'height': height,
                 'texData': texData, 'uvCoords': None,
         })
@@ -127,49 +155,13 @@ class TextureAtlas(BaseTexture):
 
         return (vertScaleX, vertScaleY)
 
-    def calc_image(self):
-
-        # Go through all registered textures and calculate the total
-        # image size for the atlas plus the coords for image location.
-
-        self.width = 0
-        self.height = 0
-        cursorPosY = 0
-        cursorPosX = 0
-        lineHeight = 0
-        self.maxSubTextureHeight = 0
-
-        for tex in self.textures:
-            imgWidth = tex['width']
-            imgHeight = tex['height']
-
-            if cursorPosX + imgWidth  + 1 >= self.maxWidth:
-
-                self.width = max(self.width, cursorPosX)
-                cursorPosY += lineHeight
-
-                self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight - 1)
-
-                lineHeight = 0
-                cursorPosX = 0
-
-            tex['x1'] = cursorPosX
-            tex['x2'] = cursorPosX + imgWidth
-            tex['y1'] = cursorPosY
-            tex['y2'] = cursorPosY + imgHeight
-
-            cursorPosX += imgWidth + 1
-            lineHeight = max(lineHeight, imgHeight + 1)
-
-        cursorPosY += lineHeight
-        self.width = max(self.width, cursorPosX)
-        self.height = cursorPosY
-
-        self.maxSubTextureHeight = max(self.maxSubTextureHeight, lineHeight - 1)
-
     def gen_atlas(self):
 
-        self.calc_image()
+        self.width = max(self.width, self.cursorPosX)
+        self.height = self.cursorPosY
+
+        self.maxSubTextureHeight = max(self.maxSubTextureHeight, self.lineHeight - 1)
+
         self.load_gl()
 
         # add data to blank gl texture with
