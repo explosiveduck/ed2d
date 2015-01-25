@@ -24,9 +24,7 @@ class _FT_Library_Wrapper(ft.FT_Library):
 
     def __del__(self):
         # call FT_Done_FreeType
-        print ('test')
         self._ft_done_freetype(self)
-        print ('test2')
 
 def init_freetype():
     handle = _FT_Library_Wrapper()
