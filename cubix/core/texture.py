@@ -142,7 +142,9 @@ class TextureAtlas(BaseTexture):
     def get_vertex_scale(self, texID):
         '''
         Returns calculated vertex scaleing for textures by textureID
-        This nomalizes all fonts to the height of the tallest glyph.
+        This nomalizes all subtextures to the height of the tallest texture.
+        This is done because the vertex data sent to the gpu is the same for
+        each 
         '''
 
         tex = self.textures[texID]
@@ -156,6 +158,8 @@ class TextureAtlas(BaseTexture):
         return (vertScaleX, vertScaleY)
 
     def gen_atlas(self):
+
+        self.cursorPosY += self.lineHeight
 
         self.width = max(self.width, self.cursorPosX)
         self.height = self.cursorPosY
@@ -171,7 +175,6 @@ class TextureAtlas(BaseTexture):
             y1 = tex['y1']
             width = tex['width']
             height = tex['height']
-
             texData = tex['texData']
 
             pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, texData)
