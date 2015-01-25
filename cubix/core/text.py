@@ -143,21 +143,8 @@ class Text(object):
 
         self.texAtlas.gen_atlas()
 
-        uvcoord = self.texAtlas.get_uvcoords()
-        vertscale = self.texAtlas.get_vertex_scale()
-        for i, uv in enumerate(uvcoord):
-            glyph = self.chrMap[chr(i+32)]
-            x1, x2, y1, y2 = uv
-
-            coord = [
-                    [x1, y2],
-                    [x2, y2],
-                    [x1, y1],
-                    [x2, y1],
-            ]
-            glyph.uvCoords = coord
-            glyph.vertexScale = vertscale[i]
-
+        for glyph in self.chrMap.values():
+            glyph.init_gl()
 
         self.vbo = mesh.buffer_object(self.data)
 
@@ -198,10 +185,6 @@ class Glyph(object):
         self.modelMatrix = glmath.Matrix(4)
 
         self.char = char
-
-        # These gets set from the Text class
-        self.vertexScale = None
-        self._uvCoords = None
         
 
         self.pixelData = self.fontData['pixelData']
@@ -214,12 +197,10 @@ class Glyph(object):
         self.textureID = self.atlas.add_texture(self.textureWidth,
                 self.textureHeight, self.pixelData)
 
-    @property
-    def uvCoords(self):
-        return self._uvCoords
-    @uvCoords.setter
-    def uvCoords(self, value):
-        self._uvCoords = value
+    def init_gl(self):
+        self._uvCoords = self.atlas.get_uvcoords(self.textureID)
+        self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
+
         self.uvbo = mesh.buffer_object(self._uvCoords)
     
     def render(self, pos):

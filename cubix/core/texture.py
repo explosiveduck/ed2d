@@ -95,56 +95,37 @@ class TextureAtlas(BaseTexture):
         })
         return textureID
 
-    def get_uvcoords(self):
-        coordData = []
-        # This will return a list of all of the uvcoords indexed by textureID
-        for tex in self.textures:
-            x1 = tex['x1'] / float(self.width)
-            x2 = tex['x2'] / float(self.width)
-            y1 = tex['y1'] / float(self.height)
-            y2 = tex['y2'] / float(self.height)
-            coordData.append((x1, x2, y1, y2))
+    def get_uvcoords(self, texID):
 
-        return coordData
+        tex = self.textures[texID]
 
-    def get_coords(self):
-        coordData = []
-        # This will return a list of all of the coord data indexed by textureID
-        for tex in self.textures:
-            x1 = tex['x1']
-            x2 = tex['x2']
-            y1 = tex['y1']
-            y2 = tex['y2']
+        x1 = tex['x1'] / float(self.width)
+        x2 = tex['x2'] / float(self.width)
+        y1 = tex['y1'] / float(self.height)
+        y2 = tex['y2'] / float(self.height)
 
-            coordData.append((x1, x2, y1, y2)) 
+        coord = [[x1, y2],
+                 [x2, y2],
+                 [x1, y1],
+                 [x2, y1]]
 
-        return coordData
+        return coord
 
-    def get_vertex_scale(self):
+    def get_vertex_scale(self, texID):
         '''
         Returns calculated vertex scaleing for textures by textureID
         This nomalizes all fonts to the height of the tallest glyph.
         '''
-        # This will return a list of all of the coord data indexed by textureID
 
-        vertScale = []
+        tex = self.textures[texID]
 
-        # This assumes that your vertex coords are:
-        #[0,1]
-        #[1,1]
-        #[0,0]
-        #[1,0]
+        imgWidth = tex['width']
+        imgHeight = tex['height']
 
-        for tex in self.textures:
-            imgWidth = tex['width']
-            imgHeight = tex['height']
+        vertScaleY = imgHeight / float(self.maxSubTextureHeight)
+        vertScaleX = imgWidth / float(self.maxSubTextureHeight)
 
-            vertScaleY = imgHeight / float(self.maxSubTextureHeight)
-            vertScaleX = imgWidth / float(self.maxSubTextureHeight)
-
-            vertScale.append([vertScaleX, vertScaleY])
-
-        return vertScale
+        return (vertScaleX, vertScaleY)
 
     def calc_image(self):
 
