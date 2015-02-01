@@ -133,6 +133,7 @@ class Text(object):
         self.font = font
 
         self.vertLoc = self.program.get_attribute(b'position')
+        self.UVLoc = self.program.get_attribute(b'vertexUV')
 
         self.data = [
              [0.0, 1.0],
@@ -170,11 +171,16 @@ class Text(object):
         pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT,
                 gl.GL_FALSE,0, None)
 
+
+        gl.glEnableVertexAttribArray(self.UVLoc)
+
         penPosX = 0
         for i, c in enumerate(text):
             char = self.chrMap[c]
             char.render(penPosX)
             penPosX += char.advance
+
+        gl.glDisableVertexAttribArray(self.UVLoc)
 
         gl.glDisableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
@@ -209,27 +215,23 @@ class Glyph(object):
         self._uvCoords = self.atlas.get_uvcoords(self.textureID)
         self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
 
+        vecScale = glmath.Vector(3, data=[self.atlas.maxSubTextureHeight*self.vertexScale[0], 
+                                          self.atlas.maxSubTextureHeight*self.vertexScale[1], 0.0])
+        
+        self.scaleMat = glmath.Matrix(4).i_scale(vecScale)
+
         self.uvbo = mesh.buffer_object(self._uvCoords)
     
     def render(self, pos):
-        self.modelMatrix = glmath.Matrix(4)
-
-        vecScale = glmath.Vector(3,
-		data=[self.atlas.maxSubTextureHeight*self.vertexScale[0],
-		    self.atlas.maxSubTextureHeight*self.vertexScale[1], 0.0])
-        self.modelMatrix.i_scale(vecScale)
 
         vecScale = glmath.Vector(3, data=[pos, 0.0, 0.0])
-        self.modelMatrix.i_translate(vecScale)
+        self.modelMatrix = self.scaleMat.translate(vecScale)
 
         self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
 
-        gl.glEnableVertexAttribArray(self.UVLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
         pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT,
                 gl.GL_FALSE, 0, None)
 
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
-
-        gl.glDisableVertexAttribArray(self.UVLoc)
 
