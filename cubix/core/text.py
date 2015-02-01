@@ -214,13 +214,10 @@ class Glyph(object):
     def render(self, pos):
         self.modelMatrix = glmath.Matrix(4)
 
-        vecScale = glmath.Vector(3, data=[self.atlas.maxSubTextureHeight, self.atlas.maxSubTextureHeight, 0.0])
+        vecScale = glmath.Vector(3,
+		data=[self.atlas.maxSubTextureHeight*self.vertexScale[0],
+		    self.atlas.maxSubTextureHeight*self.vertexScale[1], 0.0])
         self.modelMatrix.i_scale(vecScale)
-
-        vecScale = glmath.Vector(3, data=[self.vertexScale[0], self.vertexScale[1], 0.0])
-        self.modelMatrix.i_scale(vecScale)
-
-
 
         vecScale = glmath.Vector(3, data=[pos, 0.0, 0.0])
         self.modelMatrix.i_translate(vecScale)
