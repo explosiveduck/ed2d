@@ -123,6 +123,24 @@ def minS(size, vecA):
             mScalar = vecA[i]
     return mScalar
 
+def clamp(size, value, min, max):
+    output = value
+    for i in range(size):
+        # Check to see if greater than max
+        output[i] = (output[i] > max[i]) ? max[i] : output[i]
+        # Check to see is less than min
+        output[i] = (output[i] < min[i]) ? min[i] : output[i]
+    return output
+
+def transform(size, position, matrix):
+    output = zero_vector(size)
+    for i in range(size):
+        for j in range(size):
+            output[i] += position[j] * matrix[i][j]
+        output[i] += matrix[size-1][i]
+
+    return output
+
 class Vector(object):
     def __init__(self, size, data=None):
         self.size = size
@@ -235,6 +253,15 @@ class Vector(object):
     def magnitude(self):
         return magnitude(self.size, self.vector)
 
+    def clamp(self, value, min, max):
+        ''' Returns a new clamped vector. '''
+        return clamp(value, min, max)
+
+    def i_clamp(self, value, min, max):
+        ''' Clamp the vector into place. '''
+        self.vector = clamp(value, min, max).Vector
+        return self
+
     def i_normalize(self):
         ''' Normalize the vector in place. '''
         self.vector = normalize(self.size, self.vector)
@@ -265,6 +292,16 @@ class Vector(object):
             return self.dot(otherVec) < 0
         else:
             return NotImplemented
+
+    def transform(self, position, matrix):
+        ''' Transform the vector via a matrix and returns a new vector. '''
+        vecList = transform(self.size, position, matrix)
+        return Vector(self.size, data=vecList)
+
+    def i_transform(self, position, matrix):
+        ''' Transform the vector via a matrix in place. '''
+        self.vector = transform(self.size, position, matrix)
+        return self
 
     # Return common components of the vector as a group
     def xy(self):
