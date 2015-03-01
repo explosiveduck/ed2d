@@ -10,6 +10,7 @@ from cubix.core import files
 from cubix.core.opengl import typeutils 
 from cubix.core.opengl import gl, pgl
 from cubix.core import glmath
+from cubix.core.glmath import cython as cyglmath
 
 # Hack to verify that freetype is properly destructed after everything
 # this code was also commited to freetype-py
@@ -196,7 +197,7 @@ class Glyph(object):
         self.modelLoc = self.program.new_uniform(b'model')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
 
-        self.modelMatrix = glmath.Matrix(4)
+        self.modelMatrix = cyglmath.Matrix(4)
 
         self.char = char
         
@@ -216,16 +217,16 @@ class Glyph(object):
         self._uvCoords = self.atlas.get_uvcoords(self.textureID)
         self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
 
-        vecScale = glmath.Vector(3, data=[self.atlas.maxSubTextureHeight*self.vertexScale[0], 
+        vecScale = cyglmath.Vector(3, data=[self.atlas.maxSubTextureHeight*self.vertexScale[0], 
                                           self.atlas.maxSubTextureHeight*self.vertexScale[1], 0.0])
         
-        self.scaleMat = glmath.Matrix(4).i_scale(vecScale)
+        self.scaleMat = cyglmath.Matrix(4).i_scale(vecScale)
 
         self.uvbo = mesh.buffer_object(self._uvCoords)
     
     def render(self, pos):
 
-        vecScale = glmath.Vector(3, data=[pos, 0.0, 0.0])
+        vecScale = cyglmath.Vector(3, data=[pos, 0.0, 0.0])
         self.modelMatrix = self.scaleMat.translate(vecScale)
 
         self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix, uniform=self.uniform, size=4)
