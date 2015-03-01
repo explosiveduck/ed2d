@@ -127,9 +127,9 @@ def clamp(size, value, min, max):
     output = value
     for i in range(size):
         # Check to see if greater than max
-        output[i] = (output[i] > max[i]) ? max[i] : output[i]
+        output[i] = max[i] if output[i] > max[i] else output[i]
         # Check to see is less than min
-        output[i] = (output[i] < min[i]) ? min[i] : output[i]
+        output[i] = min[i] if output[i] < min[i] else output[i]
     return output
 
 def transform(size, position, matrix):
