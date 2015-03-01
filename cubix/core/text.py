@@ -207,6 +207,7 @@ class Glyph(object):
         self.textureHeight = self.fontData['texHeight']
 
         self.advance = self.fontData['advance']
+        self.uniform = self.program.get_uniform(self.modelLoc)
 
         self.textureID = self.atlas.add_texture(self.textureWidth,
                 self.textureHeight, self.pixelData)
@@ -227,7 +228,9 @@ class Glyph(object):
         vecScale = glmath.Vector(3, data=[pos, 0.0, 0.0])
         self.modelMatrix = self.scaleMat.translate(vecScale)
 
-        self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix)
+        self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix, uniform=self.uniform, size=4)
+
+        #pgl.glUniformMatrix4fv(self.uniform, 1, gl.GL_FALSE, self.modelMatrix.c_matrix)
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
         pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT,
