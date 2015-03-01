@@ -43,6 +43,7 @@ cdef object addressof(object obj):
 
 cdef float* list_2d_to_array(int sizeX, int sizeY, object pylist):
     cdef float *rtnArr
+    cdef int x, y
 
     rtnArr = <float*>malloc(sizeX * sizeY * sizeof(float))
 
@@ -58,6 +59,7 @@ cdef float* list_2d_to_array(int sizeX, int sizeY, object pylist):
 cdef float* zero_matrix(int size):
     ''' Return zero filled matrix list of the requested size'''
     cdef float *rtnMat
+    cdef int x, y
 
     rtnMat = <float*>malloc(size * size * sizeof(float))
 
@@ -72,6 +74,7 @@ cdef float* zero_matrix(int size):
 cdef float* identity(int size):
     ''' Return an identity matrix list of the requested size '''
     cdef float *rtnMat
+    cdef int x, y
     rtnMat = <float*>malloc(size * size * sizeof(float))
     if rtnMat == NULL:
         raise MemoryError()
@@ -87,6 +90,7 @@ cdef float* identity(int size):
 
 cdef float* scale(int size, float *value, int vecSize):
     cdef float *rtnMat
+    cdef int x, y
 
     rtnMat = identity(size)
     
@@ -98,6 +102,7 @@ cdef float* scale(int size, float *value, int vecSize):
 
 cdef float* matrix_multiply(float* matrixA, float* matrixB, int matSize):
     matOut = zero_matrix(matSize)
+    cdef int i, j, k
 
     for i from 0 <= i < matSize by 1:
         for j from 0 <= j < matSize by 1:
@@ -147,13 +152,13 @@ cdef class Matrix:
         self.size = size
         if data:
             self.matrix = list_2d_to_array(self.size, self.size, data)
-            self.c_matrix = (ct.c_float * size * size).from_address(<unsigned int>self.matrix)
+            self.c_matrix = (ct.c_float * size * size).from_address(<long>self.matrix)
         elif c_data:
             self.c_matrix = c_data
-            self.matrix = <float *><unsigned int>addressof(self.c_matrix)
+            self.matrix = <float *><long>addressof(self.c_matrix)
         else:
             self.matrix = identity(self.size)
-            self.c_matrix = (ct.c_float * size * size).from_address(<unsigned int>self.matrix)
+            self.c_matrix = (ct.c_float * size * size).from_address(<long>self.matrix)
 
     def __mul__(self, other):
         return self._mul(other)
@@ -161,33 +166,33 @@ cdef class Matrix:
     def _mul(self, other):
         cdef float *result
 
-        result = matrix_multiply(self.matrix, <float *><unsigned int>addressof(other.c_matrix), self.size)
-        c_result = (ct.c_float * self.size * self.size).from_address(<unsigned int>result)
+        result = matrix_multiply(self.matrix, <float *><long>addressof(other.c_matrix), self.size)
+        c_result = (ct.c_float * self.size * self.size).from_address(<long>result)
         return Matrix(self.size, c_data=c_result)
 
     def __imul__(self, other):
         cdef float *result
 
-        result = matrix_multiply(self.matrix, <float *><unsigned int>addressof(other.c_matrix), self.size)
+        result = matrix_multiply(self.matrix, <float *><long>addressof(other.c_matrix), self.size)
         free(self.matrix)
         self.matrix = result
-        self.c_matrix = (ct.c_float * self.size * self.size).from_address(<unsigned int>self.matrix)
+        self.c_matrix = (ct.c_float * self.size * self.size).from_address(<long>self.matrix)
         return self
 
 
     def i_scale(self, value):
         ''' Scale matrix instance in-place by Vector. '''
         cdef float *result
-        result = scale(self.size, <float *><unsigned int>addressof(value.c_vector), value.size)
-        c_result = (ct.c_float * self.size * self.size).from_address(<unsigned int>result)
+        result = scale(self.size, <float *><long>addressof(value.c_vector), value.size)
+        c_result = (ct.c_float * self.size * self.size).from_address(<long>result)
         self *= Matrix(self.size, c_data=c_result)
         return self
 
     def scale(self, value):
         ''' Scale matrix instance by Vector, and return new matrix. '''
         cdef float *result
-        result = scale(self.size, <float *><unsigned int>addressof(value.c_vector), value.size)
-        c_result = (ct.c_float * self.size * self.size).from_address(<unsigned int>result)
+        result = scale(self.size, <float *><long>addressof(value.c_vector), value.size)
+        c_result = (ct.c_float * self.size * self.size).from_address(<long>result)
         return self * Matrix(self.size, c_data=c_result)
 
     def i_translate(self, vecA):
@@ -195,7 +200,7 @@ cdef class Matrix:
         cdef float *vector
         cdef float *transMatList
 
-        vector = <float *><unsigned int>addressof(self.c_matrix)
+        vector = <float *><long>addressof(self.c_matrix)
 
         if self.size == 2:
             transMatList = translate2(vector)
@@ -204,7 +209,7 @@ cdef class Matrix:
         elif self.size == 4:
             transMatList = translate4(vector)
 
-        c_result = (ct.c_float * self.size * self.size).from_address(<unsigned int>transMatList)
+        c_result = (ct.c_float * self.size * self.size).from_address(<long>transMatList)
 
         self *= Matrix(self.size, c_data=c_result)
         return self
@@ -214,7 +219,7 @@ cdef class Matrix:
         cdef float *vector
         cdef float *transMatList
 
-        vector = <float *><unsigned int>addressof(vecA.c_vector)
+        vector = <float *><long>addressof(vecA.c_vector)
 
         if self.size == 2:
             transMatList = translate2(vector)
@@ -223,7 +228,7 @@ cdef class Matrix:
         elif self.size == 4:
             transMatList = translate4(vector)
 
-        c_result = (ct.c_float * self.size * self.size).from_address(<unsigned int>transMatList)
+        c_result = (ct.c_float * self.size * self.size).from_address(<long>transMatList)
 
         return self * Matrix(self.size, c_data=c_result)
 

@@ -3,6 +3,7 @@ import ctypes as ct
 
 cdef float* list_to_array(int size, object pylist):
     cdef float *rtnArr
+    cdef int x
 
     rtnArr = <float*>malloc(size * sizeof(float))
 
@@ -17,6 +18,7 @@ cdef float* list_to_array(int size, object pylist):
 cdef float* zero_vector(int size):
     ''' Return a zero filled vector list of the requested size '''
     cdef float *rtnVec
+    cdef int x
     rtnVec = <float*>malloc(size * sizeof(float))
 
     for x from 0 <= x < size by 1:
@@ -27,6 +29,7 @@ cdef float* zero_vector(int size):
 cdef float* one_vector(int size):
     ''' Return a one filled vector list of the requested size '''
     cdef float *rtnVec
+    cdef int x
     rtnVec = <float*>malloc(size * sizeof(float))
 
     for x from 0 <= x < size by 1:
@@ -43,13 +46,13 @@ cdef class Vector:
         self.size = size
         if data:
             self.vector = list_to_array(self.size, data)
-            self.c_vector = (ct.c_double * size).from_address(<unsigned int>self.vector)
+            self.c_vector = (ct.c_double * size).from_address(<long>self.vector)
         elif c_data:
             self.c_vector = c_data
-            self.vector = <float *><unsigned int>ct.addressof(self.c_vector)
+            self.vector = <float *><long>ct.addressof(self.c_vector)
         else:
             self.vector = zero_vector(self.size)
-            self.c_vector =  (ct.c_double * size).from_address(<unsigned int>self.vector)
+            self.c_vector =  (ct.c_double * size).from_address(<long>self.vector)
 
     def __dealloc__(self):
         free(self.vector)
