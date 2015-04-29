@@ -2,6 +2,23 @@ from cubix.core.glmath import vector
 from cubix.core.glmath import matrix
 import math
 
+class SimplexVerts(object):
+    def __init__(self):
+        self.p1 = vector.Vector(2)
+        self.p2 = vector.Vector(2)
+        self.p = vector.Vector(2)
+        self.u = 1
+        self.index1 = 0
+        self.index2 = 0
+
+    def copy(self, v):
+        self.p1 = v.p1
+        self.p2 = v.p2
+        self.p = v.p
+        self.u = v.u
+        self.index1 = v.index1
+        self.index2 = v.index2
+
 class Simplex(object):
     def __init__(self, vertices):
         self.vertices = []
@@ -10,11 +27,14 @@ class Simplex(object):
     def __getitem__(self, key):
         return self.vertices[key]
 
-    def count(self):
+    def getCount(self):
         return len(self.vertices)
 
     def add(self, vertex):
         self.vertices.append(vertex)
+
+    def copy(self, s):
+        self.vertices = s.vertices
 
     def remove(self, vertex):
         index = 0
@@ -70,9 +90,9 @@ class GJK(object):
 
     def processSimplex(self, simplex):
         '''Either finds a collision or the closest feature of the simplex to the origin, and updates the simplex and direction'''
-        if (simplex.count() == 2):
+        if (simplex.getCount() == 2):
             return self.processLine(simplex)
-        elif (simplex.count() == 3):
+        elif (simplex.getCount() == 3):
             return self.processTriangle(simplex)
         else:
             return self.processTetrehedron(simplex)
