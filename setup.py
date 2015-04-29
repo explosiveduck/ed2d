@@ -1,7 +1,5 @@
 import platform
 from cx_Freeze import setup, Executable
-from Cython.Build import cythonize
-
 osname = platform.system()
 
 #if osname == "Windows":
@@ -10,9 +8,8 @@ osname = platform.system()
 base = None
 
 setup(
-        name = 'Cubix',
-        version = '0.1',
-        description = 'Cubix 2d Game.',
-        executables = [Executable('launcher.py', base=base)],
-    	ext_modules = cythonize("cubix/core/glmath/cython/*.pyx")
+        name = 'ED2D',
+        version = '0.2',
+        description = '2D Game Engine',
+        executables = [Executable('launcher.py', base=base)]
 )
