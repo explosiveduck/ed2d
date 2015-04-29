@@ -3,6 +3,7 @@ from cubix.core.opengl import gl, pgl
 from cubix.core import files
 from cubix.core.opengl import typeutils
 from cubix.core.glmath import Matrix, Vector
+#import OpenGL.GL as gl2
 
 
 class ShaderBase(object):
@@ -80,19 +81,20 @@ class ShaderProgram(object):
         self.uniforms.append(gl.glGetUniformLocation(self.program, bytes(name)))
         return uniID
 
-    def set_uniform_matrix(self, uniID, value, uniform=None, size=None):
-        if not uniform:
-            uniform = self.uniforms[uniID]
-        if not size:
+    def set_uniform_matrix(self, uniID, value):
+        uniform = self.uniforms[uniID]
+        try:
             size = value.size
+            data = value.c_matrix
 
-        if size == 4:
-            pgl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
-        elif size == 3:
-            pgl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
-        elif size == 2:
-            pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
-
+            if size == 4:
+                pgl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, data)
+            if size == 3:
+                pgl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, data)
+            if size == 2:
+                pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, data)
+        except:
+            raise
     def set_uniform_array(self, uniID, value):
         uniform = self.uniforms[uniID]
         try:
@@ -103,25 +105,19 @@ class ShaderProgram(object):
             if isinstance(value[0], int):
                 if size == 4:
                     gl.glUniform4i(uniform, *value)
-                elif size == 3:
+                if size == 3:
                     gl.glUniform3i(uniform, *value)
-                elif size == 2:
+                if size == 2:
                     gl.glUniform2i(uniform, *value)
             elif isinstance(value[0], float):
                 if size == 4:
                     gl.glUniform4f(uniform, *value)
-                elif size == 3:
+                if size == 3:
                     gl.glUniform3f(uniform, *value)
-                elif size == 2:
+                if size == 2:
                     gl.glUniform2f(uniform, *value)
         except:
             raise typeError
-
-    def get_uniform(self, uniID):
-        
-        uniform = self.uniforms[uniID]
-
-        return uniform
 
     def set_uniform(self, uniID, value):
         

@@ -297,6 +297,8 @@ GL_ONE_MINUS_SRC1_ALPHA = 0x88FB
 
 # glEnable
 GL_BLEND = 0x0BE2
+GL_DEPTH_TEST = 0x0B71
+GL_CULL_FACE = 0x0B44
 GL_MULTISAMPLE = 0x809D
 
 GL_BYTE = 0x1400
@@ -338,6 +340,8 @@ def init():
     gl.glClear = gl_func( 'glClear', None, (GLbitfield,))
 
     gl.glDrawArrays = gl_func('glDrawArrays', None, (GLenum, GLint, GLsizei))
+ 
+    gl.glDrawElements = gl_func('glDrawElements', None, (GLenum, GLsizei, GLenum, ct.POINTER(GLvoid)))
 
     gl.glViewport = gl_func('glViewport', None, (GLint, GLint, GLsizei, GLsizei))
 
@@ -426,3 +430,5 @@ def init():
     gl.glBlendFunc = gl_func('glBlendFunc', None, (GLenum, GLenum))
 
     gl.glEnable = gl_func('glEnable', None, (GLenum,))
+
+    gl.glPolygonOffset = gl_func('glPolygonOffset', None, (GLfloat, GLfloat))

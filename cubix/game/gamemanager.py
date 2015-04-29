@@ -18,6 +18,7 @@ from cubix.core.physics import physobj
 from cubix.core.physics import physengine
 from cubix.core.physics import primitives
 from cubix.core.physics import gjk
+from cubix.core.csg import csg
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -25,7 +26,7 @@ class GameManager(object):
 
         self.width = 800
         self.height = 600
-        self.title = "Cubix"
+        self.title = "cubix"
         self.running = False
 
         window.init_video()
@@ -48,6 +49,11 @@ class GameManager(object):
         print ('OpenGL Version: {}.{}'.format(major, minor))
 
         gl.glViewport(0, 0, self.width, self.height)
+
+        # For CSG to work properly
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glEnable(gl.GL_CULL_FACE)
 
         vsPath = files.resolve_path('data', 'shaders', 'main.vs')
         fsPath = files.resolve_path('data', 'shaders', 'main.fs')
@@ -81,24 +87,49 @@ class GameManager(object):
         self.cModelTest = cmodel.cModel(self.cModelTestRect)
         self.physicsObjectTest = physobj.PhysObj(self.cModelTest, glmath.Vector(3, data=[0.0, 0.0, 1.0]))
         self.physicsEngineTest.addObject(self.physicsObjectTest)
-        self.meshObjectTest = mesh.PhysMesh(self.program, self.physicsObjectTest, self.texAtlas)
+        self.meshObjectTest = mesh.Mesh()
+        playerACSG = csg.CSG().cube([0, 0, 0], [1, 1, 1])
+        playerBCSG = csg.CSG().sphere([0, 0, 0], 1.35, 16, 8)
+        playerACSG.setColor(0.5, 0.0, 1.0)
+        playerBCSG.setColor(1.0, 1.0, 0.0)
+        playerFCSG = playerACSG.subtract(playerBCSG) #change to subtract, union, intersect for different outcome
+        self.meshObjectTest.fromCSG(playerFCSG)
+        self.meshObjectTest.setBuffers()
+        self.meshObjectTest.addProgram(self.program)
+        self.meshObjectTest.addTexture(None)
+        self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)
         '''End Player'''
 
         '''Scene objects'''
         # For now store all the mesh objects in here
         # We need some sort of rendering engine class
+        
         self.meshObjects = []
 
         for i in range(20):
-            xRND = rnd.randrange(0, (self.width-32))
-            yRND = rnd.randrange(0, (self.height-32))
+            xRND = rnd.randrange(1, (self.width-32))
+            yRND = rnd.randrange(1, (self.height-32))
             # The creating object stuff from above... One Liner... Yes I know. :|
             self.physicsEngineTest.addObject(physobj.PhysObj(cmodel.cModel(rectangle.Rectangle(xRND, yRND, width=32.0, height=32.0)), glmath.Vector(3, data=[0.0, 0.0, 1.0])))
             tempObj = self.physicsEngineTest.getObject(i+1)
             tempObj.getCollisionModel().getModel().scale(32, 32)
             tempObj.getCollisionModel().getModel().update()
-            self.meshObjects.append(mesh.PhysMesh(self.program, tempObj, self.texAtlas))
+            tempMesh = mesh.Mesh()
+            tempMesh.fromData(data=[
+             [0.0, 1.0, 0.0],
+             [1.0, 1.0, 0.0],
+             [0.0, 0.0, 0.0],
+             [1.0, 0.0, 0.0]])
+            #tempMesh.setColorAll(1.0, 0.0, 0.0)
+            tempMesh.setBuffers()
+            tempMesh.addProgram(self.program)
+            tempMesh.addTexture(self.texAtlas)
+            tempMesh.addPhysicsObject(tempObj)
+            self.meshObjects.append(tempMesh)
+
         '''End Scene Objects'''
+
+
 
         # Create the collider
         gjkTest = gjk.GJK()
@@ -130,6 +161,7 @@ class GameManager(object):
         # Should return true because they are touching, if not interesting each other at a depth
         print("Circle A and Box B collision:", gjkTest.intersects(circleTestA, boxTestB))
         print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
+        
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
@@ -164,7 +196,9 @@ class GameManager(object):
             self.keys.remove(data[0])
 
     def update(self):
-        self.physicsEngineTest.simulate(self.fpsTimer.tick())
+        pass
+        #Disabled because it can get really annoying, really fast >:[ 
+        #self.physicsEngineTest.simulate(self.fpsTimer.tick())
     
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
@@ -173,9 +207,11 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         gl.glBindVertexArray(self.vao)
 
+        self.meshObjectTest.render()
+
         for obj in self.meshObjects:
             obj.render()
-        self.meshObjectTest.render()
+        
 
         gl.glBindVertexArray(0)
 
