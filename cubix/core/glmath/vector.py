@@ -37,7 +37,9 @@ def one_vector(size):
 # Vector Functions
 def lerp(vecA, vecB, time):
     '''Linear interpolation between two vectors.'''
-    return (vecA * time) + (vecB * (1.0 - time))
+    #Note: The commented out part is the precise version of linear interpolation
+    #return (vecA * time) + (vecB * (1.0 - time))
+    return vecA + ((vecB - vecA) * time)
 
 def cross(vecA, vecB):
     ''' Cross product between two 3D vectors, returns a vector.'''
@@ -128,8 +130,10 @@ def clamp(size, value, min, max):
     for i in range(size):
         # Check to see if greater than max
         output[i] = max[i] if output[i] > max[i] else output[i]
+        #output[i] = (output[i] > max[i]) ? max[i] : output[i]
         # Check to see is less than min
         output[i] = min[i] if output[i] < min[i] else output[i]
+        #output[i] = (output[i] < min[i]) ? min[i] : output[i]
     return output
 
 def transform(size, position, matrix):
@@ -234,9 +238,23 @@ class Vector(object):
         vecList = vec_neg(self.size, self.vector)
         return Vector(self.size, data=vecList)
 
+    def clone(self):
+        return Vector(self.size, data=self.vector)
+
     def one(self):
         self.vector = one_vector(self.size)
         return self
+
+    def zero(self):
+        self.vector = zero_vector(self.size)
+        return self
+
+    def clone(self):
+        return Vector(self.size, data=self.vector)
+
+    def negate(self):
+        vecList = vec_neg(self.size, self.vector)
+        return Vector(self.size, data=vecList)
 
     def maxV(self, vecB):
         return Vector(self.size, data=maxV(self.size, self.vector, vecB.vector))

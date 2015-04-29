@@ -14,7 +14,9 @@ def identity(size):
     return [[1.0 if x==y else 0.0 for y in range(size)] for x in range(size)]
 
 def scale(size, value):
-    return [[(value[x] if x < 3 else 1.0) if x==y else 0.0 for y in range(size)] for x in range(size)]
+    if size == 4:
+        value = value + [1.0,]
+    return [[value[x] if x==y else 0.0 for y in range(size)] for x in range(size)]
 
 def matrix_multiply(matrixA, matrixB):
     ''' Multiply matrixA with matrixB '''
@@ -26,6 +28,47 @@ def matrix_multiply(matrixA, matrixB):
                 matOut[i][j] += matrixA[i][k] * matrixB[k][j]
     return matOut
 
+def matrix_multiply_testA(matrixA, matrixB):
+    ''' Multiply matrixA with matrixB '''
+    sizeA = len(matrixA)
+    matOut = zero_matrix(sizeA)
+    for i in range(sizeA):
+        for k in range(sizeA):
+            for j in range(sizeA):
+                matOut[i][j] += matrixA[i][k] * matrixB[k][j]
+    return matOut    
+
+def matrix_multiply_testB(matrixA, matrixB):
+    sizeA = len(matrixA)
+    matOut = zero_matrix(sizeA)
+
+    ib = 24
+    kb = 64
+    ibkb = ib + kb
+    for ii in range(0, sizeA, ib):
+        for kk in range(0, sizeA, kb):
+            for j in range(0, sizeA, 2):
+                for i in range(0, ibkb, 2):
+                    if kk is 0:
+                        acc00 = acc01 = acc10 = acc11 = 0.0
+                    else:
+                        acc00 = matOut[i + 0][j + 0]
+                        acc01 = matOut[i + 0][j + 1]
+                        acc10 = matOut[i + 1][j + 0]
+                        acc11 = matOut[i + 1][j + 1]
+                    for k in range(kk, kk + kb, 1):
+                        acc00 += matrixA[k][j + 0] * B[i + 0][k]
+                        acc01 += matrixA[k][j + 1] * B[i + 0][k]
+                        acc10 += matrixA[k][j + 0] * B[i + 1][k]
+                        acc11 += matrixA[k][j + 1] * B[i + 1][k]
+
+                    matOut[i + 0][j + 0] = acc00
+                    matOut[i + 0][j + 1] = acc01
+                    matOut[i + 1][j + 0] = acc10
+                    matOut[i + 1][j + 1] = acc11
+    return matOut
+
+
 def matrix_vector_multiply(matrix, vec):
     ''' Multiply matrix with vector '''
     matSize = len(matrix)
@@ -33,7 +76,7 @@ def matrix_vector_multiply(matrix, vec):
     vecOut = vector.Vector(vecSize)
     for i in range(matSize):
         for j in range(matSize):
-            vecOut.vector[i] += vec.vector[j] * matrix[j][i]
+            vecOut.vector[i] += vec.vector[j] * matrix[i][j]
     return vecOut
 
 def matrix_div(mat, scalar):
