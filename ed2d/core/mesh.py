@@ -46,15 +46,7 @@ class Indexer(object):
         self.map = {}
 
     def add(self, obj):
-        key = obj.__dict__
-
-        value1 = key['pos']
-        value2 = key['normal']
-
-        key['pos'] = value1
-        key['normal'] = value2
-
-        key = str(key)
+        key = repr(obj)
 
         if not(key in self.map):
             self.map[key] = len(self.unique)
