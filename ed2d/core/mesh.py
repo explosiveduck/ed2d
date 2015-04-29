@@ -2,7 +2,6 @@
 from ed2d.core.pycompat import *
 from ed2d.core import glmath
 from ed2d.core.opengl import gl, pgl
-import copy
 
 def buffer_object(data, type):
     if data or 0:
@@ -47,16 +46,15 @@ class Indexer(object):
         self.map = {}
 
     def add(self, obj):
-        key1 = obj.__dict__
-        key2 = copy.deepcopy(obj.__dict__) #why the fuck do I have to do this? asplain
+        key = obj.__dict__
 
-        tempKey1 = key1['pos'].__dict__
-        tempKey2 = key1['normal'].__dict__
+        value1 = key['pos']
+        value2 = key['normal']
 
-        key2['pos'] = tempKey1
-        key2['normal'] = tempKey2
+        key['pos'] = value1
+        key['normal'] = value2
 
-        key = str(key2)
+        key = str(key)
 
         if not(key in self.map):
             self.map[key] = len(self.unique)

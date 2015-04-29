@@ -154,6 +154,9 @@ class Vector(object):
         else:
             self.vector = data
 
+    def __rerpr__(self):
+        return 'Vector: size:{} , data:{}'.format(self.size, self.vector)
+
     def __add__(self, other):
         if isinstance(other, Vector):
             vecList = vec_add(self.size, self.vector, other.vector)
