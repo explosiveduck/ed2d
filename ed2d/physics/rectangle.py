@@ -1,5 +1,5 @@
-from ed2d.core import glmath
-from ed2d.core.physics import aabb
+from ed2d import glmath
+from ed2d.physics import aabb
 
 class Rectangle(object):
     def __init__(self, x, y, width=None, height=None, flag=None, data=None):

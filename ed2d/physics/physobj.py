@@ -1,4 +1,4 @@
-from ed2d.core.glmath import vector
+from ed2d.glmath import vector
 
 class PhysObj(object):
 

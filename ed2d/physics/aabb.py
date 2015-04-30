@@ -1,4 +1,4 @@
-from ed2d.core.physics.collisiondata import*
+from ed2d.physics.collisiondata import*
 
 class AABB(object):
 

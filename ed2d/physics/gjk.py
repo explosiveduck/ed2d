@@ -1,5 +1,5 @@
-from ed2d.core.glmath import vector
-from ed2d.core.glmath import matrix
+from ed2d.glmath import vector
+from ed2d.glmath import matrix
 import math
 
 class SimplexVerts(object):

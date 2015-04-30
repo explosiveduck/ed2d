@@ -1,9 +1,9 @@
 import math
 
-from ed2d.core.pycompat import *
+from ed2d.pycompat import *
 
-from ed2d.core.glmath import vector
-from ed2d.core.opengl import typeutils, gl
+from ed2d.glmath import vector
+from ed2d.opengl import typeutils, gl
 
 def zero_matrix(size):
     ''' Return zero filled matrix list of the requested size'''

@@ -4,7 +4,7 @@ from sdl2 import SDL_GL_GetProcAddress
 
 import platform
 
-from ed2d.core.pycompat import *
+from ed2d.pycompat import *
 
 class BindGL(object):
     def __init__(self):

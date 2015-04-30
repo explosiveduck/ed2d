@@ -1,5 +1,5 @@
 import sdl2 as sdl
-from ed2d.core.pycompat import *
+from ed2d.pycompat import *
 
 class Context(object):
     ''' An OpenGL rendering context '''

@@ -1,5 +1,5 @@
-from ed2d.core.physics import gjk
-from ed2d.core.glmath import vector
+from ed2d.physics import gjk
+from ed2d.glmath import vector
 
 class SimplexVerts(object):
 	def __init__(self):

@@ -1,5 +1,5 @@
-from ed2d.core.physics.rectangle import*
-from ed2d.core.physics.physobj import*
+from ed2d.physics.rectangle import*
+from ed2d.physics.physobj import*
 
 class QuadTree(object):
 	def __init__(self, lvl, bounds):

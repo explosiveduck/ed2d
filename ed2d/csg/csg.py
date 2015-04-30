@@ -1,6 +1,6 @@
 import math
-from ed2d.core.glmath import vector
-from ed2d.core.glmath import plane
+from ed2d.glmath import vector
+from ed2d.glmath import plane
 
 class CSG(object):
     def __init__(self):

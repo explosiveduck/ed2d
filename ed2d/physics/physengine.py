@@ -1,5 +1,5 @@
-from ed2d.core.physics import rectangle
-from ed2d.core.physics import quadtree
+from ed2d.physics import rectangle
+from ed2d.physics import quadtree
 
 class PhysEngine(object):
 

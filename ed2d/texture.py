@@ -4,8 +4,8 @@ from collections import OrderedDict
 from PIL import Image
 import sdl2 as sdl
 
-from ed2d.core.pycompat import *
-from ed2d.core.opengl import gl, pgl
+from ed2d.pycompat import *
+from ed2d.opengl import gl, pgl
 
 def load_image(path):
     img = Image.open(path)

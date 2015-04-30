@@ -1,8 +1,8 @@
 import sys
 import ctypes as ct
 
-from ed2d.core.pycompat import *
-from ed2d.core.opengl.glbind import gl_func
+from ed2d.pycompat import *
+from ed2d.opengl.glbind import gl_func
 
 c_ptrdiff_t = ct.c_ssize_t
 
@@ -325,7 +325,7 @@ def init():
     basically inject the functions on initialization.
 
     '''
-    gl = sys.modules['ed2d.core.opengl.gl']
+    gl = sys.modules['ed2d.opengl.gl']
 
     noParms = ()
 

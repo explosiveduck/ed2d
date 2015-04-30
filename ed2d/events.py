@@ -2,8 +2,8 @@ import ctypes as ct
 
 import sdl2 as sdl
 
-from ed2d.core.pycompat import *
-from ed2d.core import keymap
+from ed2d.pycompat import *
+from ed2d import keymap
 
 class Events(object):
     ''' Handles Event stuff... '''

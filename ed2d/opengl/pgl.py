@@ -1,10 +1,10 @@
 import ctypes as ct
 
-from ed2d.core.pycompat import *
-from ed2d.core.opengl import gl
-from ed2d.core.opengl import typeutils
-from ed2d.core.opengl.typeutils import conv_list_2d, is_sequence
-from ed2d.core.opengl.typeutils import conv_list, cast_ptr
+from ed2d.pycompat import *
+from ed2d.opengl import gl
+from ed2d.opengl import typeutils
+from ed2d.opengl.typeutils import conv_list_2d, is_sequence
+from ed2d.opengl.typeutils import conv_list, cast_ptr
 
 '''
 Python GL Wrapper for opengl, gives cleaner access to the opengl api.

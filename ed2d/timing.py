@@ -2,7 +2,7 @@ import platform
 import time
 import sys
 
-from ed2d.core.pycompat import *
+from ed2d.pycompat import *
 
 pyVer = sys.version_info
 

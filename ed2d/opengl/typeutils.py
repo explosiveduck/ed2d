@@ -1,4 +1,4 @@
-from ed2d.core.pycompat import *
+from ed2d.pycompat import *
 import ctypes as ct
 
 def is_sequence(arg):

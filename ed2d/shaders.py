@@ -1,8 +1,8 @@
-from ed2d.core.pycompat import *
-from ed2d.core.opengl import gl, pgl
-from ed2d.core import files
-from ed2d.core.opengl import typeutils
-from ed2d.core.glmath import Matrix, Vector
+from ed2d.pycompat import *
+from ed2d.opengl import gl, pgl
+from ed2d import files
+from ed2d.opengl import typeutils
+from ed2d.glmath import Matrix, Vector
 #import OpenGL.GL as gl2
 
 

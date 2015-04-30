@@ -3,14 +3,14 @@ import ctypes as ct
 import sdl2 as sdl
 import freetype.raw as ft
 
-from ed2d.core import texture
-from ed2d.core import mesh
-from ed2d.core import shaders
-from ed2d.core import files
-from ed2d.core.opengl import typeutils 
-from ed2d.core.opengl import gl, pgl
-from ed2d.core import glmath
-from ed2d.core.glmath import cython as cyglmath
+from ed2d import texture
+from ed2d import mesh
+from ed2d import shaders
+from ed2d import files
+from ed2d.opengl import typeutils 
+from ed2d.opengl import gl, pgl
+from ed2d import glmath
+from ed2d.glmath import cython as cyglmath
 
 # Hack to verify that freetype is properly destructed after everything
 # this code was also commited to freetype-py
