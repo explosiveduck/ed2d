@@ -187,6 +187,9 @@ class csgVertex(object):
         self.normal = normal
         self.color = [1, 0, 0]
 
+    def __repr__(self):
+        return 'csgVertex: pos:{} , normal:{}, color:{}'.format(self.pos, self.normal, self.color)
+
     def clone(self):
         return csgVertex(self.pos.clone(), self.normal.clone())
 
@@ -204,6 +207,9 @@ class csgPlane(plane.Plane):
         self.normal = normal
         self.d = d
         self.epsilon = 1e-5
+
+    def __repr__(self):
+        return 'csgPlane: normal:{} , d:{}'.format(self.normal, self.d)
 
     def clone(self):
         return csgPlane(self.normal.clone(), self.d)
@@ -284,6 +290,9 @@ class csgPolygon(object):
         self.shared = shared
         self.plane = csgPlane(vector.Vector(3).zero(), 0)
         self.plane.fromPoints(vertices[0].pos, vertices[1].pos, vertices[2].pos)
+
+    def __repr__(self):
+        return 'csgPolygon: vertices:{} , shared:{}, plane:{}'.format(self.vertices, self.shared, self.plane)
 
     def clone(self):
         return csgPolygon(self.vertices, self.shared)

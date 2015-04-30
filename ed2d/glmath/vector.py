@@ -154,7 +154,7 @@ class Vector(object):
         else:
             self.vector = data
 
-    def __rerpr__(self):
+    def __repr__(self):
         return 'Vector: size:{} , data:{}'.format(self.size, self.vector)
 
     def __add__(self, other):
