@@ -156,7 +156,7 @@ class Text(object):
         for glyph in self.chrMap.values():
             glyph.init_gl()
 
-        self.vbo = mesh.buffer_object(self.data)
+        self.vbo = mesh.buffer_object(self.data, gl.GLfloat)
 
     def draw_text(self, text):
 
@@ -222,7 +222,7 @@ class Glyph(object):
         
         self.scaleMat = cyglmath.Matrix(4).i_scale(vecScale)
 
-        self.uvbo = mesh.buffer_object(self._uvCoords)
+        self.uvbo = mesh.buffer_object(self._uvCoords, gl.GLfloat)
     
     def render(self, pos):
 

@@ -1,2 +1,2 @@
-from cubix.core.glmath.cython.matrix import *
-from cubix.core.glmath.cython.vector import *
+from ed2d.glmath.cython.matrix import *
+from ed2d.glmath.cython.vector import *
