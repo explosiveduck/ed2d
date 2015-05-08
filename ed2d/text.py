@@ -113,6 +113,8 @@ class Font(object):
                 pixelData = [0]
 
             charData['pixelData'] = pixelData
+            charData['bitmap_x'] = glyphSlot.contents.bitmap_left
+            charData['bitmap_y'] = glyphSlot.contents.bitmap_top
             charData['texWidth'] = texWidth
             charData['texHeight'] = texHeight
             charData['advance'] = glyphSlot.contents.advance.x >> 6
@@ -145,9 +147,16 @@ class Text(object):
 
         self.chrMap = {}
 
+        self.basePos = 0.0
+
         for texVal in range(32, 128):
             char = chr(texVal) 
             fontData = self.font.load_glyph(char)
+
+            # Find the fartherst position from the baseline
+            if fontData['bitmap_y'] > self.basePos:
+                self.basePos = fontData['bitmap_y']
+
             self.chrMap[char] = Glyph(self.program, self.texAtlas,
                     fontData, char)
 
@@ -158,7 +167,7 @@ class Text(object):
 
         self.vbo = mesh.buffer_object(self.data, gl.GLfloat)
 
-    def draw_text(self, text):
+    def draw_text(self, text, xPos, yPos):
 
         self.texAtlas.bind()
 
@@ -175,10 +184,11 @@ class Text(object):
 
         gl.glEnableVertexAttribArray(self.UVLoc)
 
-        penPosX = 0
+        penPosX = 0 + xPos
+        penPosY = self.basePos + yPos
         for i, c in enumerate(text):
             char = self.chrMap[c]
-            char.render(penPosX)
+            char.render(penPosX, penPosY)
             penPosX += char.advance
 
         gl.glDisableVertexAttribArray(self.UVLoc)
@@ -207,6 +217,9 @@ class Glyph(object):
         self.textureWidth = self.fontData['texWidth']
         self.textureHeight = self.fontData['texHeight']
 
+        self.bitX = self.fontData['bitmap_x']
+        self.bitY = self.fontData['bitmap_y']
+
         self.advance = self.fontData['advance']
         self.uniform = self.program.get_uniform(self.modelLoc)
 
@@ -224,9 +237,9 @@ class Glyph(object):
 
         self.uvbo = mesh.buffer_object(self._uvCoords, gl.GLfloat)
     
-    def render(self, pos):
+    def render(self, posX, posY):
 
-        vecScale = cyglmath.Vector(3, data=[pos, 0.0, 0.0])
+        vecScale = cyglmath.Vector(3, data=[posX+self.bitX, posY-self.bitY, 0.0])
         self.modelMatrix = self.scaleMat.translate(vecScale)
 
         self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix, uniform=self.uniform, size=4)

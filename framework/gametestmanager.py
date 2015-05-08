@@ -99,7 +99,7 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         gl.glBindVertexArray(self.vao)
 
-        self.text.draw_text('Hello World!, FPS: %.2f' % self.fpsEstimate)
+        self.text.draw_text('Hello World!, FPS: %.2f' % self.fpsEstimate, 0, 10)
         gl.glBindVertexArray(0)
 
     def exit(self):
