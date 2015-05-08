@@ -148,6 +148,7 @@ class Text(object):
         self.chrMap = {}
 
         self.basePos = 0.0
+        self.lineSpacing = 3
 
         for texVal in range(32, 128):
             char = chr(texVal) 
@@ -184,12 +185,17 @@ class Text(object):
 
         gl.glEnableVertexAttribArray(self.UVLoc)
 
-        penPosX = 0 + xPos
+        textLines = text.split('\n')
+
+        penPosX = xPos
         penPosY = self.basePos + yPos
-        for i, c in enumerate(text):
-            char = self.chrMap[c]
-            char.render(penPosX, penPosY)
-            penPosX += char.advance
+        for txt in textLines:
+            for i, c in enumerate(txt):
+                char = self.chrMap[c]
+                char.render(penPosX, penPosY)
+                penPosX += char.advance
+            penPosY += self.basePos + self.lineSpacing
+            penPosX = xPos
 
         gl.glDisableVertexAttribArray(self.UVLoc)
 
