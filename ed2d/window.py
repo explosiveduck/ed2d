@@ -7,6 +7,16 @@ def init_video():
     sdl.SDL_Init(0)
     sdl.SDL_InitSubSystem(sdl.SDL_INIT_VIDEO)
 
+WindowedMode = 1
+FullscreenMode = 2
+BorderlessMode = 3
+
+fullscreenMap = {
+    WindowedMode: 0,
+    FullscreenMode: sdl.SDL_WINDOW_FULLSCREEN,
+    BorderlessMode: sdl.SDL_WINDOW_FULLSCREEN_DESKTOP,
+}
+
 class Window(object):
     '''
     Creates and manages window related resources.
@@ -26,6 +36,8 @@ class Window(object):
         self.ypos = sdl.SDL_WINDOWPOS_CENTERED
 
         self.flags = sdl.SDL_WINDOW_OPENGL | sdl.SDL_WINDOW_RESIZABLE
+
+        self.flags |= fullscreenMap[self.fullscreen]
 
         self.window = sdl.SDL_CreateWindow(self.title,
             self.xpos, self.ypos, self.width, self.height, self.flags)
@@ -48,6 +60,10 @@ class Window(object):
             self.context = None
 
         sdl.SDL_GL_MakeCurrent(window, context)
+
+    def fullscreen(self, mode):
+        '''Set the window fullscreen mode'''
+        sdl.SDL_SetWindowFullscreen(self.window, fullscreenMaps[mode])
 
     def flip(self):
         ''' Flip the back buffer to the front. '''

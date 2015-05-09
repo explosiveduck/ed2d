@@ -29,7 +29,7 @@ class GameManager(object):
         self.fpsEstimate = 0
 
         self.events = events.Events()
-        self.window = window.Window(self.title, self.width, self.height, False)
+        self.window = window.Window(self.title, self.width, self.height, window.WindowedMode)
         self.context = context.Context(3, 3, 2)
         self.context.window = self.window
 
