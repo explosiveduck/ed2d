@@ -2,6 +2,7 @@
 import platform
 import os
 import sys
+import argparse
 
 
 # This function is copied from ed2d.files but since it needs
@@ -34,12 +35,48 @@ except ImportError:
 
 from ed2d import files
 
+def cmd_args():
+    parser = argparse.ArgumentParser(description='Welcome to the ED2D Framework!')
+
+    parser.add_argument('-g', '--game', type=str, help='The gamemodule to import, by default gamemanager is used.')
+
+    args = vars(parser.parse_args())
+
+    return args
+
 # Set PYSDL2_DLL_PATH to deps folder
 if platform.system() == 'Windows':
     os.environ['PYSDL2_DLL_PATH'] = files.resolve_path('deps')
 
-from framework import gamemanager
+
 
 if __name__ == '__main__':
-    game = gamemanager.GameManager()
-    game.run()
+    args = cmd_args()
+
+    importSet = False
+
+    # Process the command line arguments and remove any that have not been used
+    delItems = []
+    for item in args:
+        if args[item] is None:
+            delItems.append(item)
+            
+    
+    if args['game']:
+        if 'framework.' in args['game']:
+            importSet = True
+        delItems.append('game')
+    
+    if importSet == True:
+        gamemanager = __import__(args['game'], fromlist=[args['game']])
+    else:
+        from framework import gamemanager
+
+    # You cant delete an item when iterating on it so we delete it afterwards
+    for item in delItems:
+        del args[item]
+    if hasattr(gamemanager, 'GameManager'):
+        game = gamemanager.GameManager()
+        game.run()
+    else:
+        print ('Module does not contain GameManager.')
