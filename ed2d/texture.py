@@ -41,6 +41,9 @@ class BaseTexture(object):
 
         self.texSampID = self.program.new_uniform(b'textureSampler')
 
+        if self.texFormat is None:
+            self.texFormat = gl.GL_RGBA
+
         # Load image into new opengl texture
         self.texID = pgl.glGenTextures(1)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
@@ -49,8 +52,8 @@ class BaseTexture(object):
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
 
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, self.width, self.height,
-                         0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, self.data)
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.texFormat, self.width, self.height,
+                         0, self.texFormat, gl.GL_UNSIGNED_BYTE, self.data)
 
     def bind(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
@@ -59,10 +62,12 @@ class BaseTexture(object):
 
 class Texture(BaseTexture):
 
-    def __init__(self, path, program):
+    def __init__(self, path, program, texFormat=None):
 
         self.path = path
         self.program = program
+
+        self.texFormat = texFormat
 
         self._set_unit_id()
 
@@ -70,11 +75,13 @@ class Texture(BaseTexture):
         self.load_gl()
 
 class TextureAtlas(BaseTexture):
-    def __init__(self, program, maxWidth=1024):
+    def __init__(self, program, maxWidth=1024, texFormat=None):
 
         self.program = program
 
         self._set_unit_id()
+
+        self.texFormat = texFormat
 
         # Data format will be as follows:
         #    Indexed by textureID
@@ -177,4 +184,4 @@ class TextureAtlas(BaseTexture):
             height = tex['height']
             texData = tex['texData']
 
-            pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, texData)
+            pgl.glTexSubImage2D(gl.GL_TEXTURE_2D, 0, x1, y1, width, height, self.texFormat, gl.GL_UNSIGNED_BYTE, texData)
