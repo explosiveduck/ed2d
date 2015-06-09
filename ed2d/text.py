@@ -107,7 +107,7 @@ class Font(object):
             pixelData = [0.0 for x in range(texWidth * texHeight)]
 
             for item in range(texWidth * texHeight):
-                pixelData[item] = [255, 255, 255, bitmapStruct.buffer[item]]
+                pixelData[item] = bitmapStruct.buffer[item]
 
             if not pixelData:
                 pixelData = [0]
@@ -131,7 +131,7 @@ class Font(object):
 class Text(object):
     def __init__(self, program, font):
         self.program = program
-        self.texAtlas = texture.TextureAtlas(self.program)
+        self.texAtlas = texture.TextureAtlas(self.program, texFormat=gl.GL_RED)
 
         self.font = font
 

@@ -8,5 +8,6 @@ uniform sampler2D textureSampler;
 
 void main()
 {
-	outputColor = texture(textureSampler, UV );
+
+	outputColor = vec4(1.0, 1.0, 1.0, texture(textureSampler, UV ).r);
 }
