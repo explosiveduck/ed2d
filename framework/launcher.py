@@ -34,9 +34,9 @@ except ImportError:
 from ed2d import files
 from ed2d import cmdargs
 
-# Set PYSDL2_DLL_PATH to deps folder
+# Put the deps folder at the beginning of the path on windows so ctypes finds all of our dlls.
 if platform.system() == 'Windows':
-    os.environ['PYSDL2_DLL_PATH'] = files.resolve_path('deps')
+    os.environ["PATH"] = os.pathsep.join((files.resolve_path('deps'), os.environ["PATH"]))
 
 if __name__ == '__main__':
     cmd = cmdargs.CmdArgs
