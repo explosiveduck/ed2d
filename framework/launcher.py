@@ -45,7 +45,10 @@ if __name__ == '__main__':
 
     game = cmd.add_arg('game', str, 'The gamemodule to import, by default framework.gamemanager is used.')
 
+    cmd.parse_args()
+
     importSet = False
+    game = game()
     if game:
         if 'framework.' in game:
             importSet = True

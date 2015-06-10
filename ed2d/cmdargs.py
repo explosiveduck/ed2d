@@ -1,10 +1,23 @@
 import argparse
 
+class ArgWrapper(object):
+    def __init__(self, parent, name):
+        self.parent = parent
+        self.name = name
+
+    def __call__(self):
+        if self.parent.argsParsed:
+            return self.parent.args[self.name]
+        else:
+            print ('Arguments not yet parsed.')
+            return None
+
 class _CmdArgs(object):
     def __init__(self):
         self.parser = argparse.ArgumentParser()
         self.letterArgs = []
         self.args = None
+        self.argsParsed = False
 
     def set_description(self, desc):
         self.parser.description = desc
@@ -33,11 +46,12 @@ class _CmdArgs(object):
 
         self.parser.add_argument(*args, type=argType, help=argHelp)
 
-        self.parse_args()
-
-        return self.args[name]
+        return ArgWrapper(self, name)
 
     def parse_args(self):
         self.args = vars(self.parser.parse_args())
+        self.argsParsed = True
 
 CmdArgs = _CmdArgs()
+
+__all__ = [CmdArgs, ]
