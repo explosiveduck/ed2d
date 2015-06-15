@@ -55,14 +55,18 @@ class GameManager(object):
 
         self.vao = pgl.glGenVertexArrays(1)
         
-        fontPath = files.resolve_path('data', 'squarishsans.ttf')
-        self.font = text.Font(30, fontPath)
+        fontPath = files.resolve_path('data', 'SourceCodePro-Regular.ttf')
+        self.font = text.Font(12, fontPath)
         self.text = text.Text(self.program, self.font)
+        self.textScroll = 0
         self.meshes = []
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
+
+        with open ("gametestmanager.py", "r") as myfile:
+            self.data=myfile.read()
         
         glerr = gl.glGetError()
         if glerr != 0:
@@ -90,7 +94,11 @@ class GameManager(object):
             self.keys.remove(data[0])
 
     def update(self):
-        pass
+        if 'DOWN' in self.keys:
+            self.textScroll -= 6
+        elif 'UP' in self.keys:
+            self.textScroll += 6
+
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
@@ -99,7 +107,7 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         gl.glBindVertexArray(self.vao)
 
-        self.text.draw_text('Hello World!, FPS: %.2f' % self.fpsEstimate, 0, 10)
+        self.text.draw_text(self.data, 0, 10 + self.textScroll)
         gl.glBindVertexArray(0)
 
     def exit(self):
