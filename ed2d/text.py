@@ -160,6 +160,7 @@ class Text(object):
 
             self.chrMap[char] = Glyph(self.program, self.texAtlas,
                     fontData, char)
+        print (self.basePos)
 
         self.texAtlas.gen_atlas()
 
@@ -251,6 +252,7 @@ class Glyph(object):
         self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix, uniform=self.uniform, size=4)
 
         #pgl.glUniformMatrix4fv(self.uniform, 1, gl.GL_FALSE, self.modelMatrix.c_matrix)
+        #gl.glUniformMatrix4fv(self.uniform, 1, gl.GL_FALSE, self.modelMatrix.c_matrix[0])
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
         pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT,

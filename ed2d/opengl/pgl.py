@@ -175,19 +175,21 @@ def glUniformMatrix3fv(location, count, transpose, value):
     gl.glUniformMatrix3fv(location, count, transpose, cValuePtr)
 
 def glUniformMatrix4fv(location, count, transpose, value):
-
     try:
-        cDataPtr = cast_ptr(value, gl.GLfloat)
+        gl.glUniformMatrix4fv(location, count, transpose, value[0])
     except:
         try:
-            value[0][0]
+            cDataPtr = cast_ptr(value, gl.GLfloat)
         except:
-            cData = conv_list(value, gl.GLfloat)
-        else:
-            cData = conv_list_2d(value, gl.GLfloat)
-        cDataPtr = cast_ptr(cData, gl.GLfloat)
+            try:
+                value[0][0]
+            except:
+                cData = conv_list(value, gl.GLfloat)
+            else:
+                cData = conv_list_2d(value, gl.GLfloat)
+            cDataPtr = cast_ptr(cData, gl.GLfloat)
 
-    gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
+        gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
 
 def glGenTextures(n):
     textures = (gl.GLuint * n)()
