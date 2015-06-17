@@ -65,7 +65,7 @@ class GameManager(object):
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
-        with open ("gametestmanager.py", "r") as myfile:
+        with open ("./game/gametestmanager.py", "r") as myfile:
             self.data=myfile.read()
         
         glerr = gl.glGetError()

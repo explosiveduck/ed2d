@@ -19,17 +19,18 @@ def get_path():
         return path0
 
 try:
-	# Test if the ed2d package is found.
-	import ed2d
-	del ed2d
+    # Test if the ed2d package is found with the python installation.
+    import ed2d
+    del ed2d
 
 except ImportError:
+        # If its not assume its located 1 directory above.
+    # Get path of one directory up to get development location.
+    path = os.sep.join(get_path().split(os.sep)[:-1])
 
-	# Get path of one directory up to get development location.
-	path = os.sep.join(get_path().split(os.sep)[:-1])
-
-	# add path where ed2d package is located.
-	sys.path.insert(0, path)
+    # add location of the ed2d package to the python path so
+    # it can be imported.
+    sys.path.append(path)
 
 from ed2d import files
 from ed2d import cmdargs
@@ -47,17 +48,13 @@ if __name__ == '__main__':
 
     cmd.parse_args()
 
-    importSet = False
     game = game()
+    
+    
     if game:
-        if 'framework.' in game:
-            importSet = True
-    
-    
-    if importSet == True:
         gamemanager = __import__(game, fromlist=[game])
     else:
-        from framework import gamemanager
+        from game import gamemanager
 
     if hasattr(gamemanager, 'GameManager'):
         game = gamemanager.GameManager()

@@ -8,11 +8,11 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
+framework/build/
 develop-eggs/
 dist/
 downloads/
-deps/*dll
+framework/deps/*dll
 eggs/
 lib/
 lib64/
