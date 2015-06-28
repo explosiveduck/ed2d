@@ -34,7 +34,7 @@ class Events(object):
         Processes the events polled from sdl.
         Custom events might be a possiblility if we need them.
         '''
-        
+
         event = sdl.SDL_Event()
 
         while sdl.SDL_PollEvent(ct.byref(event)):
@@ -81,3 +81,5 @@ class Events(object):
 
             if not eventName is None:
                 self.broadcast_event(eventName, data)
+
+__all__ = ['Events']

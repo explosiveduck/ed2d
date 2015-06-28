@@ -39,3 +39,5 @@ class Context(object):
         if self.context == None:
             # Create context
             self.context = sdl.SDL_GL_CreateContext(self._window.window)
+
+__all__ = ['Context']

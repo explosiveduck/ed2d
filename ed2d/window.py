@@ -2,7 +2,7 @@
 import sdl2 as sdl
 from ed2d.pycompat import *
 
-def init_video():
+def _init_video():
     ''' Prepare sdl for subsystem initialization, and init sdl video. '''
     sdl.SDL_Init(0)
     sdl.SDL_InitSubSystem(sdl.SDL_INIT_VIDEO)
@@ -72,3 +72,8 @@ class Window(object):
     def destroy(self):
         ''' Destroy the window '''
         sdl.SDL_DestroyWindow(self.window)
+
+# Init sdl video before finishing
+_init_video()
+
+__all__ = ['WindowedMode', 'FullscreenMode', 'BorderlessMode', 'Window']
