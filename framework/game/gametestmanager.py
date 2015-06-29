@@ -23,8 +23,6 @@ class GameManager(object):
         self.title = "Cubix"
         self.running = False
 
-        window.init_video()
-
         self.fpsTimer = timing.FpsCounter()
         self.fpsEstimate = 0
 
@@ -54,7 +52,7 @@ class GameManager(object):
         self.orthoID = self.program.new_uniform(b'ortho')
 
         self.vao = pgl.glGenVertexArrays(1)
-        
+
         fontPath = files.resolve_path('data', 'SourceCodePro-Regular.ttf')
         self.font = text.Font(12, fontPath)
         self.text = text.Text(self.program, self.font)
@@ -67,7 +65,7 @@ class GameManager(object):
 
         with open ("./game/gametestmanager.py", "r") as myfile:
             self.data=myfile.read()
-        
+
         glerr = gl.glGetError()
         if glerr != 0:
             print ('GLError:', glerr)

@@ -29,8 +29,6 @@ class GameManager(object):
         self.title = "ed2d"
         self.running = False
 
-        window.init_video()
-
         self.fpsTimer = timing.FpsCounter()
         self.fpsEstimate = 0
 
@@ -71,7 +69,7 @@ class GameManager(object):
         self.texAtlas = texture.Texture(imagePath, self.program)
 
         '''Physics Test Scene'''
-        # Create a physics engine    
+        # Create a physics engine
         self.physicsEngineTest = physengine.PhysEngine()
 
         '''Player'''
@@ -103,7 +101,7 @@ class GameManager(object):
         '''Scene objects'''
         # For now store all the mesh objects in here
         # We need some sort of rendering engine class
-        
+
         self.meshObjects = []
 
         for i in range(20):
@@ -161,12 +159,12 @@ class GameManager(object):
         # Should return true because they are touching, if not interesting each other at a depth
         print("Circle A and Box B collision:", gjkTest.intersects(circleTestA, boxTestB))
         print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
-        
+
 
         self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
-        
+
         glerr = gl.glGetError()
         if glerr != 0:
             print ('GLError:', glerr)
@@ -197,9 +195,9 @@ class GameManager(object):
 
     def update(self):
         pass
-        #Disabled because it can get really annoying, really fast >:[ 
+        #Disabled because it can get really annoying, really fast >:[
         #self.physicsEngineTest.simulate(self.fpsTimer.tick())
-    
+
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
@@ -211,7 +209,7 @@ class GameManager(object):
 
         for obj in self.meshObjects:
             obj.render()
-        
+
 
         gl.glBindVertexArray(0)
 
