@@ -1,4 +1,6 @@
-class Node(object):
+from ed2d.glmath import matrix
+
+class BaseNode(object):
     def __init__(self, object):
         self.nodeID = None
         self.isRoot = False
@@ -21,16 +23,21 @@ class Node(object):
         self.root = None
         self.nodeID = None
 
-    def recuse(self, callback):
+    def recurse(self, callback):
         for i in self.children[1:]:
-            callback(i)
-            i.recuse(callback)
+            callback(self, i)
+            i.recurse(callback)
+
+    def recurse_up(self, callback):
+        callback(self)
+        if not self.parent.isRoot:
+            self.parent.recurse_up(callback)
 
     def reparent(self, parent):
         self.detach()
         self.attach(parent)
 
-class RootNode(Node):
+class RootNode(BaseNode):
     def __init__(self, object):
         self.nodeID = 0
         self.treeChildren = [self]
@@ -65,12 +72,23 @@ class RootNode(Node):
         self.reusableIDs.append(nodeID)
         self.nodeCount -= 1
 
+class GraphicsNode(BaseNode):
+    def __init__(self, object):
+        super(GraphicsNode, self).__init__(object)
+        self.matrix = matrix.Matrix(4)
+        self.appliedMatrix = self.matrix
+
+    def bind_matrix(self, matrix):
+        self.matrix = matrix
+
 class SceneGraph(object):
     def __init__(self):
         self.root = RootNode(None)
+        self.root.matrix = matrix.Matrix(4)
+        self.root.appliedMatrix = self.root.matrix
 
     def establish(self, object, parent=None):
-        node = Node(object)
+        node = GraphicsNode(object)
         if parent == None:
             parent = self.root
         else:
@@ -88,3 +106,13 @@ class SceneGraph(object):
 
     def aquire_root(self):
         return self.root
+
+    @classmethod
+    def _recurse_mtx_apply(self, parent, object):
+        object.appliedMatrix = parent.appliedMatrix * object.matrix
+
+    def apply_matrix(self):
+        self.root.recurse(self._recurse_mtx_apply)
+
+    def render(self):
+        self.apply_matrix()

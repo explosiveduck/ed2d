@@ -20,6 +20,9 @@ class GameManager(object):
         self.title = "SceneGraph"
         self.running = False
 
+        self.fpsTimer = timing.FpsCounter()
+        self.fpsEstimate = 0
+
         self.window = window.Window(self.title, self.width,
                 self.height, window.WindowedMode)
 
@@ -56,6 +59,7 @@ class GameManager(object):
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+        self.sg.render()
 
     def update(self):
         pass
@@ -69,6 +73,10 @@ class GameManager(object):
         self.update()
         self.render()
         self.window.flip()
+        self.fpsTimer.tick()
+        if self.fpsTimer.fpsTime >= 2000:
+            self.fpsEstimate = self.fpsTimer.get_fps()
+            print ("{:.2f} fps".format(self.fpsEstimate))
 
     def run(self):
         ''' Called from launcher doesnt exit until the game is quit '''
