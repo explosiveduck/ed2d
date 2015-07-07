@@ -95,7 +95,7 @@ class CSG(object):
         for i in range(6):
             invidiualPolygonVertices = []
             for j in range(4):
-                pos = vector.Vector(3, 
+                pos = vector.Vector(3,
                                     data = [c[0] + r[0] * (2 *  int(bool(indices[i][j] & 1)) - 1),
                                             c[1] + r[1] * (2 *  int(bool(indices[i][j] & 2)) - 1),
                                             c[2] + r[2] * (2 *  int(bool(indices[i][j] & 4)) - 1)])
@@ -129,6 +129,10 @@ class CSG(object):
 
         for i in range(sl):
             for j in range(st):
+
+                i = float(i)
+                j = float(j)
+                
                 vertices = []
 
                 vertex(i / sl, j / st)
@@ -347,7 +351,7 @@ class csgNode(CSG):
 
         front = []
         back = []
-        
+
         for i in range(len(polygons)):
             front, back, front, back = self.plane.splitPolygon(polygons[i], front, back, front, back)
 
