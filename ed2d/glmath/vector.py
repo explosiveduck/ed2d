@@ -292,7 +292,7 @@ class Vector(object):
         ''' Return a new normalized vector. '''
         vecList = normalize(self.size, self.vector)
         return Vector(self.size, data=vecList)
-        
+
     def dot(self, vecB):
         ''' Return the dot product between two vectors. '''
         if isinstance(vecB, Vector):
@@ -313,6 +313,30 @@ class Vector(object):
             return self.dot(otherVec) < 0
         else:
             return NotImplemented
+
+    def barycentric(self, a, b, c):
+        ''' Compute barycentric coordinates (u, v, w) for point p with respect to triangle (a, b, c). '''
+        # This method is shown in Christer Ericson's Real-Time Collision Detection book
+        # Basically is cramer's rule to solve a linear system.
+        # Returns [u, v, w] list
+
+        v0 = b - a
+        v1 = c - a
+        v2 = self - a
+
+        d00 = v0.dot(v0)
+        d01 = v0.dot(v1)
+        d11 = v1.dot(v1)
+        d20 = v2.dot(v0)
+        d21 = v2.dot(v1)
+
+        denom = d00 * d11 - d01 * d01
+
+        v = (d11 * d20 - d01 * d21) / denom
+        w = (d00 * d21 - d01 * d20) / denom
+        u = 1.0 - v - w
+
+        return [u, v, w]
 
     def transform(self, position, matrix):
         ''' Transform the vector via a matrix and returns a new vector. '''
