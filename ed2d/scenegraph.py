@@ -1,5 +1,6 @@
 from ed2d.glmath import matrix
 
+
 class BaseNode(object):
     def __init__(self, object):
         self.nodeID = None
@@ -37,6 +38,7 @@ class BaseNode(object):
         self.detach()
         self.attach(parent)
 
+
 class RootNode(BaseNode):
     def __init__(self, object):
         self.nodeID = 0
@@ -72,6 +74,7 @@ class RootNode(BaseNode):
         self.reusableIDs.append(nodeID)
         self.nodeCount -= 1
 
+
 class GraphicsNode(BaseNode):
     def __init__(self, object):
         super(GraphicsNode, self).__init__(object)
@@ -81,6 +84,7 @@ class GraphicsNode(BaseNode):
     def bind_matrix(self, matrix):
         self.matrix = matrix
 
+
 class SceneGraph(object):
     def __init__(self):
         self.root = RootNode(None)
@@ -89,7 +93,7 @@ class SceneGraph(object):
 
     def establish(self, object, parent=None):
         node = GraphicsNode(object)
-        if parent == None:
+        if parent is None:
             parent = self.root
         else:
             parent = self.aquire(parent)

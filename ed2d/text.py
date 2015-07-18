@@ -7,14 +7,15 @@ from ed2d import texture
 from ed2d import mesh
 from ed2d import shaders
 from ed2d import files
-from ed2d.opengl import typeutils 
+from ed2d.opengl import typeutils
 from ed2d.opengl import gl, pgl
 from ed2d import glmath
+# from ed2d import glmath as cyglmath
 from ed2d.glmath import cython as cyglmath
+
 
 # Hack to verify that freetype is properly destructed after everything
 # this code was also commited to freetype-py
-
 class _FT_Library_Wrapper(ft.FT_Library):
     '''Subclass of FT_Library to help with calling FT_Done_FreeType'''
     # for some reason this doesn't get carried over and ctypes complains
@@ -27,16 +28,17 @@ class _FT_Library_Wrapper(ft.FT_Library):
         # call FT_Done_FreeType
         self._ft_done_freetype(self)
 
+
 def init_freetype():
     handle = _FT_Library_Wrapper()
 
     if ft.FT_Init_FreeType(ct.byref(handle)):
-        raise Exception('FreeType failed to initialize.')  
+        raise Exception('FreeType failed to initialize.')
 
     return handle
 
-freetype = init_freetype()
 
+freetype = init_freetype()
 
 # These are the usable fields of FT_GlyphSlotRec
 #   field:            data type:
@@ -60,33 +62,34 @@ freetype = init_freetype()
 # lsb_delta         FT_Pos
 # rsb_delta         FT_Pos
 
+
 class Font(object):
     def __init__(self, size, fontPath):
-        
+
         self.size = size
         self.path = fontPath
 
         self.face = ft.FT_Face()
-        
+
         # here is the general structure of the char data dict.
         #
-        # It has 
+        # It has
         self.charDataCache = {}
 
         # load font face
-        if ft.FT_New_Face(freetype, typeutils.to_c_str(fontPath), 0, ct.byref(self.face)):
+        if ft.FT_New_Face(freetype, typeutils.to_c_str(fontPath), 0,
+                          ct.byref(self.face)):
             raise Exception('Error loading font.')
 
         # For now the device dpi will be hard coded to 72
         # later on if we want to do mobile stuff, or have dpi scaling
         # for high-dpi monitors this will need to be changed.
-        if ft.FT_Set_Char_Size(self.face, 0, size*64, 72, 72):
+        if ft.FT_Set_Char_Size(self.face, 0, size * 64, 72, 72):
             raise Exception('Error setting character size.')
 
     def load_glyph(self, char):
         '''
         Loads glyph, and returns a dictionary containing glyph data.
-        
         '''
         try:
             return self.charDataCache[char]
@@ -97,7 +100,7 @@ class Font(object):
             if ft.FT_Load_Glyph(self.face, index, ft.FT_LOAD_RENDER):
                 raise Exception('Error loading glyph')
 
-            glyphSlot = self.face.contents.glyph 
+            glyphSlot = self.face.contents.glyph
 
             charData = {}
             bitmapStruct = glyphSlot.contents.bitmap
@@ -118,7 +121,7 @@ class Font(object):
             charData['texWidth'] = texWidth
             charData['texHeight'] = texHeight
             charData['advance'] = glyphSlot.contents.advance.x >> 6
-            
+
             self.charDataCache[char] = charData
 
             return charData
@@ -138,12 +141,7 @@ class Text(object):
         self.vertLoc = self.program.get_attribute(b'position')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
 
-        self.data = [
-             [0.0, 1.0],
-             [1.0, 1.0],
-             [0.0, 0.0],
-             [1.0, 0.0],
-        ]
+        self.data = [[0.0, 1.0], [1.0, 1.0], [0.0, 0.0], [1.0, 0.0], ]
 
         self.chrMap = {}
 
@@ -151,15 +149,15 @@ class Text(object):
         self.lineSpacing = 3
 
         for texVal in range(32, 128):
-            char = chr(texVal) 
+            char = chr(texVal)
             fontData = self.font.load_glyph(char)
 
             # Find the fartherst position from the baseline
             if fontData['bitmap_y'] > self.basePos:
                 self.basePos = fontData['bitmap_y']
 
-            self.chrMap[char] = Glyph(self.program, self.texAtlas,
-                    fontData, char)
+            self.chrMap[char] = Glyph(self.program, self.texAtlas, fontData,
+                                      char)
         print (self.basePos)
 
         self.texAtlas.gen_atlas()
@@ -180,9 +178,8 @@ class Text(object):
 
         gl.glEnableVertexAttribArray(self.vertLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT,
-                gl.GL_FALSE,0, None)
-
+        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0,
+                                  None)
 
         gl.glEnableVertexAttribArray(self.UVLoc)
 
@@ -217,7 +214,6 @@ class Glyph(object):
         self.modelMatrix = cyglmath.Matrix(4)
 
         self.char = char
-        
 
         self.pixelData = self.fontData['pixelData']
 
@@ -231,32 +227,35 @@ class Glyph(object):
         self.uniform = self.program.get_uniform(self.modelLoc)
 
         self.textureID = self.atlas.add_texture(self.textureWidth,
-                self.textureHeight, self.pixelData)
+                                                self.textureHeight,
+                                                self.pixelData)
 
     def init_gl(self):
         self._uvCoords = self.atlas.get_uvcoords(self.textureID)
         self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
 
-        vecScale = cyglmath.Vector(3, data=[self.atlas.maxSubTextureHeight*self.vertexScale[0], 
-                                          self.atlas.maxSubTextureHeight*self.vertexScale[1], 0.0])
-        
+        vecScale = cyglmath.Vector(
+            3,
+            data=[self.atlas.maxSubTextureHeight * self.vertexScale[0],
+                  self.atlas.maxSubTextureHeight * self.vertexScale[1], 0.0])
+
         self.scaleMat = cyglmath.Matrix(4).i_scale(vecScale)
 
         self.uvbo = mesh.buffer_object(self._uvCoords, gl.GLfloat)
-    
+
     def render(self, posX, posY):
 
-        vecScale = cyglmath.Vector(3, data=[posX+self.bitX, posY-self.bitY, 0.0])
+        vecScale = cyglmath.Vector(
+            3,
+            data=[posX + self.bitX, posY - self.bitY, 0.0])
         self.modelMatrix = self.scaleMat.translate(vecScale)
 
-        self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix, uniform=self.uniform, size=4)
-
-        #pgl.glUniformMatrix4fv(self.uniform, 1, gl.GL_FALSE, self.modelMatrix.c_matrix)
-        #gl.glUniformMatrix4fv(self.uniform, 1, gl.GL_FALSE, self.modelMatrix.c_matrix[0])
+        self.program.set_uniform_matrix(self.modelLoc, self.modelMatrix,
+                                        uniform=self.uniform,
+                                        size=4)
 
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT,
-                gl.GL_FALSE, 0, None)
+        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0,
+                                  None)
 
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
-
