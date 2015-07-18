@@ -8,7 +8,7 @@ import ctypes as ct
 ######## Following code is for a reimplementation of the ctypes addressof function
 # that way less code gets generated in the execution path when converting to and from
 # ctypes objects.
-
+test = 'bob'
 cdef extern from "Python.h":
     object PyLong_FromVoidPtr(void *p)
 
@@ -81,6 +81,7 @@ cdef float* identity(int size):
 
     for x from 0 <= x < size by 1:
         for y from 0 <= y < size by 1:
+          rtnMat[y + x * size] = 0.0
             if x==y:
                 rtnMat[y + x * size] = 1.0
             else:
@@ -93,7 +94,7 @@ cdef float* scale(int size, float *value, int vecSize):
     cdef int x, y
 
     rtnMat = identity(size)
-    
+
     for x from 0 <= x < size by 1:
         for y from 0 <= y < size by 1:
             if x == y and x < 3:
