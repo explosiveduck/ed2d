@@ -2,7 +2,7 @@ import sys
 import ctypes as ct
 
 from ed2d.pycompat import *
-from ed2d.opengl.glbind import gl_func
+from ed2d.bindutils import gl_func
 
 c_ptrdiff_t = ct.c_ssize_t
 
@@ -36,7 +36,7 @@ GL_COLOR_BUFFER_BIT = 0x00004000
 GL_DEPTH_BUFFER_BIT = 0x00000100
 GL_STENCIL_BUFFER_BIT = 0x00000400
 
-# glDrawArrays 
+# glDrawArrays
 GL_POINTS = 0x0000
 GL_LINE_STRIP = 0x0003
 GL_LINE_LOOP = 0x0002
@@ -205,7 +205,7 @@ GL_MIRROR_CLAMP_TO_EDGE = 0x8743
 
 GL_NEAREST = 0x2600
 GL_LINEAR = 0x2601
-GL_NEAREST_MIPMAP_NEAREST = 0x2700                    
+GL_NEAREST_MIPMAP_NEAREST = 0x2700
 GL_LINEAR_MIPMAP_NEAREST = 0x2701
 GL_NEAREST_MIPMAP_LINEAR = 0x2702
 GL_LINEAR_MIPMAP_LINEAR = 0x2703
@@ -333,14 +333,14 @@ def init():
 
     _glGetIntergervParams = (GLenum, ct.POINTER(GLint))
     gl.glGetIntegerv = gl_func( 'glGetIntegerv', None, _glGetIntergervParams)
-    
+
     _glClearColorParams = (GLclampf, GLclampf, GLclampf, GLclampf)
     gl.glClearColor = gl_func( 'glClearColor', None, _glClearColorParams)
 
     gl.glClear = gl_func( 'glClear', None, (GLbitfield,))
 
     gl.glDrawArrays = gl_func('glDrawArrays', None, (GLenum, GLint, GLsizei))
- 
+
     gl.glDrawElements = gl_func('glDrawElements', None, (GLenum, GLsizei, GLenum, ct.POINTER(GLvoid)))
 
     gl.glViewport = gl_func('glViewport', None, (GLint, GLint, GLsizei, GLsizei))

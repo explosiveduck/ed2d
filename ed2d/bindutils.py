@@ -1,12 +1,33 @@
 import ctypes as ct
 from ctypes.util import find_library
-from sdl2 import SDL_GL_GetProcAddress
-
-import platform
 
 from ed2d.pycompat import *
 
-class BindGL(object):
+import platform
+osName = platform.system()
+
+def define_function(libName, name, returnType, params):
+    '''Helper function to help in binding functions'''
+    if osName == "Windows":
+        function = ct.WINFUNCTYPE(returnType, *params)
+        lib = ct.WinDLL(libName)
+    elif osName == "Darwin" or osName == "Linux":
+        function = ct.FUNCTYPE(returnType, *params)
+        lib = ct.CDLL(find_library(libName))
+
+    address = getattr(lib, name)
+    new_func = ct.cast(address, function)
+
+    return new_func
+
+if osName == "Windows":
+    glGetProcAddress = define_function('opengl32', 'wglGetProcAddress', ct.POINTER(ct.c_int), (ct.c_char_p,))
+elif osName in ('Linux', 'Darwin'):
+    from sdl2 import SDL_GL_GetProcAddress
+    glGetProcAddress = SDL_GL_GetProcAddress
+
+
+class _BindGL(object):
     def __init__(self):
         self.osName = platform.system()
 
@@ -31,11 +52,12 @@ class BindGL(object):
             address = getattr(self.lib, name)
         except AttributeError:
             name = name.encode(encoding='UTF-8')
-            address = SDL_GL_GetProcAddress(name)
+            address = glGetProcAddress(name.encode(encoding='UTF-8'))
 
         return ct.cast(address, function)
 
-_glbind = BindGL()
+
+_glbind = _BindGL()
 gl_func = _glbind.gl_func
 
-__all__ = ['gl_func']
+__all__ = ['gl_func', 'define_function']
