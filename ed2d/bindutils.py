@@ -21,8 +21,10 @@ def define_function(libName, name, returnType, params):
     return new_func
 
 if osName == "Windows":
-    glGetProcAddress = define_function('opengl32', 'wglGetProcAddress', ct.POINTER(ct.c_int), (ct.c_char_p,))
-elif osName in ('Linux', 'Darwin'):
+    glGetProcAddress = define_function('opengl32', 'wglGetProcAddress',
+            ct.POINTER(ct.c_int), (ct.c_char_p,))
+
+elif osName in ('Linux', 'Darwin', 'Windows'):
     from sdl2 import SDL_GL_GetProcAddress
     glGetProcAddress = SDL_GL_GetProcAddress
 
@@ -40,7 +42,8 @@ class _BindGL(object):
             self.lib = ct.WinDLL(libFound)
             self.funcType = ct.WINFUNCTYPE
         elif self.osName == 'Darwin': # Mac OS X
-            libFound = find_library('/System/Library/Frameworks/OpenGL.framework')
+            libraryPath = '/System/Library/Frameworks/OpenGL.framework'
+            libFound = find_library(libraryPath)
             self.lib = ct.CDLL(libFound)
             self.funcType = ct.CFUNCTYPE
 
