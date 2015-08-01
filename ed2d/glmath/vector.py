@@ -64,6 +64,18 @@ def refract(IOR, incidentVec, Norm):
         scalar = IOR * DOTNI + math.sqrt(k)
         return (IOR * incidentVec) - (scalar * normal)
 
+# 2D - get angle of the vector
+def toAngle(vector):
+    return math.atan2(vector[1], vector[0])
+
+# 2D -  90 degree rotation
+def lperp(vector):
+    return Vector(2, data = [-vector[1], vector[0]])
+
+# 2D -  -90 degree rotation
+def rperp(vector):
+    return Vector(2, data = [vector[1], -vector[0]])
+
 def vec_add(size, vecA, vecB):
     return [(vecA[i] + vecB[i]) for i in range(size)]
 
