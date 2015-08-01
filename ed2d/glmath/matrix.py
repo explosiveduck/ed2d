@@ -7,7 +7,7 @@ from ed2d.opengl import typeutils, gl
 
 def zero_matrix(size):
     ''' Return zero filled matrix list of the requested size'''
-    return [[0.0 for y in range(size)] for x in range(size)]
+    return [[0.0] * size for x in range(size)]
 
 def identity(size):
     ''' Return an identity matrix list of the requested size '''
@@ -22,60 +22,21 @@ def matrix_multiply(matrixA, matrixB):
     ''' Multiply matrixA with matrixB '''
     sizeA = len(matrixA)
     matOut = zero_matrix(sizeA)
-    for i in range(sizeA):
-        for j in range(sizeA):
-            for k in range(sizeA):
+    crange = list(range(sizeA))
+    for i in crange:
+        for k in crange:
+            for j in crange:
                 matOut[i][j] += matrixA[i][k] * matrixB[k][j]
     return matOut
-
-def matrix_multiply_testA(matrixA, matrixB):
-    ''' Multiply matrixA with matrixB '''
-    sizeA = len(matrixA)
-    matOut = zero_matrix(sizeA)
-    for i in range(sizeA):
-        for k in range(sizeA):
-            for j in range(sizeA):
-                matOut[i][j] += matrixA[i][k] * matrixB[k][j]
-    return matOut    
-
-def matrix_multiply_testB(matrixA, matrixB):
-    sizeA = len(matrixA)
-    matOut = zero_matrix(sizeA)
-
-    ib = 24
-    kb = 64
-    ibkb = ib + kb
-    for ii in range(0, sizeA, ib):
-        for kk in range(0, sizeA, kb):
-            for j in range(0, sizeA, 2):
-                for i in range(0, ibkb, 2):
-                    if kk is 0:
-                        acc00 = acc01 = acc10 = acc11 = 0.0
-                    else:
-                        acc00 = matOut[i + 0][j + 0]
-                        acc01 = matOut[i + 0][j + 1]
-                        acc10 = matOut[i + 1][j + 0]
-                        acc11 = matOut[i + 1][j + 1]
-                    for k in range(kk, kk + kb, 1):
-                        acc00 += matrixA[k][j + 0] * B[i + 0][k]
-                        acc01 += matrixA[k][j + 1] * B[i + 0][k]
-                        acc10 += matrixA[k][j + 0] * B[i + 1][k]
-                        acc11 += matrixA[k][j + 1] * B[i + 1][k]
-
-                    matOut[i + 0][j + 0] = acc00
-                    matOut[i + 0][j + 1] = acc01
-                    matOut[i + 1][j + 0] = acc10
-                    matOut[i + 1][j + 1] = acc11
-    return matOut
-
 
 def matrix_vector_multiply(matrix, vec):
     ''' Multiply matrix with vector '''
     matSize = len(matrix)
     vecSize = vec.size
     vecOut = vector.Vector(vecSize)
-    for i in range(matSize):
-        for j in range(matSize):
+    crange = list(range(matSize))
+    for i in crange:
+        for j in crange:
             vecOut.vector[i] += vec.vector[j] * matrix[i][j]
     return vecOut
 
@@ -83,8 +44,9 @@ def matrix_div(mat, scalar):
     ''' Divide a matrix by a scalar. '''
     size = len(mat)
     matOut = zero_matrix(size)
-    for i in range(size):
-        for j in range(size):
+    crange = list(range(sizeA))
+    for i in crange:
+        for j in crange:
             matOut[i][j] = mat[j][i] / scalar
     return matOut
 
@@ -92,8 +54,9 @@ def transpose(mat):
     '''Transposes a NxN matrix.'''
     size = len(mat)
     out = zero_matrix(size)
-    for i in range(size):
-        for j in range(size):
+    crange = list(range(size))
+    for i in crange:
+        for j in crange:
             out[i][j]= mat[j][i]
     return out
 
@@ -629,7 +592,7 @@ def ortho(left, right, bottom, top, zNear, zFar):
     rtnMat[3][1] = -(top + bottom) / (top - bottom)
     rtnMat[3][2] = - (zFar + zNear) / (zFar - zNear)
     rtnMat[3][3] = 1
-    return Matrix(4, data=rtnMat) 
+    return Matrix(4, data=rtnMat)
 
 def perspective(fov, aspect, znear, zfar):
     ''' Perspective projection matrix 4x4. FOVY'''
@@ -641,7 +604,7 @@ def perspective(fov, aspect, znear, zfar):
     b = 1.0 / (tanHalfFovy)
     c = - (zfar + znear) / (zfar - znear)
     d = - (2.0 * zfar * znear) / (zfar - znear)
-  
+
     out = [[  a, 0.0, 0.0, 0.0],
            [0.0,   b, 0.0, 0.0],
            [0.0, 0.0,   c,-1.0],
@@ -655,17 +618,17 @@ def perspectiveX(fov, aspect, znear, zfar):
 
     xmax = f
     xmin = -f
-    
+
     ymin = xmin / aspect
     ymax = xmax / aspect
-    
+
     a = (2.0 * znear) / (xmax - xmin)
-    b = (2.0 * znear) / (ymax - ymin)   
+    b = (2.0 * znear) / (ymax - ymin)
     c = -(zfar + znear) / (zfar - znear)
     d = -(2.0 * zfar * znear) / (zfar - znear)
     e = (xmax + xmin) / (xmax - xmin)
     f = (ymax + ymin) / (ymax - ymin)
-    
+
     out = [[  a, 0.0, 0.0, 0.0],
            [0.0,   b, 0.0, 0.0],
            [  e,   f,   c,-1.0],

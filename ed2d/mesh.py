@@ -1,7 +1,7 @@
-
 from ed2d.pycompat import *
 from ed2d import glmath
 from ed2d.opengl import gl, pgl
+
 
 def buffer_object(data, type):
     if data or 0:
@@ -13,23 +13,28 @@ def buffer_object(data, type):
     else:
         return None
 
+
 def index_buffer_object(data, type):
     if data or 0:
         ibo = pgl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ibo)
-        pgl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, data, type, gl.GL_STATIC_DRAW)
+        pgl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, data, type,
+                         gl.GL_STATIC_DRAW)
         gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, 0)
         return ibo
     else:
         return None
 
+
 def bind_object(dataLoc, vbo, size):
     if (dataLoc is not None) and (vbo is not None):
         gl.glEnableVertexAttribArray(dataLoc)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-        pgl.glVertexAttribPointer(dataLoc, size, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+        pgl.glVertexAttribPointer(dataLoc, size, gl.GL_FLOAT, gl.GL_FALSE, 0,
+                                  None)
     else:
         pass
+
 
 def unbind_object(dataLoc):
     if dataLoc is not None:
@@ -38,8 +43,8 @@ def unbind_object(dataLoc):
     else:
         pass
 
-class Indexer(object):
 
+class Indexer(object):
     def __init__(self):
         self.unique = []
         self.indices = []
@@ -48,14 +53,14 @@ class Indexer(object):
     def add(self, obj):
         key = repr(obj)
 
-        if not(key in self.map):
+        if not (key in self.map):
             self.map[key] = len(self.unique)
             self.unique.append(obj)
 
         return self.map[key]
 
-class MeshBase(object):
 
+class MeshBase(object):
     def __init__(self):
         self.program = None
         self.vertLoc = None
@@ -74,7 +79,7 @@ class MeshBase(object):
         self.texture = texture
 
     def render(self):
-        
+
         self.program.set_uniform_matrix(self.modelID, self.modelMatrix)
 
         if self.texture is not None:
@@ -91,7 +96,8 @@ class MeshBase(object):
         if self.ibo:
             gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.ibo)
 
-            gl.glDrawElements(gl.GL_TRIANGLES, self.ntris * 3, gl.GL_UNSIGNED_INT, 0)
+            gl.glDrawElements(gl.GL_TRIANGLES, self.ntris * 3,
+                              gl.GL_UNSIGNED_INT, 0)
 
             gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, 0)
         else:
@@ -105,6 +111,7 @@ class MeshBase(object):
         self.vbo = buffer_object(self.data, gl.GLfloat)
         self.uvbo = buffer_object(self.texCoord, gl.GLfloat)
         self.ibo = index_buffer_object(self.triangles, gl.GLuint)
+
 
 class Mesh(MeshBase):
     def __init__(self):
@@ -129,19 +136,23 @@ class Mesh(MeshBase):
         self.normals = []
         self.colors = []
         self.triangles = []
-        
 
     def setColorAll(self, r, g, b):
-        '''This will populate the colors array with same color for every vertex.'''
+        '''
+        This will populate the colors array with same color for every vertex.
+        '''
+
         if not self.colors:
             for i in range(self.nverts):
-                self.colors.append([r,g,b])
+                self.colors.append([r, g, b])
         else:
             for i in range(self.nverts):
                 self.colors[i] = [r, g, b]
 
     def fromData(self, **kwargs):
-        ''' This will take in any set of vertices, uv coordinates and colors arrays. '''
+        '''
+        This will take in any set of vertices, uv coordinates and colors arrays
+        '''
         if kwargs is not None:
             for key, value in kwargs.items():
                 if key is 'data':
@@ -157,10 +168,12 @@ class Mesh(MeshBase):
                     self.colors = value
                 else:
                     self.colors = []
-        
 
     def fromCSG(self, csg):
-        '''This will take in a CSG object and convert it to mesh for rendering and simulation purposes.'''
+        '''
+        This will take in a CSG object and convert it to mesh for
+        rendering and simulation purposes.
+        '''
         indexer = Indexer()
         polygons = csg.toPolygons()
 
@@ -181,10 +194,10 @@ class Mesh(MeshBase):
             self.normals.append(v.normal.vector)
             self.colors.append(v.color)
 
-        #print("Indexer Unique Count: ", len(indexer.unique))
-        #print("Polygon Count: ", len(polygons))
-        #print("Triangles Count: ", len(self.triangles))
-        #print("Vertices Count: ", len(self.data))
+        # print("Indexer Unique Count: ", len(indexer.unique))
+        # print("Polygon Count: ", len(polygons))
+        # print("Triangles Count: ", len(self.triangles))
+        # print("Vertices Count: ", len(self.data))
 
         self.nverts = len(self.data)
         self.ntris = len(self.triangles)
@@ -198,7 +211,6 @@ class Mesh(MeshBase):
         self.data = self.rect.getVertices()
         self.texCoord = self.rect.getVertices()
         self.modelMatrix = self.rect.getModelMatrix()
-
 
     def scale(self, value):
         self.scaleDelta = value / self._scale
@@ -219,17 +231,18 @@ class Mesh(MeshBase):
             self.modelMatrix = self.rect.getModelMatrix()
 
         if self.scaleDelta:
-            vecScale = glmath.Vector(3, data=[self.scaleDelta, self.scaleDelta, 0.0])
+            vecScale = glmath.Vector(
+                3,
+                data=[self.scaleDelta, self.scaleDelta, 0.0])
 
             self.modelMatrix.i_scale(vecScale)
             self.scaleDelta = 0
 
         if self.xPosDelta or self.yPosDelta:
-            vecTrans = glmath.Vector(3, data=[self.xPosDelta, self.yPosDelta, 0.0])
-            
+            vecTrans = glmath.Vector(
+                3,
+                data=[self.xPosDelta, self.yPosDelta, 0.0])
+
             self.modelMatrix.i_translate(vecTrans)
             self.xPosDelta = 0
             self.yPosDelta = 0
-        
-
-
