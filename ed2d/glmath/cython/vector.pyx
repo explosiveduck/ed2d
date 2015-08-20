@@ -1,6 +1,6 @@
 from libc.stdlib cimport malloc, free
 import ctypes as ct
-
+test='bob'
 cdef float* list_to_array(int size, object pylist):
     cdef float *rtnArr
     cdef int x

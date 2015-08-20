@@ -1,6 +1,7 @@
 import sys
 import os
 
+
 def get_path():
     ''' get the current path '''
     path0 = os.path.realpath(sys.path[0])
@@ -13,12 +14,14 @@ def get_path():
     else:
         return path0
 
+
 def resolve_path(*location):
     '''Resolve path relative to current path.'''
     path = get_path()
     location = (path,) + location
     location = os.sep.join(location)
     return location
+
 
 def read_file(path):
     '''Read file and return string'''

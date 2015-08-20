@@ -21,7 +21,7 @@ class Events(object):
 
     def remove_listener(self, listener):
         ''' Remove specified event listener '''
-        if not listener in self.listeners:
+        if listener not in self.listeners:
             self.listener.remove()
 
     def broadcast_event(self, event, args):
@@ -79,7 +79,7 @@ class Events(object):
                 # Will add more event types later
                 pass
 
-            if not eventName is None:
+            if eventName is not None:
                 self.broadcast_event(eventName, data)
 
 __all__ = ['Events']

@@ -19,12 +19,14 @@ class ShaderBase(object):
         else:
             print (self.shaderSuccessMessage)
 
+
 class VertexShader(ShaderBase):
     def __init__(self, path):
         self.shaderData = files.read_file(path)
         self.shaderType = gl.GL_VERTEX_SHADER
         self.shaderErrorMessage = 'Vertex Shader compilation error.'
         self.shaderSuccessMessage = 'Vertex Shader compiled successfully.'
+
 
 class FragmentShader(ShaderBase):
     def __init__(self, path):
@@ -33,12 +35,13 @@ class FragmentShader(ShaderBase):
         self.shaderErrorMessage = 'Fragment Shader compilation error.'
         self.shaderSuccessMessage = 'Fragment Shader compiled successfully.'
 
+
 class ShaderProgram(object):
     def __init__(self, vertex, fragment):
 
         self.uniforms = []
         self.uniformNames = {}
-        
+
         self.vertex = vertex
         self.fragment = fragment
 
@@ -77,7 +80,8 @@ class ShaderProgram(object):
     def new_uniform(self, name):
         uniID = len(self.uniforms)
         self.uniformNames[uniID] = name
-        self.uniforms.append(gl.glGetUniformLocation(self.program, bytes(name)))
+        self.uniforms.append(gl.glGetUniformLocation(self.program,
+                                                     bytes(name)))
         return uniID
 
     def set_uniform_matrix(self, uniID, value, uniform=None, size=None):
@@ -118,13 +122,13 @@ class ShaderProgram(object):
             raise typeError
 
     def get_uniform(self, uniID):
-        
+
         uniform = self.uniforms[uniID]
 
         return uniform
 
     def set_uniform(self, uniID, value):
-        
+
         uniform = self.uniforms[uniID]
 
         # Need to imeplement the matrix uniforms after I
