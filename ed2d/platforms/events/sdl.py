@@ -2,7 +2,6 @@ import ctypes as ct
 
 import sdl2 as sdl
 
-from ed2d.pycompat import *
 from ed2d.platforms.events import keymap
 
 class Events(object):

@@ -53,4 +53,4 @@ if __name__ == '__main__':
         game = gamemanager.GameManager()
         game.run()
     else:
-        print ('Module does not contain GameManager.')
+        print('Module does not contain GameManager.')

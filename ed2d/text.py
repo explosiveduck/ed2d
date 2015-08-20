@@ -158,7 +158,7 @@ class Text(object):
 
             self.chrMap[char] = Glyph(self.program, self.texAtlas, fontData,
                                       char)
-        print (self.basePos)
+        print(self.basePos)
 
         self.texAtlas.gen_atlas()
 

@@ -9,7 +9,7 @@ class ArgWrapper(object):
         if self.parent.argsParsed:
             return self.parent.args[self.name]
         else:
-            print ('Arguments not yet parsed.')
+            print('Arguments not yet parsed.')
             return None
 
 class _CmdArgs(object):
@@ -39,7 +39,7 @@ class _CmdArgs(object):
                 letter = name[i]
                 break
             else:
-                print ('All possible short arguments are taken for this name.')
+                print('All possible short arguments are taken for this name.')
                 return
 
             args.append('-' + letter)

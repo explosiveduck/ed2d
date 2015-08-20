@@ -1,4 +1,3 @@
-from ed2d.pycompat import *
 from ed2d.opengl import gl, pgl
 from ed2d import files
 from ed2d.opengl import typeutils
@@ -14,10 +13,10 @@ class ShaderBase(object):
         status = pgl.glGetShaderiv(self.shader, gl.GL_COMPILE_STATUS)
 
         if not status:
-            print (self.shaderErrorMessage)
-            print (pgl.glGetShaderInfoLog(self.shader))
+            print(self.shaderErrorMessage)
+            print(pgl.glGetShaderInfoLog(self.shader))
         else:
-            print (self.shaderSuccessMessage)
+            print(self.shaderSuccessMessage)
 
 
 class VertexShader(ShaderBase):
@@ -58,10 +57,10 @@ class ShaderProgram(object):
         status = pgl.glGetProgramiv(self.program, gl.GL_LINK_STATUS)
 
         if not status:
-            print ('Linking error:')
-            print (pgl.glGetProgramInfoLog(self.program))
+            print('Linking error:')
+            print(pgl.glGetProgramInfoLog(self.program))
         else:
-            print ('Program Linked successfully.')
+            print('Program Linked successfully.')
 
     def use(self, using=True):
         if using is False:

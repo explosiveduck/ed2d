@@ -50,13 +50,13 @@ class RootNode(BaseNode):
         self.reusableIDs = []
 
     def reparent(self, parent):
-        print ('Error can\'t reparent root node.')
+        print('Error can\'t reparent root node.')
 
     def attach(self, parent):
-        print ('Error can\'t attach root node.')
+        print('Error can\'t attach root node.')
 
     def dettach(self, parent):
-        print ('Error can\'t dettach root node.')
+        print('Error can\'t dettach root node.')
 
     def _add_tree_child(self, object):
         if self.reusableIDs:

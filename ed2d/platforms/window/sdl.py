@@ -1,6 +1,4 @@
-
 import sdl2 as sdl
-from ed2d.pycompat import *
 
 def _init_video():
     ''' Prepare sdl for subsystem initialization, and init sdl video. '''

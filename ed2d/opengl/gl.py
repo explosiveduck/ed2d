@@ -1,7 +1,6 @@
 import sys
 import ctypes as ct
 
-from ed2d.pycompat import *
 from ed2d.bindutils import gl_func
 
 c_ptrdiff_t = ct.c_ssize_t

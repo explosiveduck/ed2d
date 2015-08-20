@@ -1,4 +1,3 @@
-from ed2d.pycompat import *
 from ed2d import glmath
 from ed2d.opengl import gl, pgl
 
