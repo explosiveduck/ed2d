@@ -1,20 +1,14 @@
 import argparse
 
-class ArgWrapper(object):
-    def __init__(self, parent, name):
-        self.parent = parent
-        self.name = name
-
-    def __call__(self):
-        if self.parent.argsParsed:
-            return self.parent.args[self.name]
-        else:
-            print('Arguments not yet parsed.')
-            return None
+class ArgParseWrapper(argparse.ArgumentParser):
+    '''Overide the default parse_args to not error out with unused args.'''
+    def parse_args(self, args=None, namespace=None):
+        args, argv = self.parse_known_args(args, namespace)
+        return args
 
 class _CmdArgs(object):
     def __init__(self):
-        self.parser = argparse.ArgumentParser()
+        self.parser = ArgParseWrapper(add_help=False)
         self.letterArgs = []
         self.args = None
         self.argsParsed = False
@@ -46,9 +40,13 @@ class _CmdArgs(object):
 
         self.parser.add_argument(*args, type=argType, help=argHelp)
 
-        return ArgWrapper(self, name)
+        return vars(self.parser.parse_args())[name]
 
     def parse_args(self):
+        # Add the help option/action after all arguments
+        self.parser.add_argument('-h', '--help',
+            action='help',
+            default=argparse.SUPPRESS, help='show this help message and exit')
         self.args = vars(self.parser.parse_args())
         self.argsParsed = True
 

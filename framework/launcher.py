@@ -39,15 +39,14 @@ if __name__ == '__main__':
 
     game = cmd.add_arg('game', str, 'The gamemodule to import, by default framework.gamemanager is used.')
 
-    cmd.parse_args()
-
-    game = game()
-
-
     if game:
         gamemanager = __import__(game, fromlist=[game])
     else:
         from game import gamemanager
+
+    # Parse the arguments after we import the game
+    # that way any game defined arguments will be shown in the help list
+    cmd.parse_args()
 
     if hasattr(gamemanager, 'GameManager'):
         game = gamemanager.GameManager()
