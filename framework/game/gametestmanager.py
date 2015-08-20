@@ -1,5 +1,4 @@
 import random as rnd
-from ed2d.pycompat import *
 from ed2d import window
 from ed2d import events
 from ed2d import context
