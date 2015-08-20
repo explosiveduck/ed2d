@@ -1,8 +1,6 @@
 import ctypes as ct
 from ctypes.util import find_library
 
-from ed2d.pycompat import *
-
 import platform
 osName = platform.system()
 
