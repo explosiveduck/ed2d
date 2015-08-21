@@ -1,6 +1,6 @@
 ed2d
 =====
-This library/engine/framework started out originally as an entry for pyweek 19. We didnt get that far with the game, but we decided to keep the code around and continue extending it. We hope to have a first release in a usable state for pyWeek 20 within the next week or so.
+This library/engine/framework started out originally as an entry for pyweek 19. We didnt get that far with the game, but we decided to keep the code around and continue extending it. We hope to have an alpha release soon.
 
 Currently written in python using pysdl2 and freetype-py.
 
