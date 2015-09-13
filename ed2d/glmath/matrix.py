@@ -582,7 +582,7 @@ class Matrix(object):
 
 # Matrix-based functions the use the class instead of the functions directly
 
-def ortho(left, right, bottom, top, zNear, zFar):
+def orthographic(left, right, bottom, top, zNear, zFar):
     ''' Orthographic Projection '''
     rtnMat = zero_matrix(4)
     rtnMat[0][0] = 2.0 / (right - left)
