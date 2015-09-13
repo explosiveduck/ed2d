@@ -1,43 +1,18 @@
-import sdl2 as sdl
-from ed2d.pycompat import *
+import platform
 
-class Context(object):
-    ''' An OpenGL rendering context '''
-    def __init__(self, major, minor, msaa):
-        self.major = major
-        self.minor = minor
-        self.msaa = msaa
+# from ed2d.cmdargs import  CmdArgs
+# forceSDL = CmdArgs.add_arg('sdl', bool, 'Force sdl2 instead of native.')
 
-        self.profile = sdl.SDL_GL_CONTEXT_PROFILE_CORE
+osName = platform.system()
+# if osName == 'Windows':
+# 	from ed2d.context.win32 import Context
+# # elif osName == 'Linux':
+# 	# from ed2d.context.x11 import Context
+# elif osName in ('Darwin', 'Linux'):
+# 	from ed2d.context.sdl2 import Context
+# else:
+# 	pass
 
-        self.context = None
-        self._window = None
-
-        sdl.SDL_GL_SetAttribute(sdl.SDL_GL_DOUBLEBUFFER, 1)
-
-        sdl.SDL_GL_SetAttribute(sdl.SDL_GL_CONTEXT_MAJOR_VERSION, self.major)
-        sdl.SDL_GL_SetAttribute(sdl.SDL_GL_CONTEXT_MINOR_VERSION, self.minor)
-
-        sdl.SDL_GL_SetAttribute(sdl.SDL_GL_CONTEXT_PROFILE_MASK, self.profile)
-
-        if self.msaa < 0:
-            sdl.SDL_GL_SetAttribute(sdl.SDL_GL_MULTISAMPLEBUFFERS, 1)
-            sdl.SDL_GL_SetAttribute(sdl.SDL_GL_MULTISAMPLESAMPLES, self.msaa)
-
-    def destroy(self):
-        ''' Destroy the rendering context '''
-        sdl.SDL_GL_DeleteContext(self.context)
-
-    @property
-    def window(self):
-        return self._window
-    @window.setter
-    def window(self, window):
-        # this mainly exists because we need the sdl window object
-        # to be able to create a context
-        self._window = window
-        if self.context == None:
-            # Create context
-            self.context = sdl.SDL_GL_CreateContext(self._window.window)
+from ed2d.platforms.context.sdl import Context
 
 __all__ = ['Context']

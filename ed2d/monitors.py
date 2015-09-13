@@ -5,14 +5,14 @@ import platform
 
 # osName = platform.system()
 # if osName == 'Windows':
-# 	from ed2d.window.win32 import Window
+# 	from ed2d.monitors.win32 import Monitors
 # # elif osName == 'Linux':
-# 	# from ed2d.window.x11 import Window
+# 	# from ed2d.monitors.x11 import Monitors
 # elif osName in ('Darwin', 'Linux'):
-# 	from ed2d.window.sdl2 import Window
+# 	from ed2d.monitors.sdl2 import Monitors
 # else:
 # 	pass
 
-from ed2d.platforms.window.sdl import *
+from ed2d.platforms.monitors.sdl import *
 
-__all__ = ['WindowedMode', 'FullscreenMode', 'BorderlessMode', 'Window']
+__all__ = ['Monitors']

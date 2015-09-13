@@ -1,7 +1,5 @@
 import math
 
-from ed2d.pycompat import *
-
 from ed2d.glmath import vector
 from ed2d.opengl import typeutils, gl
 

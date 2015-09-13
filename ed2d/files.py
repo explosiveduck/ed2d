@@ -3,7 +3,7 @@ import os
 
 
 def get_path():
-
+    ''' get the current path '''
     path0 = os.path.realpath(sys.path[0])
     path1 = os.path.realpath(sys.path[1])
 
@@ -16,6 +16,7 @@ def get_path():
 
 
 def resolve_path(*location):
+    '''Resolve path relative to current path.'''
     path = get_path()
     location = (path,) + location
     location = os.sep.join(location)
@@ -23,6 +24,7 @@ def resolve_path(*location):
 
 
 def read_file(path):
+    '''Read file and return string'''
     output = ''
     with open(path, 'r') as f:
         output = f.read()

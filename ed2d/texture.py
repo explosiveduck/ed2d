@@ -4,7 +4,6 @@ from collections import OrderedDict
 from PIL import Image
 import sdl2 as sdl
 
-from ed2d.pycompat import *
 from ed2d.opengl import gl, pgl
 
 def load_image(path):

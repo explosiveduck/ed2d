@@ -36,13 +36,13 @@ class GameManager(object):
 
     def gl_init(self):
         '''Init opengl-using objects.'''
-        print ('MOO')
+        print('MOO')
         self.sg = scenegraph.SceneGraph()
         listNode = self.sg.establish([])
         stringNode = self.sg.establish('')
         self.sg.establish({}, parent=stringNode)
 
-        print (self.sg.root.treeChildren)
+        print(self.sg.root.treeChildren)
 
     def resize(self, width, height):
         self.width = width
@@ -76,7 +76,7 @@ class GameManager(object):
         self.fpsTimer.tick()
         if self.fpsTimer.fpsTime >= 2000:
             self.fpsEstimate = self.fpsTimer.get_fps()
-            print ("{:.2f} fps".format(self.fpsEstimate))
+            print("{:.2f} fps".format(self.fpsEstimate))
 
     def run(self):
         ''' Called from launcher doesnt exit until the game is quit '''

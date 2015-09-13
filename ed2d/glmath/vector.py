@@ -1,7 +1,5 @@
 import math
 
-from ed2d.pycompat import *
-
 REFRENCE_VECTOR_2 = [0.0 for x in range(2)]
 REFRENCE_VECTOR_3 = [0.0 for x in range(3)]
 REFRENCE_VECTOR_4 = [0.0 for x in range(4)]

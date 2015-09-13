@@ -1,6 +1,5 @@
 import ctypes as ct
 
-from ed2d.pycompat import *
 from ed2d.opengl import gl
 from ed2d.opengl import typeutils
 from ed2d.opengl.typeutils import conv_list_2d, is_sequence

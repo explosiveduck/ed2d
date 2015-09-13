@@ -1,5 +1,4 @@
 import random as rnd
-from ed2d.pycompat import *
 from ed2d import window
 from ed2d import events
 from ed2d import context
@@ -44,7 +43,7 @@ class GameManager(object):
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
         minor = pgl.glGetInteger(gl.GL_MINOR_VERSION)
-        print ('OpenGL Version: {}.{}'.format(major, minor))
+        print('OpenGL Version: {}.{}'.format(major, minor))
 
         gl.glViewport(0, 0, self.width, self.height)
 
@@ -167,7 +166,7 @@ class GameManager(object):
 
         glerr = gl.glGetError()
         if glerr != 0:
-            print ('GLError:', glerr)
+            print('GLError:', glerr)
 
     def resize(self, width, height):
         self.width = width
@@ -189,7 +188,7 @@ class GameManager(object):
             self.meshObjectTest.update(self.physicsObjectTest)
         elif event == 'key_down':
             self.keys.append(data[0])
-            print (self.keys)
+            print(self.keys)
         elif event == 'key_up':
             self.keys.remove(data[0])
 
@@ -222,7 +221,7 @@ class GameManager(object):
         self.fpsTimer.tick()
         if self.fpsTimer.fpsTime >= 2000:
             self.fpsEstimate = self.fpsTimer.get_fps()
-            print ("{:.2f} fps".format(self.fpsEstimate))
+            print("{:.2f} fps".format(self.fpsEstimate))
 
     def run(self):
         ''' Called from launcher doesnt exit until the game is quit '''
