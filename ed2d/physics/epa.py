@@ -36,7 +36,35 @@ class Simplex(object):
 		self.divisor = v.divisor
 
 	def getSearchPosition(self):
-		pass
+		if self.count is 1:
+			return -self.verts[0].p
+
+		if self.count is 2:
+			ab = self.verts[1].p - self.verts[0].p
+			sgn = vector.cross(self.verts[0].p, ab)
+
+			if sgn > 0:
+				return vector.lperp(ab)
+			else:
+				return vector.rperp(ab)
+
+		return self.Vector(2)
+
+	def getClosestPoint(self):
+		if self.count is 1:
+			return self.verts[0].p 
+
+		if self.count is 2:
+			return vector.lerp(self.verts[0].p , self.verts[1].p, self.verts[1].u / self.divisor)
+
+		if self.count is 3:
+			s = 1 / self.verts[0].p
+			p = self.verts[0].p * (self.verts[0].u * s)
+			p += self.verts[1].p * (self.verts[1].u * s)
+			p += self.verts[2].p * (self.verts[2].u * s)
+			return p
+
+		return self.Vector(2)
 
 class Edge(object):
 	def __init__(self, index1, index2):
@@ -90,14 +118,48 @@ class Polytope(object):
 				self.EdgeTail = newEdge
 
 	def deleteEdge(self, edge):
-		if edge == self.edgeHead:
+		if edge is self.edgeHead:
 			self.edgeHead = edge.next
 
+		if edge is self.edgeTail:
+			self.edgeTail = edge.prev
+
+		edge.prev.next = edge.next
+		edge.next.prev = edge.prev
+
 	def getClosestEdge(self):
-		pass
+		firstEdge = self.edgeHead
+
+		if (firstEdge.distsq is None):
+			a = self.verts[firstEdge.index1].p
+			b = self.verts[firstEdge.index2].p
+			ab = b - a
+
+			v = -ab.dot(a)
+
+			if v <= 0:
+				cp = vector.Vector(2, data = [a.x , a.y])
+				firstEdge.distsq = cp.lengthsq()
+				firstEdge.dir = cp
+			else:
+				u = ab.dot(b)
+				if u <= 0:
+					cp = vector.Vector(2, data = [b.x , b.y])
+					firstEdge.distsq = cp.lengthsq()
+					firstEdge.dir = cp
+				else:
+					s = 1 / ab.lengthsq()
+					vp = vector.lerp(a , b, v * s)
+					firstEdge.distsq = cp.lengthsq()
+					firstEdge.dir = vector.rperp(ab)
+
+		closestEdge = firstEdge
+
+		
 
 class EPA(object):
 	def __init__(self, poly1, xf1, poly2, xf2, simplex):
+		#xf1 is the center of polygon 1 and xf2 is the center of the polygon 2
 		self.poly1 = poly1
 		self.poly2 = poly2
 		self.xf1 = xf1
