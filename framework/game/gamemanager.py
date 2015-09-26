@@ -160,7 +160,7 @@ class GameManager(object):
         print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
 
 
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
@@ -172,7 +172,7 @@ class GameManager(object):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
     def process_event(self, event, data):
