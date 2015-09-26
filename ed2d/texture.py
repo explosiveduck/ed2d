@@ -39,6 +39,7 @@ class BaseTexture(object):
     def load_gl(self):
 
         self.texSampID = self.program.new_uniform(b'textureSampler')
+        self.texResID = self.program.new_uniform(b'textureResolution')
 
         if self.texFormat is None:
             self.texFormat = gl.GL_RGBA
@@ -48,8 +49,8 @@ class BaseTexture(object):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
         gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
 
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
 
         pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.texFormat, self.width, self.height,
                          0, self.texFormat, gl.GL_UNSIGNED_BYTE, self.data)
@@ -72,6 +73,7 @@ class Texture(BaseTexture):
 
         self.width, self.height, self.data = load_image(self.path)
         self.load_gl()
+        self.program.set_uniform_array(self.texResID, [float(self.width), float(self.height)])
 
 class TextureAtlas(BaseTexture):
     def __init__(self, program, maxWidth=1024, texFormat=None):
