@@ -1,18 +1,18 @@
 #version 330
+in vec3 fragColor;
+in vec2 UV;
 
-im vec3 viewPortResolution; //viewport resoltuion
-in float textureResolution; //texture resolution
-in sampler2D texture; // 2D texture
-in vec2 fragCoords; // Coordinates of the pixel
+uniform sampler2D textureSampler;
+uniform vec2 viewPortResolution;
+uniform vec2 textureResolution;
 
-out vec4 outputColor; // Final color
+out vec4 outputColor;
 
-vec4 imageFilter(in vec2 fragCoord)
+
+vec4 imageFilter(vec2 test)
 {
-	vec2 p = fragCoord.xy / viewPortResolution.xy;
-	vec2 uv = p * 1.0; // This is to scale the texture (1.0 being original size)
-
-	uv = uv * textureResolution + 0.5;
+	
+	vec2 uv = test.xy * textureResolution * 1.0 + 0.5;
 
 	vec2 iuv = floor(uv);
 	vec2 fuv = fract(uv);
@@ -21,8 +21,8 @@ vec4 imageFilter(in vec2 fragCoord)
 
 	uv = (uv - 0.5) / textureResolution;
 
-	vec3 color = texture2D(texture, uv).xyz;
-
+	vec3 color = texture(textureSampler, uv).xyz;
+	
 	vec4 fragColor = vec4(color, 1.0);
 
 	return fragColor;
@@ -30,5 +30,5 @@ vec4 imageFilter(in vec2 fragCoord)
 
 void main()
 {
-	outputColor = imageFilter(fragCoords);
+	outputColor = vec4(fragColor, 1.0) + imageFilter(UV);
 }
