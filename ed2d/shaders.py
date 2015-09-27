@@ -118,7 +118,7 @@ class ShaderProgram(object):
                 elif size == 2:
                     gl.glUniform2f(uniform, *value)
         except:
-            raise typeError
+            raise TypeError
 
     def get_uniform(self, uniID):
 
