@@ -99,7 +99,7 @@ def shearXZ4(x, z):
     ''' Shear on XZ. '''
     out = identity(4)
     out[0][1] = x
-    out[2][1] = y
+    out[2][1] = z
     return out
 
 ###### Translate functions #####
