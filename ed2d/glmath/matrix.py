@@ -1,7 +1,8 @@
 import math
 
 from ed2d.glmath import vector
-from ed2d.opengl import typeutils, gl
+from ed2d.opengl import gl
+from ed2d import typeutils
 
 def zero_matrix(size):
     ''' Return zero filled matrix list of the requested size'''

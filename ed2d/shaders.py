@@ -1,6 +1,6 @@
 from ed2d.opengl import gl, pgl
 from ed2d import files
-from ed2d.opengl import typeutils
+from ed2d import typeutils
 from ed2d.glmath import Matrix, Vector
 
 

@@ -7,7 +7,7 @@ from ed2d import texture
 from ed2d import mesh
 from ed2d import shaders
 from ed2d import files
-from ed2d.opengl import typeutils
+from ed2d import typeutils
 from ed2d.opengl import gl, pgl
 from ed2d import glmath
 # from ed2d import glmath as cyglmath
