@@ -6,6 +6,7 @@ import sdl2 as sdl
 
 from ed2d.opengl import gl, pgl
 
+
 def load_image(path):
     img = Image.open(path)
 
@@ -18,6 +19,7 @@ def load_image(path):
 
     width, height = img.size
     return width, height, data
+
 
 class BaseTexture(object):
     ''' Texture manager'''
@@ -32,9 +34,17 @@ class BaseTexture(object):
     # have external subclasses of the BaseTexture.
 
     _textureCount = 0
+
     def _set_unit_id(self):
         self.texUnitID = self._textureCount
         BaseTexture._textureCount += 1
+
+    def __init__(self, program):
+
+        self.program = program
+        self.texFormat = None
+
+        self._set_unit_id()
 
     def load_gl(self):
 
@@ -60,16 +70,14 @@ class BaseTexture(object):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.texID)
         self.program.set_uniform(self.texSampID, self.texUnitID)
 
+
 class Texture(BaseTexture):
 
     def __init__(self, path, program, texFormat=None):
-
+        super(Texture, self).__init__(program)
         self.path = path
-        self.program = program
 
         self.texFormat = texFormat
-
-        self._set_unit_id()
 
         self.width, self.height, self.data = load_image(self.path)
         self.load_gl()
@@ -78,12 +86,11 @@ class Texture(BaseTexture):
         super(Texture, self).load_gl()
         self.program.set_uniform_array(self.texResID, [float(self.width), float(self.height)])
 
+
 class TextureAtlas(BaseTexture):
     def __init__(self, program, maxWidth=1024, texFormat=None):
 
         self.program = program
-
-        self._set_unit_id()
 
         self.texFormat = texFormat
 
@@ -91,7 +98,8 @@ class TextureAtlas(BaseTexture):
         #    Indexed by textureID
         #    value:
         #        - a second dict with information about that texture
-        #            - x, y position in texture, width and height, texture data/uvcoords
+        #            - x, y position in texture, width and height, texture
+        #              data/uvcoords
         self.textures = []
         self.data = 0
         self.maxWidth = maxWidth
@@ -109,7 +117,7 @@ class TextureAtlas(BaseTexture):
         imgWidth = width
         imgHeight = height
 
-        if self.cursorPosX + imgWidth  + 1 >= self.maxWidth:
+        if (self.cursorPosX + imgWidth + 1) >= self.maxWidth:
 
             self.width = max(self.width, self.cursorPosX)
             self.cursorPosY += self.lineHeight
@@ -128,7 +136,7 @@ class TextureAtlas(BaseTexture):
         self.lineHeight = max(self.lineHeight, imgHeight + 1)
 
         self.textures.append({
-                'x1':x1, 'x2':x2, 'y1':y1, 'y2':y2,
+                'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2,
                 'width': width, 'height': height,
                 'texData': texData, 'uvCoords': None,
         })
