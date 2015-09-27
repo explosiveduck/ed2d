@@ -144,7 +144,7 @@ def clamp(size, value, minS, maxS):
         # Check to see is less than min
         output[i] = minS[i] if output[i] < minS[i] else output[i]
         #output[i] = (output[i] < min[i]) ? min[i] : output[i]
-    return vector.Vector(size, data=output)
+    return Vector(size, data=output)
 
 def transform(size, position, matrix):
     output = zero_vector(size)
