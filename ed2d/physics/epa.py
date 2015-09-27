@@ -195,9 +195,9 @@ class EPA(object):
 				return
 
 			# Compute the new closest point to closest edge direction
-			index1 = supportPoint(self.poly1, self.xf1.unrotate(-self.d))
+			index1 = supportPoint(self.poly1, self.xf1.unrotate(-self.d)) ########      BROKEN
 			p1 = xf1.transform(poly1.verts[index1])
-			index2 = supportPoint(self.poly2. self.xf2.unrotate(d))
+			index2 = supportPoint(self.poly2. self.xf2.unrotate(d))       ############ BROKEN
 			p2 = xf2.transform(poly2.verts[index2])
 			p = p1 - p2
 
