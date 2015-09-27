@@ -27,7 +27,7 @@ class Simplex(object):
     def __getitem__(self, key):
         return self.verts[key]
 
-    def getCount(Self):
+    def getCount(self):
         return len(self.verts)
 
     def copy(self, v):
