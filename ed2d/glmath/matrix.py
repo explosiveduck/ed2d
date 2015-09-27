@@ -652,7 +652,7 @@ def project(obj, model, proj, viewport):
     projM = typeutils.list_2d_to_1d(proj)
     modelM = typeutils.list_2d_to_1d(model)
 
-    T = m.Matrix(4)
+    T = Matrix(4)
     for r in range(4):
         for c in range(4):
             T[r][c] = 0.0
