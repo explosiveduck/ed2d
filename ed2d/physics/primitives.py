@@ -58,18 +58,18 @@ class Triangle(object):
 
         if x >= y and x >= z:
             # x is largest, project to the yz plane
-            nu = triArea2D(p[1], p[2], b[1], b[2], c[1], c[2]) # Area of PBC in yz plane
-            nv = triArea2D(p[1], p[2], c[1], c[2], a[1], a[2]) # Area of PCA in yz plane
+            nu = self.triArea2D(p[1], p[2], b[1], b[2], c[1], c[2]) # Area of PBC in yz plane
+            nv = self.triArea2D(p[1], p[2], c[1], c[2], a[1], a[2]) # Area of PCA in yz plane
             ood = 1.0 / m[0] # 1 / (2 * area of ABC in yz plane)
         elif y >= x and y >= z:
             # y is largest, project to the xz plane
-            nu = triArea2D(p[0], p[2], b[0], b[2], c[0], c[2]) # Area of PBC in xz plane
-            nv = triArea2D(p[0], p[2], c[0], c[2], a[0], a[2]) # Area of PCA in xz plane
+            nu = self.triArea2D(p[0], p[2], b[0], b[2], c[0], c[2]) # Area of PBC in xz plane
+            nv = self.triArea2D(p[0], p[2], c[0], c[2], a[0], a[2]) # Area of PCA in xz plane
             ood = 1.0 / -m[1] # 1 / (2 * area of ABC in xz plane)
         else:
             # z is largest, project to the xy plane
-            nu = triArea2D(p[0], p[1], b[0], b[1], c[0], c[1]) # Area of PBC in xy plane
-            nv = triArea2D(p[0], p[1], c[0], c[1], a[0], a[1]) # Area of PCA in xy plane
+            nu = self.triArea2D(p[0], p[1], b[0], b[1], c[0], c[1]) # Area of PBC in xy plane
+            nv = self.triArea2D(p[0], p[1], c[0], c[1], a[0], a[1]) # Area of PCA in xy plane
             ood = 1.0 / m[2]
 
         # Barycentric coordinates
