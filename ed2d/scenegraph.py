@@ -2,7 +2,7 @@ from ed2d.glmath import matrix
 
 
 class BaseNode(object):
-    def __init__(self, object):
+    def __init__(self, obj):
         self.nodeID = None
         self.isRoot = False
         self.root = None
@@ -40,7 +40,7 @@ class BaseNode(object):
 
 
 class RootNode(BaseNode):
-    def __init__(self, object):
+    def __init__(self, obj):
         self.nodeID = 0
         self.treeChildren = [self]
         self.children = [self]
@@ -58,26 +58,26 @@ class RootNode(BaseNode):
     def dettach(self, parent):
         print('Error can\'t dettach root node.')
 
-    def _add_tree_child(self, object):
+    def _add_tree_child(self, obj):
         if self.reusableIDs:
             nodeID = self.reusableIDs.pop(0)
-            self.treeChildren[nodeID] = object
+            self.treeChildren[nodeID] = obj
         else:
             nodeID = len(self.treeChildren)
-            self.treeChildren.append(object)
+            self.treeChildren.append(obj)
         self.nodeCount += 1
         return nodeID
 
-    def _del_tree_child(self, object):
-        nodeID = object.nodeID
+    def _del_tree_child(self, obj):
+        nodeID = obj.nodeID
         self.treeChildren[nodeID] = None
         self.reusableIDs.append(nodeID)
         self.nodeCount -= 1
 
 
 class GraphicsNode(BaseNode):
-    def __init__(self, object):
-        super(GraphicsNode, self).__init__(object)
+    def __init__(self, obj):
+        super(GraphicsNode, self).__init__(obj)
         self.matrix = matrix.Matrix(4)
         self.appliedMatrix = self.matrix
 
@@ -85,14 +85,14 @@ class GraphicsNode(BaseNode):
         self.matrix = matrix
 
 
-class SceneGraph(object):
+class SceneGraph(obj):
     def __init__(self):
         self.root = RootNode(None)
         self.root.matrix = matrix.Matrix(4)
         self.root.appliedMatrix = self.root.matrix
 
-    def establish(self, object, parent=None):
-        node = GraphicsNode(object)
+    def establish(self, obj, parent=None):
+        node = GraphicsNode(obj)
         if parent is None:
             parent = self.root
         else:
@@ -112,8 +112,8 @@ class SceneGraph(object):
         return self.root
 
     @classmethod
-    def _recurse_mtx_apply(self, parent, object):
-        object.appliedMatrix = parent.appliedMatrix * object.matrix
+    def _recurse_mtx_apply(self, parent, obj):
+        obj.appliedMatrix = parent.appliedMatrix * obj.matrix
 
     def apply_matrix(self):
         self.root.recurse(self._recurse_mtx_apply)
