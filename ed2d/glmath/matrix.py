@@ -78,7 +78,7 @@ def shearXZ3(x, z):
     ''' Shear on XZ. '''
     out = identity(3)
     out[0][1] = x
-    out[2][1] = y
+    out[2][1] = z
     return out
 
 def shearXY4(x, y):
