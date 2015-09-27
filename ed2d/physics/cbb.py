@@ -17,13 +17,13 @@ class CBB(object):
     	# Collision happens when the distance between the two centers is less than the sum of the radii
     	state = distanceCenters < distanceRadii
 
-    	# Calculate the depth penetration 
+    	# Calculate the depth penetration
     	depthPenetration = distanceCenters - (distanceRadii)
 
     	return CollisionData(state, tempDistance, depthPenetration)
 
     def getCenter(self):
-        return center
+        return self.center
 
     def getRadius(self):
-        return radius
+        return self.radius
