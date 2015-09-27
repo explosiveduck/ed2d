@@ -62,7 +62,7 @@ class Window(object):
 
         sdl.SDL_GL_MakeCurrent(window, context)
 
-    def fullscreen(self, mode):
+    def set_fullscreen(self, mode):
         '''Set the window fullscreen mode'''
         sdl.SDL_SetWindowFullscreen(self.window, fullscreenMap[mode])
 
