@@ -51,15 +51,15 @@ def reflect(incidentVec, norm):
     '''Reflect a vector'''
     return incidentVec - (norm * (2.0 * incidentVec.dot(norm)))
 
-def refract(IOR, incidentVec, Norm):
+def refract(IOR, incidentVec, normal):
     ''' Refract a vector. '''
     dotNI = normal.dot(incidentVec)
     k = 1.0 - IOR * IOR * IOR * (1.0 - dotNI * dotNI)
 
     if k < 0.0:
-        return Vector(len(Norm))
+        return Vector(normal.size)
     else:
-        scalar = IOR * DOTNI + math.sqrt(k)
+        scalar = IOR * dotNI + math.sqrt(k)
         return (IOR * incidentVec) - (scalar * normal)
 
 # 2D - get angle of the vector
@@ -135,14 +135,14 @@ def minS(size, vecA):
             mScalar = vecA[i]
     return mScalar
 
-def clamp(size, value, min, max):
+def clamp(size, value, minS, maxS):
     output = value
     for i in range(size):
         # Check to see if greater than max
-        output[i] = max[i] if output[i] > max[i] else output[i]
+        output[i] = maxS[i] if output[i] > maxS[i] else output[i]
         #output[i] = (output[i] > max[i]) ? max[i] : output[i]
         # Check to see is less than min
-        output[i] = min[i] if output[i] < min[i] else output[i]
+        output[i] = minS[i] if output[i] < minS[i] else output[i]
         #output[i] = (output[i] < min[i]) ? min[i] : output[i]
     return output
 
@@ -197,7 +197,7 @@ class Vector(object):
         else:
             return NotImplemented
 
-    def __isub__(self, vecB):
+    def __isub__(self, other):
         if isinstance(other, Vector):
             self.vector = vec_sub(self.size, self.vector, other.vector)
             return self
@@ -262,9 +262,6 @@ class Vector(object):
         self.vector = zero_vector(self.size)
         return self
 
-    def clone(self):
-        return Vector(self.size, data=self.vector)
-
     def negate(self):
         vecList = vec_neg(self.size, self.vector)
         return Vector(self.size, data=vecList)
@@ -284,13 +281,13 @@ class Vector(object):
     def magnitude(self):
         return magnitude(self.size, self.vector)
 
-    def clamp(self, value, min, max):
+    def clamp(self, value, minS, maxS):
         ''' Returns a new clamped vector. '''
-        return clamp(value, min, max)
+        return clamp(value, minS, maxS)
 
-    def i_clamp(self, value, min, max):
+    def i_clamp(self, value, minS, maxS):
         ''' Clamp the vector into place. '''
-        self.vector = clamp(value, min, max).Vector
+        self.vector = clamp(value, minS, maxS).Vector
         return self
 
     def i_normalize(self):
