@@ -165,7 +165,7 @@ class EPA(object):
 		self.xf1 = xf1
 		self.xf2 = xf2
 		self.simplex = simplex
-		self.polytope = genPolytope(self.simplex)
+		self.polytope = Polytope(self.simplex)
 
 		self.edgeHistory = []
 		self.closestEdge = 0
