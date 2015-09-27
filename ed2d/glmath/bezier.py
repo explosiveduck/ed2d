@@ -97,7 +97,12 @@ class BezierPath(object):
         potentialSamplePoint = sourcePoints[1]
 
         for i in range(2, sourcePointsLen, 1):
-            if (potentialSamplePoint - sourcePoints[i]).sqrMagnitude() > minSqrDistance && (samplePoints[len(samplePoints) - 2] - sourcePoints[i]).sqrMagnitude()) > maxSqrDistance:
+            # These variables need better names
+            pointDiff = potentialSamplePoint - sourcePoints[i]
+            pointDIff2 = samplePoints[len(samplePoints) - 2] - sourcePoints[i]
+
+            if (pointDiff.sqrMagnitude() > minSqrDistance and
+                    pointDIff2.sqrMagnitude() > maxSqrDistance):
                 samplePoints.append(potentialSamplePoint)
             potentialSamplePoint = sourcePoints[i]
 
