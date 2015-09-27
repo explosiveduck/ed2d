@@ -224,7 +224,7 @@ def det4(mat):
     sf17 = mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]
     sf18 = mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]
 
-    inverse = zero_matatrix(4)
+    inverse = zero_matrix(4)
     inverse[0][0] = + (mat[1][1] * sf00 - mat[1][2] * sf01 + mat[1][3] * sf02)
     inverse[0][1] = - (mat[1][0] * sf00 - mat[1][2] * sf03 + mat[1][3] * sf04)
     inverse[0][2] = + (mat[1][0] * sf01 - mat[1][1] * sf03 + mat[1][3] * sf05)
