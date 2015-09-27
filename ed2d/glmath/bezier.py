@@ -169,7 +169,8 @@ class BezierPath(object):
         leftDirection = (left - mid).normalize()
         rightDirection = (right - mid).normalize()
 
-        if (leftDirection.dot(rightDirection) > self.divison_threshold) || math.abs(tMid - 0.5) < 0.0001:
+        if (leftDirection.dot(rightDirection) > self.divison_threshold or
+                math.abs(tMid - 0.5) < 0.0001):
             pointsAddedCount = 0
 
             pointsAddedCount += self.findDrawingPointsAdded(curveIndex, t0, tMid, pointList, insertionIndex)
