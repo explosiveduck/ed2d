@@ -2,8 +2,6 @@ import math
 from ed2d.glmath import vector
 from ed2d.glmath import matrix
 
-from ed2d.pycompat import *
-
 
 def quat_add(quat, quat1):
     ''' Add two quaternions. '''
@@ -75,7 +73,7 @@ class Quaternion(object):
     def __mul__(self, other):
         if isinstance(other, Quaternion):
             return Quaternion(quat_mul_quat(self.data, other.data))
-        elif isinstance(other, Vector):
+        elif isinstance(other, vector.Vector):
             return Quaternion(quat_mul_vect(self.data, other.data))
         elif isinstance(other, float):
             return Quaternion(quat_mul_float(self.data, other))
@@ -86,7 +84,7 @@ class Quaternion(object):
         if isinstance(other, Quaternion):
             self.data = quat_mul_quat(self.data, other.data)
             return self
-        elif isinstance(other, Vector):
+        elif isinstance(other, vector.Vector):
             self.data = quat_mul_vect(self.data, other.data)
             return self
         elif isinstance(other, float):
