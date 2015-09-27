@@ -34,3 +34,17 @@ def conv_list_2d(listIn, cType):
             arrayOut[x][y] = listIn[x][y]
 
     return arrayOut
+
+def list_2d_to_1d(inlist):
+    ''' Convert a python 2D list to python 1D list. '''
+    sizeX = len(inlist[0])
+    sizeY = len(inlist)
+
+    rtnList = [None for x in range(sizeY*sizeX)]
+
+    for x in range(sizeY):
+        for y in range(sizeX):
+            print((y + x * sizeX), x, y)
+            rtnList[y + x * sizeX] = inlist[x][y]
+
+    return rtnList
