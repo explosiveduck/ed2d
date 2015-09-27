@@ -30,7 +30,6 @@ def glGetInteger(pname):
 
 def glShaderSource(shader, string):
     count = 1
-    cStrLife = []
     # TODO - fix this to allow an array of shader source to be used
     # if typeutils.is_sequence(string):
     #     count = len(string)
@@ -45,11 +44,9 @@ def glShaderSource(shader, string):
     #         strings[i] = typeutils.to_c_str(item, cStrLife, True)
     #     cString = ct.cast(strings, ct.POINTER(ct.c_char))
 
-    cString = typeutils.to_c_str(string, cStrLife, True)
+    cString = typeutils.to_c_str(string, True)
 
     gl.glShaderSource(shader, count, ct.pointer(cString), None)
-
-    del cStrLife[:]
 
 # target, size, data, usage
 def glBufferData(target, data, dataType, usage):
