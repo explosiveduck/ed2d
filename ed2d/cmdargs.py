@@ -23,7 +23,7 @@ class _CmdArgs(object):
         args.append('--' + name)
 
         if not noShort:
-            # Check through 
+            # Check through
             letter = None
             for i in range(len(name)):
                 if name[i] in self.letterArgs:
@@ -52,4 +52,4 @@ class _CmdArgs(object):
 
 CmdArgs = _CmdArgs()
 
-__all__ = [CmdArgs, ]
+__all__ = ['CmdArgs', ]
