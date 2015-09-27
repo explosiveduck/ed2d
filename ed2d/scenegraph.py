@@ -18,7 +18,7 @@ class BaseNode(object):
         return nodeID
 
     def detach(self):
-        self.parent.children.remove(node)
+        self.parent.children.remove(self)
         self.root._del_tree_child(self)
         self.parent = None
         self.root = None
