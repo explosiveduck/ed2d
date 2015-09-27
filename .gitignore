@@ -57,3 +57,5 @@ target/
 # cython compilation c files
 ed2d/glmath/cython/vector.c
 ed2d/glmath/cython/matrix.c
+
+launch.sh
