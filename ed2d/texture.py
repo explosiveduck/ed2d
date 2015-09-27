@@ -73,6 +73,9 @@ class Texture(BaseTexture):
 
         self.width, self.height, self.data = load_image(self.path)
         self.load_gl()
+
+    def load_gl(self):
+        super(Texture, self).load_gl()
         self.program.set_uniform_array(self.texResID, [float(self.width), float(self.height)])
 
 class TextureAtlas(BaseTexture):
@@ -152,7 +155,7 @@ class TextureAtlas(BaseTexture):
         Returns calculated vertex scaleing for textures by textureID
         This nomalizes all subtextures to the height of the tallest texture.
         This is done because the vertex data sent to the gpu is the same for
-        each 
+        each
         '''
 
         tex = self.textures[texID]
