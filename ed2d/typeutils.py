@@ -44,7 +44,6 @@ def list_2d_to_1d(inlist):
 
     for x in range(sizeY):
         for y in range(sizeX):
-            print((y + x * sizeX), x, y)
             rtnList[y + x * sizeX] = inlist[x][y]
 
     return rtnList
