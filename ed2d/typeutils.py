@@ -15,7 +15,6 @@ def cast_ptr(obj, ptrType):
 
 def to_c_str(text, extList=False):
     ''' Convert python strings to null terminated c strings. '''
-    global _stringRef
     # We only want to keep the cString data around for 1 call
     if not extList and len(_stringRef) != 0:
         _stringRef.remove(_stringRef[0])
