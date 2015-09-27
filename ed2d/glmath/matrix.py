@@ -613,7 +613,7 @@ def perspective(fov, aspect, znear, zfar):
 
 def perspectiveX(fov, aspect, znear, zfar):
     ''' Perspective projection matrix 4x4. FOVX'''
-    f = znear * math.tan((fov * PI / 360.0))
+    f = znear * math.tan((fov * math.pi / 360.0))
 
     xmax = f
     xmin = -f
