@@ -85,7 +85,7 @@ class GraphicsNode(BaseNode):
         self.matrix = matrix
 
 
-class SceneGraph(obj):
+class SceneGraph(object):
     def __init__(self):
         self.root = RootNode(None)
         self.root.matrix = matrix.Matrix(4)
