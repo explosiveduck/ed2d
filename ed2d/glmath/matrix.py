@@ -636,15 +636,15 @@ def perspectiveX(fov, aspect, znear, zfar):
 
 def lookAt(eye, center, up):
     ''' Matrix 4x4 lookAt function.'''
-    f = normalize(sub(center, eye))
-    u = normalize(up)
-    s = normalize(cross(f, u))
-    u = cross(s, f)
+    f = (center - eye).normalize()
+    u = up.normalize()
+    s = vector.cross(f, u).normalize()
+    u = vector.cross(s, f)
 
     output = [[s[0], u[0], -f[0], 0.0],
               [s[1], u[1], -f[1], 0.0],
               [s[2], u[2], -f[2], 0.0],
-              [-dot(s, eye), -dot(u, eye), dot(f, eye), 1.0]]
+              [-s.dot(eye), -u.dot(eye), f.dot(eye), 1.0]]
     return Matrix(4, data=output)
 
 def project(obj, model, proj, viewport):
@@ -662,7 +662,7 @@ def project(obj, model, proj, viewport):
     result = Vector(4)
 
     for r in range(4):
-        result[r] = dot(T[r], obj)
+        result[r] = T[r].dot(obj)
 
     rhw = 1.0 / result[3]
 
@@ -676,15 +676,15 @@ def unproject(winx, winy, winz, modelview, projection, viewport):
     IN = [0.0, 0.0, 0.0, 0.0]
     objCoord = [0.0, 0.0, 0.0]
 
-    A = m.mulM(projection, modelview)
-    m = m.inverse(A)
+    A = projection * modelview
+    m = A.inverse()
 
     IN[0] = (winx - viewport[0]) / viewport[2] * 2.0 - 1.0
     IN[1] = (winy - viewport[1]) / viewport[3] * 2.0 - 1.0
     IN[2] = 2.0 * winz - 1.0
     IN[3] = 1.0
 
-    OUT = m.mulV(m, IN)
+    OUT = m * IN
     if(OUT[3] == 0.0):
         return [0.0, 0.0, 0.0]
 
@@ -693,3 +693,4 @@ def unproject(winx, winy, winz, modelview, projection, viewport):
     objCoord[1] = out[1] * out[3]
     objCoord[2] = out[2] * out[3]
     return objCoord
+
