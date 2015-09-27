@@ -1,12 +1,14 @@
 
 import sdl2 as sdl
 
+
 class DisplayMode(object):
     def __init__(self):
         self.width = None
         self.height = None
         self.format = None
         self.refresh_rate = None
+
 
 class Monitor(object):
     def __init__(self):
@@ -33,6 +35,7 @@ def _sdl2_mode_convert(sdlMode):
 
     return mode
 
+
 def _sdl2_mode_init():
     dispMode = sdl.SDL_DisplayMode()
 
@@ -43,11 +46,13 @@ def _sdl2_mode_init():
 
     return dispMode
 
+
 def _cmp_displ_modes(mode1, mode2):
     return (mode1.width == mode2.width and
             mode1.height == mode2.heigt and
             mode1.refresh_rate == mode2.refresh_rate and
             mode1.format == mode2.format)
+
 
 class Monitors(object):
     def __init__(self):
@@ -57,18 +62,16 @@ class Monitors(object):
         self.update_monitors()
         self.update_display_modes()
 
-
     def _find_matching_mode(self, mode):
         modeMatch = None
         for dispMode in self.displayModes:
             if _cmp_displ_modes(dispMode, mode):
-                modeMatch = disMode
+                modeMatch = dispMode
                 break
             else:
                 dis.supportedModes.append(mode)
                 self.displayModes.append(mode)
         return modeMatch
-
 
     def update_display_modes(self):
         '''Re-aquire display mode data from sdl2'''
@@ -84,7 +87,6 @@ class Monitors(object):
 
                 mode = _sdl2_mode_convert(dispMode)
 
-
                 for disMode in self.displayModes:
                     if _cmp_displ_modes(disMode, mode):
                         dis.supportedModes.append(disMode)
@@ -99,7 +101,6 @@ class Monitors(object):
 
                 currMode = _sdl2_mode_convert(currDisplay)
                 dis.displayMode = self._find_matching_mode(currMode)
-
 
     def update_monitors(self):
         '''Re-aquire monitor data from sdl2'''
@@ -129,7 +130,6 @@ class Monitors(object):
             monitors.append(monitor)
 
         self.monitors = monitors
-
 
     def get_monitor_at(self, xPos, yPos):
         """ Returns a monitor based on a single point """
