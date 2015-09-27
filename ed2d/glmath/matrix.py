@@ -649,8 +649,8 @@ def lookAt(eye, center, up):
 
 def project(obj, model, proj, viewport):
     ''' The most hacked together project code in the world. :| It works tho. :3 '''
-    projM = convert2Dto1D(proj)
-    modelM = convert2Dto1D(model)
+    projM = typeutils.list_2d_to_1d(proj)
+    modelM = typeutils.list_2d_to_1d(model)
 
     T = m.Matrix(4)
     for r in range(4):
