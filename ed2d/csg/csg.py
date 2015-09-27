@@ -167,8 +167,8 @@ class CSG(object):
 
         polygons = []
 
-        def point(stack, slice, normalBlend):
-            angle = slice * math.pi * 2
+        def point(stack, sliceC, normalBlend):
+            angle = sliceC * math.pi * 2
             out = axisX * math.cos(angle) + axisY * math.sin(angle)
             pos = s + ray * stack + out * r
             normal = out * (1 - abs(normalBlend)) + axisZ * normalBlend
