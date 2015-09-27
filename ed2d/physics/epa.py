@@ -222,8 +222,8 @@ class EPA(object):
 			prevEdge = edge.prev
 			nextEdge = edge.next
 
-			polytope.insertEdge(prevEdge, Edge(prevEdge.index2, new_index))
-			polytope.insertEdge(prevEdge.next, Edge(new_index, nextEdge.index1))
+			self.polytope.insertEdge(prevEdge, Edge(prevEdge.index2, new_index))
+			self.polytope.insertEdge(prevEdge.next, Edge(new_index, nextEdge.index1))
 
 			# Check for duplicate support points. This is the main termination criteria.
 			duplicate = False
