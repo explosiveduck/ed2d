@@ -4,4 +4,4 @@ debug = CmdArgs.add_arg('debug', bool, 'Enable debug output.')
 
 def _debug(*args):
     if debug:
-        print(*args)
+        print (*args)
