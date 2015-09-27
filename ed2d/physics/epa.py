@@ -28,7 +28,7 @@ class Simplex(object):
 		return self.verts[key]
 
 	def getCount(Self):
-		return len(verts)
+		return len(self.verts)
 
 	def copy(self, v):
 		self.verts = v.verts
@@ -52,7 +52,7 @@ class Simplex(object):
 
 	def getClosestPoint(self):
 		if self.count is 1:
-			return self.verts[0].p 
+			return self.verts[0].p
 
 		if self.count is 2:
 			return vector.lerp(self.verts[0].p , self.verts[1].p, self.verts[1].u / self.divisor)
@@ -76,7 +76,7 @@ class Edge(object):
 class Polytope(object):
 	def __init__(self, simplex):
 		self.verts = []
-		
+
 		for i in range(simplex.count()):
 			self.verts[i] = SimplexVerts()
 			self.verts[i].copy(simplex.vertices[i])
@@ -155,7 +155,7 @@ class Polytope(object):
 
 		closestEdge = firstEdge
 
-		
+
 
 class EPA(object):
 	def __init__(self, poly1, xf1, poly2, xf2, simplex):
