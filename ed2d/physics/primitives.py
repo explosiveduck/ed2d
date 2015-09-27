@@ -1,3 +1,5 @@
+import math
+
 from ed2d.glmath import vector
 from ed2d.glmath import matrix
 
@@ -146,7 +148,7 @@ class Box(object):
         self.rotation = rotation
 
     def getFurthestPoint(self, direction):
-        halfWidth = vector.Vector(3).right() * self.halfDims.vector[0] 
+        halfWidth = vector.Vector(3).right() * self.halfDims.vector[0]
         halfHeight = vector.Vector(3).up() * self.halfDims.vector[1]
         halfDepth = vector.Vector(3).back() * self.halfDims.vector[2]
 
