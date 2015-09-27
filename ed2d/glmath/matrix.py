@@ -634,62 +634,62 @@ def perspectiveX(fov, aspect, znear, zfar):
            [0.0, 0.0,   d, 0.0]]
     return Matrix(4, data=out)
 
-def lookAt(eye, center, up):
-    ''' Matrix 4x4 lookAt function.'''
-    f = (center - eye).normalize()
-    u = up.normalize()
-    s = vector.cross(f, u).normalize()
-    u = vector.cross(s, f)
-
-    output = [[s[0], u[0], -f[0], 0.0],
-              [s[1], u[1], -f[1], 0.0],
-              [s[2], u[2], -f[2], 0.0],
-              [-s.dot(eye), -u.dot(eye), f.dot(eye), 1.0]]
-    return Matrix(4, data=output)
-
-def project(obj, model, proj, viewport):
-    ''' The most hacked together project code in the world. :| It works tho. :3 '''
-    projM = typeutils.list_2d_to_1d(proj)
-    modelM = typeutils.list_2d_to_1d(model)
-
-    T = Matrix(4)
-    for r in range(4):
-        for c in range(4):
-            T[r][c] = 0.0
-            for i in range(4):
-                T[r][c] += projM[r + i * 4] * modelM[i + c *4]
-
-    result = Vector(4)
-
-    for r in range(4):
-        result[r] = T[r].dot(obj)
-
-    rhw = 1.0 / result[3]
-
-    return [(1 + result[0] * rhw) * viewport[2] / 2.0 + viewport[0],
-            (1 + result[1] * rhw) * viewport[3] / 2.0 + viewport[1],
-            (result[2] * rhw) * (1 - 0) + 0, rhw]
-
-def unproject(winx, winy, winz, modelview, projection, viewport):
-    ''' Unproject a point from the screen and return the object coordinates. '''
-    m = Matrix(4)
-    IN = [0.0, 0.0, 0.0, 0.0]
-    objCoord = [0.0, 0.0, 0.0]
-
-    A = projection * modelview
-    m = A.inverse()
-
-    IN[0] = (winx - viewport[0]) / viewport[2] * 2.0 - 1.0
-    IN[1] = (winy - viewport[1]) / viewport[3] * 2.0 - 1.0
-    IN[2] = 2.0 * winz - 1.0
-    IN[3] = 1.0
-
-    OUT = m * IN
-    if(OUT[3] == 0.0):
-        return [0.0, 0.0, 0.0]
-
-    OUT[3] = 1.0 / OUT[3]
-    objCoord[0] = out[0] * out[3]
-    objCoord[1] = out[1] * out[3]
-    objCoord[2] = out[2] * out[3]
-    return objCoord
+# def lookAt(eye, center, up):
+#     ''' Matrix 4x4 lookAt function.'''
+#     f = (center - eye).normalize()
+#     u = up.normalize()
+#     s = vector.cross(f, u).normalize()
+#     u = vector.cross(s, f)
+#
+#     output = [[s[0], u[0], -f[0], 0.0],
+#               [s[1], u[1], -f[1], 0.0],
+#               [s[2], u[2], -f[2], 0.0],
+#               [-s.dot(eye), -u.dot(eye), f.dot(eye), 1.0]]
+#     return Matrix(4, data=output)
+#
+# def project(obj, model, proj, viewport):
+#     ''' The most hacked together project code in the world. :| It works tho. :3 '''
+#     projM = typeutils.list_2d_to_1d(proj)
+#     modelM = typeutils.list_2d_to_1d(model)
+#
+#     T = Matrix(4)
+#     for r in range(4):
+#         for c in range(4):
+#             T[r][c] = 0.0
+#             for i in range(4):
+#                 T[r][c] += projM[r + i * 4] * modelM[i + c *4]
+#
+#     result = vector.Vector(4)
+#
+#     for r in range(4):
+#         result[r] = T[r].dot(obj)
+#
+#     rhw = 1.0 / result[3]
+#
+#     return [(1 + result[0] * rhw) * viewport[2] / 2.0 + viewport[0],
+#             (1 + result[1] * rhw) * viewport[3] / 2.0 + viewport[1],
+#             (result[2] * rhw) * (1 - 0) + 0, rhw]
+#
+# def unproject(winx, winy, winz, modelview, projection, viewport):
+#     ''' Unproject a point from the screen and return the object coordinates. '''
+#     m = Matrix(4)
+#     IN = [0.0, 0.0, 0.0, 0.0]
+#     objCoord = [0.0, 0.0, 0.0]
+#
+#     A = projection * modelview
+#     m = A.inverse()
+#
+#     IN[0] = (winx - viewport[0]) / viewport[2] * 2.0 - 1.0
+#     IN[1] = (winy - viewport[1]) / viewport[3] * 2.0 - 1.0
+#     IN[2] = 2.0 * winz - 1.0
+#     IN[3] = 1.0
+#
+#     OUT = m * IN
+#     if(OUT[3] == 0.0):
+#         return [0.0, 0.0, 0.0]
+#
+#     OUT[3] = 1.0 / OUT[3]
+#     objCoord[0] = out[0] * out[3]
+#     objCoord[1] = out[1] * out[3]
+#     objCoord[2] = out[2] * out[3]
+#     return objCoord
