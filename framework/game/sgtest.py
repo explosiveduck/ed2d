@@ -2,12 +2,7 @@ from ed2d import window
 from ed2d import context
 from ed2d import events
 from ed2d import timing
-from ed2d import shaders
-from ed2d import glmath
-from ed2d import texture
-from ed2d import mesh
 from ed2d.opengl import gl
-from ed2d.opengl import pgl
 from ed2d import scenegraph
 
 class GameManager(object):
