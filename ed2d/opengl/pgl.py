@@ -169,7 +169,7 @@ def glUniformMatrix3fv(location, count, transpose, value):
 
     cDataPtr = typeutils.cast_ptr(cData, gl.GLfloat)
 
-    gl.glUniformMatrix3fv(location, count, transpose, cValuePtr)
+    gl.glUniformMatrix3fv(location, count, transpose, cDataPtr)
 
 def glUniformMatrix4fv(location, count, transpose, value):
     try:
