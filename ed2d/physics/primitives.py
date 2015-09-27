@@ -81,7 +81,7 @@ class Triangle(object):
 
     # Test if point p is contained in triangle (a, b, c)
     def testPointTriangle(self, a, b, c, p):
-        bV = barycentric(a, b, c, p)
+        bV = self.barycentric(a, b, c, p)
         return (bV[1] >= 0.0) and (bV[2] >= 0.0) and ((bV[1] + bV[2]) <= 1.0)
 
     def getFurthestPoint(self, direction):
