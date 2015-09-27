@@ -43,7 +43,7 @@ def matrix_div(mat, scalar):
     ''' Divide a matrix by a scalar. '''
     size = len(mat)
     matOut = zero_matrix(size)
-    crange = list(range(sizeA))
+    crange = list(range(size))
     for i in crange:
         for j in crange:
             matOut[i][j] = mat[j][i] / scalar
@@ -693,4 +693,3 @@ def unproject(winx, winy, winz, modelview, projection, viewport):
     objCoord[1] = out[1] * out[3]
     objCoord[2] = out[2] * out[3]
     return objCoord
-
