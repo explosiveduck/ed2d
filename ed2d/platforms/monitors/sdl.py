@@ -68,9 +68,6 @@ class Monitors(object):
             if _cmp_displ_modes(dispMode, mode):
                 modeMatch = dispMode
                 break
-            else:
-                dis.supportedModes.append(mode)
-                self.displayModes.append(mode)
         return modeMatch
 
     def update_display_modes(self):
@@ -94,6 +91,10 @@ class Monitors(object):
                     else:
                         dis.supportedModes.append(mode)
                         self.displayModes.append(mode)
+
+                if not self.displayModes:
+                    dis.supportedModes.append(mode)
+                    self.displayModes.append(mode)
 
                 currDisplay = _sdl2_mode_init()
 
