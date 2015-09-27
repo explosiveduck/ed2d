@@ -64,7 +64,7 @@ class Window(object):
 
     def fullscreen(self, mode):
         '''Set the window fullscreen mode'''
-        sdl.SDL_SetWindowFullscreen(self.window, fullscreenMaps[mode])
+        sdl.SDL_SetWindowFullscreen(self.window, fullscreenMap[mode])
 
     def flip(self):
         ''' Flip the back buffer to the front. '''
