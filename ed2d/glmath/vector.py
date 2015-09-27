@@ -144,7 +144,7 @@ def clamp(size, value, minS, maxS):
         # Check to see is less than min
         output[i] = minS[i] if output[i] < minS[i] else output[i]
         #output[i] = (output[i] < min[i]) ? min[i] : output[i]
-    return output
+    return vector.Vector(size, data=output)
 
 def transform(size, position, matrix):
     output = zero_vector(size)
@@ -281,13 +281,13 @@ class Vector(object):
     def magnitude(self):
         return magnitude(self.size, self.vector)
 
-    def clamp(self, value, minS, maxS):
+    def clamp(self, size, value, minS, maxS):
         ''' Returns a new clamped vector. '''
-        return clamp(value, minS, maxS)
+        return clamp(size, value, minS, maxS)
 
-    def i_clamp(self, value, minS, maxS):
+    def i_clamp(self, size, value, minS, maxS):
         ''' Clamp the vector into place. '''
-        self.vector = clamp(value, minS, maxS).Vector
+        self.vector = clamp(size, value, minS, maxS).vector
         return self
 
     def i_normalize(self):
