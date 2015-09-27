@@ -1,6 +1,4 @@
 from ed2d.glmath import vector
-from ed2d.glmath import matrix
-import math
 
 class SimplexVerts(object):
     def __init__(self):
@@ -106,7 +104,7 @@ class GJK(object):
         aO = -a
 
         if(ab.isInSameDirection(aO)):
-            dot = ab.dot(aO)
+            #dot = ab.dot(aO)
             #angle = math.acos(dot / ab.magnitude() * aO.magnitude())
             self.direction = vector.cross(vector.cross(ab, aO), ab)
         else:
@@ -166,8 +164,8 @@ class GJK(object):
         ac = c - a
         ad = d - a
         ab = b - a
-        bc = c - b
-        bd = d - b
+        #bc = c - b
+        #bd = d - b
 
         acd = vector.cross(ad, ac)
         abd = vector.cross(ab, ad)
