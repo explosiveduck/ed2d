@@ -151,7 +151,7 @@ def rotate3(axis, theta):
 
     oneMinusCos = (1.0 - c)
 
-    nAxis = vector.normalize(axis)
+    nAxis = axis.normalize()
 
     x2 = nAxis[0] * nAxis[0]
     y2 = nAxis[1] * nAxis[1]
@@ -169,7 +169,7 @@ def rotate4(axis, theta):
 
     oneMinusCos = (1.0 - c)
 
-    nAxis = vector.normalize(axis)
+    nAxis = axis.normalize()
 
     x2 = nAxis[0] * nAxis[0]
     y2 = nAxis[1] * nAxis[1]
@@ -309,7 +309,7 @@ def inverse4(mat):
     sf17 = mat[1][0] * mat[2][2] - mat[2][0] * mat[1][2]
     sf18 = mat[1][0] * mat[2][1] - mat[2][0] * mat[1][1]
 
-    inverse = zero_matatrix(4)
+    inverse = zero_matrix(4)
     inverse[0][0] = + (mat[1][1] * sf00 - mat[1][2] * sf01 + mat[1][3] * sf02)
     inverse[0][1] = - (mat[1][0] * sf00 - mat[1][2] * sf03 + mat[1][3] * sf04)
     inverse[0][2] = + (mat[1][0] * sf01 - mat[1][1] * sf03 + mat[1][3] * sf05)
