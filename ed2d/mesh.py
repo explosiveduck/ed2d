@@ -2,22 +2,22 @@ from ed2d import glmath
 from ed2d.opengl import gl, pgl
 
 
-def buffer_object(data, type):
+def buffer_object(data, typeM):
     if data or 0:
         vbo = pgl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vbo)
-        pgl.glBufferData(gl.GL_ARRAY_BUFFER, data, type, gl.GL_STATIC_DRAW)
+        pgl.glBufferData(gl.GL_ARRAY_BUFFER, data, typeM, gl.GL_STATIC_DRAW)
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
         return vbo
     else:
         return None
 
 
-def index_buffer_object(data, type):
+def index_buffer_object(data, typeM):
     if data or 0:
         ibo = pgl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, ibo)
-        pgl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, data, type,
+        pgl.glBufferData(gl.GL_ELEMENT_ARRAY_BUFFER, data, typeM,
                          gl.GL_STATIC_DRAW)
         gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, 0)
         return ibo
