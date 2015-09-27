@@ -29,12 +29,12 @@ class Rectangle(object):
         self.modelMatrix = glmath.Matrix(4)
 
         # Params processing
-        if width == None and height == None:
+        if width is None and height is None:
             self.findDim()
 
-        if flag == None and data == None:
+        if flag is None and data is None:
             self.generateVertices()
-        elif flag == 'QT' and data == None:
+        elif flag == 'QT' and data is None:
             self.fgenerateVertices()
         else:
             self.data = data
