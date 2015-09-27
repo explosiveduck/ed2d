@@ -34,10 +34,10 @@ class Camera(object):
         self.arcball_on = False
 
 
-    def perspectiveProj(self, fov, aspect, znear, zfar):
+    def perspectiveProjection(self, fov, aspect, znear, zfar):
         self.perspectiveProj = matrix.perspective(fov, aspect, znear, zfar)
 
-    def orthographicProj(self, left, right, bottom, top, znear, zfar):
+    def orthographicProjection(self, left, right, bottom, top, znear, zfar):
         self.orthographicProj = matrix.orthographic(left, right, bottom, top, znear, zfar)
 
     def calcViewMatrix(self):
@@ -93,7 +93,7 @@ class Camera(object):
         if self.arcball_on:
             self.cur_x = deltaX
             self.cur_y = deltaY
-            self.doArcBallRotation()
+            self.doArcBallRotation(tick)
 
     def rotate(self, axis, angle):
         self.rotation = self.rotation * quaternion.QuatFromAxis(axis, angle)
@@ -109,7 +109,10 @@ class Camera(object):
         self.calcViewMatrix()
         return self.viewMatrix
 
-    def doArcBallRotation(self):
+    def doArcBallRotation(self, tick):
+
+        last_x = 0
+        last_y = 0
 
         def get_vector(x, y):
             point = vector.Vector(3, data=[1.0 * x / self.screen_width * 2 - 1.0, -(1.0 * y / self.screen_height * 2 - 1.0), 0.0])
