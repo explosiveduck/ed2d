@@ -52,15 +52,15 @@ def glShaderSource(shader, string):
     del cStrLife[:]
 
 # target, size, data, usage
-def glBufferData(target, data, type, usage):
+def glBufferData(target, data, dataType, usage):
 
     if typeutils.is_sequence(data[0]):
-        cData = typeutils.conv_list_2d(data, type)
+        cData = typeutils.conv_list_2d(data, dataType)
 
     else:
-        cData = typeutils.conv_list(data, type)
+        cData = typeutils.conv_list(data, dataType)
 
-    cDataPtr = typeutils.cast_ptr(cData, type)
+    cDataPtr = typeutils.cast_ptr(cData, dataType)
     dataSize = ct.sizeof(cData)
 
     gl.glBufferData(target, dataSize, cDataPtr, usage)
@@ -84,7 +84,7 @@ def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
         castType = glTypeMap[ptype]
         try:
             data[0][0]
-        except:
+        except TypeError:
             cData = typeutils.conv_list(data, gl.GLfloat)
         else:
             cData = typeutils.conv_list_2d(data, gl.GLfloat)
@@ -177,10 +177,10 @@ def glUniformMatrix4fv(location, count, transpose, value):
     except:
         try:
             cDataPtr = typeutils.cast_ptr(value, gl.GLfloat)
-        except:
+        except TypeError:
             try:
                 value[0][0]
-            except:
+            except TypeError:
                 cData = typeutils.conv_list(value, gl.GLfloat)
             else:
                 cData = typeutils.conv_list_2d(value, gl.GLfloat)
@@ -195,9 +195,9 @@ def glGenTextures(n):
     return textures[0]
 
 
-def glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels):
+def glTexImage2D(target, level, internalformat, width, height, border, formatGl, dataType, pixels):
     if not (pixels == 0 or pixels is None):
-        castType = glTypeMap[type]
+        castType = glTypeMap[dataType]
         if typeutils.is_sequence(pixels[0]):
             cData = typeutils.conv_list_2d(pixels, castType)
         else:
@@ -206,14 +206,14 @@ def glTexImage2D(target, level, internalformat, width, height, border, format, t
         cPixelPtr = typeutils.cast_ptr(cData, castType)
     else:
         cPixelPtr = 0
-    gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, cPixelPtr)
+    gl.glTexImage2D(target, level, internalformat, width, height, border, formatGl, dataType, cPixelPtr)
 
-def glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels):
-    castType = glTypeMap[type]
+def glTexSubImage2D(target, level, xoffset, yoffset, width, height, formatGl, dataType, pixels):
+    castType = glTypeMap[dataType]
     if typeutils.is_sequence(pixels[0]):
         cData = typeutils.conv_list_2d(pixels, castType)
     else:
         cData = typeutils.conv_list(pixels, castType)
 
     cPixelPtr = typeutils.cast_ptr(cData, castType)
-    gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, cPixelPtr)
+    gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, formatGl, dataType, cPixelPtr)
