@@ -1,7 +1,7 @@
 import math
 from ed2d.glmath import vector
 from ed2d.glmath import matrix
-from ed2d.glmath import quaternion # needs implementation 
+from ed2d.glmath import quaternion # needs implementation
 
 class Camera(object):
     def __init__(self):
@@ -13,7 +13,7 @@ class Camera(object):
         self.sensitivity = 0.05
         self.aperature = 0
 
-        # Camera modifiers 
+        # Camera modifiers
         self.cameraRotation = matrix.Matrix(4)
         self.cameraPosition = matrix.Matrix(4)
         self.cameraTranslation = matrix.Matrix(4)
@@ -48,7 +48,7 @@ class Camera(object):
         self.viewMatrix = self.cameraTranslation * self.cameraRotation
         self.viewMatrixInverse = matrix.inverse4(self.viewMatrix)
 
-    def onKeys(self, key, tick):
+    def onKeys(self, keys, tick):
         moveAmount = 0.5 * tick
 
         if 'W' in keys:
@@ -110,10 +110,10 @@ class Camera(object):
         return self.viewMatrix
 
     def doArcBallRotation(self):
-        
+
         def get_vector(x, y):
             point = vector.Vector(3, data=[1.0 * x / self.screen_width * 2 - 1.0, -(1.0 * y / self.screen_height * 2 - 1.0), 0.0])
-            
+
             pointSqred = point[0] * point[0] + point[1] * point[1]
 
             if pointSqred <= 1 * 1:
@@ -135,6 +135,3 @@ class Camera(object):
 
             last_x = self.cur_x
             last_y = self.cur_y
-        
-
-
