@@ -40,6 +40,7 @@ class Rectangle(object):
             self.data = data
             self.__findDim()
 
+        self.scale(width, height)
         self.translate(x, y)
 
 
