@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/8f1fcec7fc2a4b95b170cfbdbe1a8952)](https://www.codacy.com/app/matthewsitton/ed2d)
 ed2d
 =====
 This library/engine/framework started out originally as an entry for pyweek 19. We didnt get that far with the game, but we decided to keep the code around and continue extending it. We hope to have an alpha release soon.
