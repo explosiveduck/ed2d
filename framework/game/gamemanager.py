@@ -73,7 +73,6 @@ class GameManager(object):
         '''Player'''
         # Create a rectangle the long way, this will be the player
         self.cModelTestRect = rectangle.Rectangle(100.0, 100.0, width=32.0, height=32.0)
-        self.cModelTestRect.scale(32, 32)
         self.cModelTestRect.update()
 
         # Creating a object steps:
