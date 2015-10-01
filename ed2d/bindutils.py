@@ -53,7 +53,7 @@ class _BindGL(object):
             address = getattr(self.lib, name)
         except AttributeError:
             name = name.encode(encoding='UTF-8')
-            address = glGetProcAddress(name.encode(encoding='UTF-8'))
+            address = glGetProcAddress(name)
 
         return ct.cast(address, function)
 
