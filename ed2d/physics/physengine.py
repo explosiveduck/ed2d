@@ -19,10 +19,8 @@ class PhysEngine(object):
 
         # Pass this for a while, this basically add velocity to objects
         # But is kinda of a stupid way to do
-        '''
-        for i in range(len(self.pObjects)):
-            self.pObjects[i].update(delta)
-        '''
+        # for i in range(len(self.pObjects)):
+        #     self.pObjects[i].update(delta)
 
         # Run collision check
         self.collisions()
