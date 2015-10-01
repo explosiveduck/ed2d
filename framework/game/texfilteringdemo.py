@@ -1,4 +1,3 @@
-import random as rnd
 from ed2d import window
 from ed2d import events
 from ed2d import context
@@ -61,11 +60,13 @@ class GameManager(object):
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
         self.texAtlas = texture.Texture(imagePath, self.program)
 
-        '''Physics Scene'''
+        ### Physics Scene ###
+
         # Create a physics engine
         self.physicsEngineTest = physengine.PhysEngine()
 
-        '''Player physical model'''
+        ### Player physical model ###
+
         # Create a rectangle the long way, this will be the player
         self.cModelTestRect = rectangle.Rectangle(0.0, 0.0, width=800, height=600)
         self.cModelTestRect.update()
@@ -89,7 +90,8 @@ class GameManager(object):
         self.meshObjectTest.addProgram(self.program)
         self.meshObjectTest.addTexture(self.texAtlas)
         self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)
-        '''End Player'''
+
+        ### End Player ###
 
         # Setup projection
         self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
