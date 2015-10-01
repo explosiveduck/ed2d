@@ -66,11 +66,11 @@ class GameManager(object):
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
         self.texAtlas = texture.Texture(imagePath, self.program)
 
-        '''Physics Test Scene'''
+        # Physics Test Scene
         # Create a physics engine
         self.physicsEngineTest = physengine.PhysEngine()
 
-        '''Player'''
+        # Player
         # Create a rectangle the long way, this will be the player
         self.cModelTestRect = rectangle.Rectangle(100.0, 100.0, width=32.0, height=32.0)
         self.cModelTestRect.update()
@@ -93,9 +93,9 @@ class GameManager(object):
         self.meshObjectTest.addProgram(self.program)
         self.meshObjectTest.addTexture(None)
         self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)
-        '''End Player'''
+        # End Player
 
-        '''Scene objects'''
+        # Scene objects
         # For now store all the mesh objects in here
         # We need some sort of rendering engine class
 
@@ -122,7 +122,7 @@ class GameManager(object):
             tempMesh.addPhysicsObject(tempObj)
             self.meshObjects.append(tempMesh)
 
-        '''End Scene Objects'''
+        # End Scene Objects
 
 
 
