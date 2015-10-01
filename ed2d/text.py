@@ -1,15 +1,11 @@
 import ctypes as ct
 
-import sdl2 as sdl
 import freetype.raw as ft
 
 from ed2d import texture
 from ed2d import mesh
-from ed2d import shaders
-from ed2d import files
 from ed2d import typeutils
 from ed2d.opengl import gl, pgl
-from ed2d import glmath
 # from ed2d import glmath as cyglmath
 from ed2d.glmath import cython as cyglmath
 
@@ -94,7 +90,7 @@ class Font(object):
         try:
             return self.charDataCache[char]
 
-        except:
+        except KeyError:
             index = ft.FT_Get_Char_Index(self.face, ord(char))
 
             if ft.FT_Load_Glyph(self.face, index, ft.FT_LOAD_RENDER):
@@ -188,7 +184,7 @@ class Text(object):
         penPosX = xPos
         penPosY = self.basePos + yPos
         for txt in textLines:
-            for i, c in enumerate(txt):
+            for c in txt:
                 char = self.chrMap[c]
                 char.render(penPosX, penPosY)
                 penPosX += char.advance
