@@ -1,11 +1,11 @@
 class cModel(object):
 
-    def __init__(self, object):
-        # The following need to be "overwritten" by 
+    def __init__(self, obj):
+        # The following need to be "overwritten" by
         # by the object class.. ie. rectangle or circle in case of 2D
-        self.object = object
-        self.type = object.getType()
-        self.cmodel = object.getCollisionData()
+        self.object = obj
+        self.type = obj.getType()
+        self.cmodel = obj.getCollisionData()
 
     def intersect(self, cother):
         '''Check interesection between two colliders'''
