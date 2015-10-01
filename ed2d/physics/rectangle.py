@@ -64,10 +64,10 @@ class Rectangle(object):
         '''Generate a box based on width and height'''
         # This is here to be used with the quadtree
         # Is definetly temporary, it might be better to init a unit sized rectangle and then scale it
-        self.data = [0.0, self.height,
-                     self.width, self.height,
-                     0.0, 0.0,
-                     self.width, 0.0]
+        self.data = [[0.0, self.height],
+                     [self.width, self.height],
+                     [0.0, 0.0],
+                     [self.width, 0.0]]
 
     def generateVertices(self):
         '''Generate a unit box.'''
