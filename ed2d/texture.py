@@ -1,6 +1,4 @@
 
-from collections import OrderedDict
-
 from PIL import Image
 import sdl2 as sdl
 
