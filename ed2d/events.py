@@ -8,7 +8,7 @@ osName = platform.system()
 #     from ed2d.events.win32 import Events
 # elif osName == 'Linux':
 #     from ed2d.events.x11 import Events
-if osName in ('Darwin', 'Linux'):
+if osName in ('Windows', 'Darwin', 'Linux'):
     from ed2d.platforms.events.sdl import Events
 else:
     pass
