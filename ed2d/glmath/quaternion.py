@@ -2,6 +2,9 @@ import math
 from ed2d.glmath import vector
 from ed2d.glmath import matrix
 
+def quat_identity():
+    ''' Returns the quaternion identity. '''
+    return [1.0, 0.0, 0.0, 0.0]
 
 def quat_add(quat, quat1):
     ''' Add two quaternions. '''
@@ -35,12 +38,48 @@ def quat_div_float(quat, scalar):
     ''' Divide a quaternion with a scalar (float). '''
     return [quat[0] / scalar, quat[1] / scalar, quat[2] / scalar, quat[3] / scalar]
 
+def quat_neg(quat):
+    ''' Negate the elements of a quaternion. '''
+    return [-quat[0], -quat[1], -quat[2], -quat[3]]
+
+def quat_dot(quat1, quat2):
+    ''' Dot product between two quaternions. Returns a scalar. '''
+    rdp= 0
+    for i in range(4):
+        rdp += quat1[i] * quat2[i]
+    return rdp
+
+def quat_magnitude(quat):
+    ''' Compute magnitude of a quaternion. Returns a scalar. '''
+    rmg = 0
+    for i in range(4):
+        rmg += quat[i] * quat[i]
+    return math.sqrt(rmg)
+
+def quat_normalize(quat):
+    ''' Returns a normalized quaternion. '''
+    length = quat_magnitude(quat)
+    oquat = quat_identity()
+    if length is not 0:
+        for i in range(4):
+            oquat[i] = quat[i] / length
+    return oquat
+
+def quat_conjugate(quat):
+    ''' Returns the conjugate of a quaternion. '''
+    idquat = quat_identity()
+    for i in range(4):
+        idquat[i] = -quat[i]
+    idquat[0] = -idquat[0]
+    return idquat
+
+
 class Quaternion(object):
 
     def __init__(self, data=None):
 
         if data is None:
-            self.data = [1.0, 0.0, 0.0, 0.0]
+            self.data = quat_identity()
         else:
             self.data = data
 
@@ -105,3 +144,45 @@ class Quaternion(object):
             return self
         else:
             return NotImplemented
+
+    def i_negate(self):
+        self.data = quat_neg(self.data)
+        return self
+
+    def negate(self):
+        quatList = quat_neg(self.data)
+        return Quaternion(quatList)
+
+    def i_identity(self):
+        self.data = quat_identity()
+        return self
+
+    def identity(self):
+        quatList = quat_identity()
+        return Quaternion(quatList)
+
+    def magnitude(self):
+        return quat_magnitude(self.data)
+
+    def dot(self, quat2):
+        if isinstance(quat2, Quaternion):
+            return quat_dot(self.data, quat2.data)
+        else:
+            return NotImplemented
+
+    def i_normalize(self):
+        self.data = quat_normalize(self.data)
+        return self
+
+    def normalize(self):
+        quatList = quat_normalize(self.data)
+        return Quaternion(quatList)
+
+    def i_conjugate(self):
+        self.data = quat_conjugate(self.data)
+        return self
+
+    def conjugate(self):
+        quatList = quat_conjugate(self.data)
+        return Quaternion(quatList)
+
