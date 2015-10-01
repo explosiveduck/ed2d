@@ -1,12 +1,14 @@
+'''
+Python GL Wrapper for opengl, gives cleaner access to the opengl api.
+Aims to be similar PyOpenGL where it makes sense.
+'''
+
 import ctypes as ct
 
 from ed2d.opengl import gl
 from ed2d import typeutils
 
-'''
-Python GL Wrapper for opengl, gives cleaner access to the opengl api.
-Aims to be similar PyOpenGL where it makes sense.
-'''
+
 
 def glGetInteger(pname):
     # because this function can return differant amounts of data
