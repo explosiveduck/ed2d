@@ -22,8 +22,9 @@ except ImportError:
     # add location of the ed2d package to the python path so
     # it can be imported.
     sys.path.append(path)
-    
+
     import ed2d
+    del ed2d
 
 from ed2d import files
 from ed2d import cmdargs
