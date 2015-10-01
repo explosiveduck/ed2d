@@ -40,8 +40,9 @@ class Rectangle(object):
             self.data = data
             self.__findDim()
 
-        self.scale(width, height)
         self.translate(x, y)
+        self.scale(self.width, self.height)
+        self.update()
 
 
     def make_aabb(self):
@@ -81,8 +82,8 @@ class Rectangle(object):
         self.scaleDeltaY = valueY / self._scaleY
         self._scaleX = valueX
         self._scaleY = valueY
-        self.width = self.scaleDeltaX
-        self.height = self.scaleDeltaY
+        self.width = valueX
+        self.height = valueY
 
     def translate(self, x, y):
         '''Translate the object by X and Y'''
