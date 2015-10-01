@@ -57,7 +57,7 @@ class GameManager(object):
         self.textScroll = 0
         self.meshes = []
 
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
