@@ -33,6 +33,7 @@ class GameManager(object):
         print('MOO')
         self.sg = scenegraph.SceneGraph()
         listNode = self.sg.establish([])
+        print(listNode)
         stringNode = self.sg.establish('')
         self.sg.establish({}, parent=stringNode)
 
