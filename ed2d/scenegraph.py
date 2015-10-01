@@ -12,7 +12,7 @@ class BaseNode(object):
     def attach(self, parent):
         self.root = parent.root
         self.parent = parent
-        nodeID = self.root._add_tree_child(self)
+        nodeID = self.root.add_tree_child(self)
         self.nodeID = nodeID
         self.parent.children.append(self)
         return nodeID
@@ -58,7 +58,7 @@ class RootNode(BaseNode):
     def dettach(self, parent):
         print('Error can\'t dettach root node.')
 
-    def _add_tree_child(self, obj):
+    def add_tree_child(self, obj):
         if self.reusableIDs:
             nodeID = self.reusableIDs.pop(0)
             self.treeChildren[nodeID] = obj
