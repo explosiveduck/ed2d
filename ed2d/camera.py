@@ -76,12 +76,10 @@ class Camera(object):
             self.movie(self.rotation.getUp(), -moveAmount)
 
         # Mouse buttons
-        '''
-        if 'MOUSE_LEFT' in keys:
-            self.arcball_on = True
-        else:
-            self.arcball_on = False
-        '''
+        # if 'MOUSE_LEFT' in keys:
+        #     self.arcball_on = True
+        # else:
+        #     self.arcball_on = False
 
     def onMouseMove(self, deltaX, deltaY, tick):
         if deltaX != 0:
