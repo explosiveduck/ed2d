@@ -173,7 +173,7 @@ def glUniformMatrix3fv(location, count, transpose, value):
 def glUniformMatrix4fv(location, count, transpose, value):
     try:
         gl.glUniformMatrix4fv(location, count, transpose, value[0])
-    except:
+    except Exception: # not sure yet what type the exception it :/
         try:
             cDataPtr = typeutils.cast_ptr(value, gl.GLfloat)
         except TypeError:
