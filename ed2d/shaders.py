@@ -1,7 +1,7 @@
 from ed2d.opengl import gl, pgl
 from ed2d import files
 from ed2d import typeutils
-from ed2d.glmath import Matrix, Vector
+from ed2d.glmath import Vector
 
 
 class ShaderBase(object):
