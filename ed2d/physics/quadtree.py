@@ -1,5 +1,5 @@
-from ed2d.physics.rectangle import*
-from ed2d.physics.physobj import*
+from ed2d.physics.rectangle import Rectangle
+from ed2d.physics.physobj import PhysObj
 
 class QuadTree(object):
 	def __init__(self, lvl, bounds):
@@ -39,24 +39,24 @@ class QuadTree(object):
 	# Determine which node the objects belongs to.
 	# -1 means object cannot completely fit within
 	# A child node and is part of the parent node
-	def getIndex(self, object):
+	def getIndex(self, obj):
 		index = -1
 		verticalMidPoint = self.bounds.getX() + (self.bounds.getWidth() / 2)
 		horizontalMidPoint = self.bounds.getY() + (self.bounds.getHeight() / 2)
 
 		# Object can completely fit whitin the top quadrants
-		topQuadrant = (object.getY() < horizontalMidPoint) and ((object.getY() + object.getHeight()) < horizontalMidPoint)
+		topQuadrant = (obj.getY() < horizontalMidPoint) and ((obj.getY() + obj.getHeight()) < horizontalMidPoint)
 		# Object can completely fit whitin the bottom quadrants
-		bottomQuadrant = (object.getY() > horizontalMidPoint)
+		bottomQuadrant = (obj.getY() > horizontalMidPoint)
 
 		# Object can completely fit within left quadrants
-		if ((object.getX() < verticalMidPoint) and ((object.getX() + object.getWidth()) < verticalMidPoint)):
+		if ((obj.getX() < verticalMidPoint) and ((obj.getX() + obj.getWidth()) < verticalMidPoint)):
 			if topQuadrant:
 				index = 1
 			elif bottomQuadrant:
 				index = 2
 		# Object can completely fit within right quadrants
-		elif (object.getX() > verticalMidPoint):
+		elif (obj.getX() > verticalMidPoint):
 			if topQuadrant:
 				index = 0
 			elif bottomQuadrant:
