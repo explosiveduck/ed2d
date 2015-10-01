@@ -19,7 +19,7 @@ class BaseNode(object):
 
     def detach(self):
         self.parent.children.remove(self)
-        self.root._del_tree_child(self)
+        self.root.del_tree_child(self)
         self.parent = None
         self.root = None
         self.nodeID = None
@@ -68,7 +68,7 @@ class RootNode(BaseNode):
         self.nodeCount += 1
         return nodeID
 
-    def _del_tree_child(self, obj):
+    def del_tree_child(self, obj):
         nodeID = obj.nodeID
         self.treeChildren[nodeID] = None
         self.reusableIDs.append(nodeID)
