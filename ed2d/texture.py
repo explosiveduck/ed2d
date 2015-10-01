@@ -89,6 +89,7 @@ class Texture(BaseTexture):
 
 class TextureAtlas(BaseTexture):
     def __init__(self, program, maxWidth=1024, texFormat=None):
+        super(TextureAtlas, self).__init__(program)
 
         self.program = program
 
