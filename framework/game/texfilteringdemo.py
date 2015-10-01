@@ -6,7 +6,6 @@ from ed2d import files
 from ed2d import shaders
 from ed2d.opengl import gl
 from ed2d.opengl import pgl
-from ed2d import typeutils
 from ed2d import glmath
 from ed2d import texture
 from ed2d import mesh
