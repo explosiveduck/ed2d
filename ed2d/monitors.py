@@ -9,10 +9,8 @@ osName = platform.system()
 # # elif osName == 'Linux':
 # 	# from ed2d.monitors.x11 import Monitors
 if osName in ('Windows', 'Darwin', 'Linux'):
- 	from ed2d.monitors.sdl2 import Monitors
+ 	from ed2d.platforms.monitors.sdl import Monitors
 else:
  	pass
-
-from ed2d.platforms.monitors.sdl import Monitors
 
 __all__ = ['Monitors']
