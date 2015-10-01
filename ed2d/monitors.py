@@ -13,6 +13,6 @@ import platform
 # else:
 # 	pass
 
-from ed2d.platforms.monitors.sdl import *
+from ed2d.platforms.monitors.sdl import Monitors
 
 __all__ = ['Monitors']
