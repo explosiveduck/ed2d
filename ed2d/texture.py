@@ -1,6 +1,5 @@
 
 from PIL import Image
-import sdl2 as sdl
 
 from ed2d.opengl import gl, pgl
 
