@@ -81,7 +81,7 @@ cdef float* identity(int size):
 
     for x from 0 <= x < size by 1:
         for y from 0 <= y < size by 1:
-          rtnMat[y + x * size] = 0.0
+            rtnMat[y + x * size] = 0.0
             if x==y:
                 rtnMat[y + x * size] = 1.0
             else:
