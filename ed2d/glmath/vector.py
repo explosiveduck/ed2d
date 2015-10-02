@@ -110,7 +110,7 @@ def magnitude(size, vecA):
 def normalize(size, vecA):
     length = magnitude(size, vecA)
     temp = zero_vector(size)
-    if length != 0:
+    if length is not 0:
         for i in range(size):
             temp[i] = vecA[i] / length
     return temp
