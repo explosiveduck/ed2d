@@ -159,6 +159,36 @@ def quat_lerp(quat0, quat1, t):
 
     return outList
 
+def quat_to_matrix(quat):
+    ''' Converts a quaternion to a rotational 4x4 matrix. '''
+    x2 = quat.data[1] * quat.data[1]
+    y2 = quat.data[2] * quat.data[2]
+    z2 = quat.data[3] * quat.data[3]
+    xy = quat.data[1] * quat.data[2]
+    xz = quat.data[1] * quat.data[3]
+    yz = quat.data[2] * quat.data[3]
+    wx = quat.data[0] * quat.data[1]
+    wy = quat.data[0] * quat.data[2]
+    wz = quat.data[0] * quat.data[3]
+
+    outputMatrix = matrix.Matrix(4)
+
+    outputMatrix.data[0][0] = 1.0 - 2.0 * y2 - 2.0 * z2
+    outputMatrix.data[0][1] = 2.0 * xy + 2.0 * wz
+    outputMatrix.data[0][2] = 2.0 * xz - 2.0 * wy
+    outputMatrix.data[0][3] = 0.0
+
+    outputMatrix.data[1][0] = 2.0 * xy - 2.0 * wz
+    outputMatrix.data[1][1] = 1.0 - 2.0 * x2 - 2.0 * z2
+    outputMatrix.data[1][2] = 2.0 * yz + 2.0 * wx
+    outputMatrix.data[1][3] = 0.0
+
+    outputMatrix.data[2][0] = 2.0 * xz + 2.0 * wy
+    outputMatrix.data[2][1] = 2.0 * yz - 2.0 * wx
+    outputMatrix.data[2][2] = 1.0 - 2.0 * x2 - 2.0 * y2
+    outputMatrix.data[2][3] = 0.0
+
+    return outputMatrix
 
 class Quaternion(object):
 
@@ -282,3 +312,59 @@ class Quaternion(object):
     def lerp(self, quat1, time):
         quatList = quat_lerp(self, quat1, time)
         return Quaternion(quatList)
+
+    def toMatrix(self):
+        return quat_to_matrix(self)
+
+        
+
+def quat_from_matrix(matrix):
+    ''' Converts a 4x4 rotational matrix to quaternion. '''
+    fourXSquaredMinus1 = matrix.data[0][0] - matrix.data[1][1] - matrix.data[2][2]
+    fourYSquaredMinus1 = matrix.data[1][1] - matrix.data[0][0] - matrix.data[2][2]
+    fourZSquaredMinus1 = matrix.data[2][2] - matrix.data[0][0] - matrix.data[1][1]
+    fourWSquaredMinus1 = matrix.data[0][0] + matrix.data[1][1] + matrix.data[2][2]
+
+    biggestIndex = 0
+
+    fourBiggestSquaredMinus1 = fourWSquaredMinus1
+
+    if (fourXSquaredMinus1 > fourBiggestSquaredMinus1):
+        biggestIndex = 1
+    elif(fourYSquaredMinus1 > fourBiggestSquaredMinus1):
+        biggestIndex = 2
+    elif(fourZSquaredMinus1 > fourBiggestSquaredMinus1):
+        biggestIndex = 3
+
+    biggestVal = math.sqrt(fourBiggestSquaredMinus1 + 1) * 0.5
+    mult = 0.25 / biggestVal
+
+    rquat = Quaternion()
+
+    if biggestIndex is 0:
+        rquat.data[0] = biggestVal
+        rquat.data[1] = (matrix.data[1][2] - matrix.data[2][1]) * mult
+        rquat.data[2] = (matrix.data[2][0] - matrix.data[0][2]) * mult
+        rquat.data[3] = (matrix.data[0][1] - matrix.data[1][0]) * mult
+        return rquat
+
+    if biggestIndex is 1:
+        rquat.data[0] = (matrix.data[1][2] - matrix.data[2][1]) * mult
+        rquat.data[1] = biggestVal
+        rquat.data[2] = (matrix.data[0][1] + matrix.data[1][0]) * mult
+        rquat.data[3] = (matrix.data[2][0] + matrix.data[0][2]) * mult
+        return rquat
+
+    if biggestIndex is 2:
+        rquat.data[0] = (matrix.data[2][0] - matrix.data[0][2]) * mult
+        rquat.data[1] = (matrix.data[0][1] + matrix.data[1][0]) * mult
+        rquat.data[2] = biggestVal
+        rquat.data[3] = (matrix.data[1][2] + matrix.data[2][1]) * mult
+        return rquat
+
+    if biggestIndex is 3:
+        rquat.data[0] = (matrix.data[0][1] - matrix.data[1][0]) * mult
+        rquat.data[1] = (matrix.data[2][0] + matrix.data[0][2]) * mult
+        rquat.data[2] = (matrix.data[1][2] + matrix.data[2][1]) * mult
+        rquat.data[3] = biggestVal
+        return rquat
