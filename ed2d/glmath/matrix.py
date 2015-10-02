@@ -13,9 +13,7 @@ def identity(size):
     return [[1.0 if x==y else 0.0 for y in range(size)] for x in range(size)]
 
 def scale(size, value):
-    if size == 4:
-        value = value + [1.0,]
-    return [[value[x] if x==y else 0.0 for y in range(size)] for x in range(size)]
+    return [[(value[x] if x < 3 else 1.0) if x==y else 0.0 for y in range(size)] for x in range(size)]
 
 def matrix_multiply(matrixA, matrixB):
     ''' Multiply matrixA with matrixB '''
