@@ -31,24 +31,18 @@ def glGetInteger(pname):
     return valueList
 
 def glShaderSource(shader, string):
-    count = 1
-    # TODO - fix this to allow an array of shader source to be used
-    # if typeutils.is_sequence(string):
-    #     count = len(string)
-    #     maxStrLen = 0
+    if not typeutils.is_sequence(string):
+        string = [string]
+    count = len(string)
 
-    #     for item in string:
-    #         if len(item) > maxStrLen:
-    #             maxStrLen = len(item)
+    strings = []
+    
+    for item in string:
+         strings.append(typeutils.to_c_str(item))
 
-    #     strings = (ct.c_char * maxStrLen * count)
-    #     for i, item in enumerate(string):
-    #         strings[i] = typeutils.to_c_str(item, cStrLife, True)
-    #     cString = ct.cast(strings, ct.POINTER(ct.c_char))
+    cStrings = typeutils.conv_list(strings, ct.POINTER(ct.c_char))
 
-    cString = typeutils.to_c_str(string, True)
-
-    gl.glShaderSource(shader, count, ct.pointer(cString), None)
+    gl.glShaderSource(shader, count, cStrings, None)
 
 # target, size, data, usage
 def glBufferData(target, data, dataType, usage):
