@@ -87,7 +87,7 @@ def quat_roate_y_from_angle(theta):
     sto2 = math.sin(thetaOver2)
     return [cto2, 0.0, sto2, 0.0]
 
-def quat_roate_y_from_angle(theta):
+def quat_roate_z_from_angle(theta):
     ''' Creates a quaternion that rotates around Z axis given an angle. '''
     thetaOver2 = theta * 0.5
     cto2 = math.cos(thetaOver2)
@@ -101,9 +101,9 @@ def quat_roate_from_axis_angle(axis, theta):
     cto2 = math.cos(math.radians(thetaOver2))
 
     quat1List = []
-    if isinstance(axis, Vector):
+    if isinstance(axis, vector.Vector):
         quat1List = [cto2, axis.vector[0] * sto2, axis.vector[1] * sto2, axis.vector[2] * sto2]
-    elif isinstance(axis, List):
+    elif isinstance(axis, list):
         quat1List = (cto2, axis[0] * sto2, axis[1] * sto2, axis[2] * sto2)
     else:
         return NotImplemented
