@@ -73,6 +73,92 @@ def quat_conjugate(quat):
     idquat[0] = -idquat[0]
     return idquat
 
+def quat_roate_x_from_angle(theta):
+    ''' Creates a quaternion that rotates around X axis given an angle. '''
+    thetaOver2 = theta * 0.5
+    cto2 = math.cos(thetaOver2)
+    sto2 = math.sin(thetaOver2)
+    return [cto2, sto2, 0.0, 0.0]
+
+def quat_roate_y_from_angle(theta):
+    ''' Creates a quaternion that rotates around Y axis given an angle. '''
+    thetaOver2 = theta * 0.5
+    cto2 = math.cos(thetaOver2)
+    sto2 = math.sin(thetaOver2)
+    return [cto2, 0.0, sto2, 0.0]
+
+def quat_roate_y_from_angle(theta):
+    ''' Creates a quaternion that rotates around Z axis given an angle. '''
+    thetaOver2 = theta * 0.5
+    cto2 = math.cos(thetaOver2)
+    sto2 = math.sin(thetaOver2)
+    return [cto2, 0.0, 0.0, sto2]
+
+def quat_roate_from_axis_angle(axis, theta):
+    ''' Creates a quaternion that rotates around an arbitary axis given an angle. '''
+    thetaOver2 = theta * 0.5
+    sto2 = math.sin(math.radians(thetaOver2))
+    cto2 = math.cos(math.radians(thetaOver2))
+
+    quat1List = []
+    if isinstance(axis, Vector):
+        quat1List = [cto2, axis.vector[0] * sto2, axis.vector[1] * sto2, axis.vector[2] * sto2]
+    elif isinstance(axis, List):
+        quat1List = (cto2, axis[0] * sto2, axis[1] * sto2, axis[2] * sto2)
+    else:
+        return NotImplemented
+
+    quat1 = Quaternion(quat1List)
+    rotation = (quat1 * axis) * quat1.conjugate()
+    return rotation
+
+def quat_rotate_vector(quat, axis):
+    ''' Rotates a vector by a quaternion. '''
+    return (quat * axis) * quat.conjugate()
+
+def quat_pow(quat, exp):
+    ''' Returns a quaternion to the power of N. '''
+    quatExp = Quaternion()
+
+    if quat.data[0] is not 0.0:
+        angle = math.acos(quat.data[0])
+        newAngle = angle * exp
+        quatExp.data[0] = math.cos(newAngle)
+        divAngle = math.sin(newAngle) / math.sin(angle)
+        quatExp.data[1] *= divAngle
+        quatExp.data[2] *= divAngle
+        quatExp.data[3] *= divAngle
+    return quatExp
+
+def quat_log(quat):
+    ''' Returns the logatithm of a quaternion. '''
+    alpha = math.acos(quat.data[0])
+    sinAlpha = math.sin(alpha)
+
+    outList = [1.0, 0.0, 0.0, 0.0]
+
+    if sinAlpha > 0.0:
+        outList[1] = quat.data[1] * alpha / sinAlpha
+        outList[2] = quat.data[2] * alpha / sinAlpha
+        outList[3] = quat.data[3] * alpha / sinAlpha
+    else:
+        outList = quat.data
+
+    return outList
+
+def quat_lerp(quat0, quat1, t):
+    ''' Linear interpolation between two quaternions. '''
+    k0 = 1.0 - t
+    k1 = t
+
+    outList = [1.0, 0.0, 0.0, 0.0]
+    outList[0] = quat0.data[0] * k0 + quat1.data[0] * k1
+    outList[1] = quat0.data[1] * k0 + quat1.data[1] * k1
+    outList[2] = quat0.data[2] * k0 + quat1.data[2] * k1
+    outList[3] = quat0.data[3] * k0 + quat1.data[3] * k1
+
+    return outList
+
 
 class Quaternion(object):
 
@@ -186,3 +272,13 @@ class Quaternion(object):
         quatList = quat_conjugate(self.data)
         return Quaternion(quatList)
 
+    def pow(self, e):
+        exponent = e
+        return quat_pow(self, exponent)
+
+    def log(self):
+        return quat_log(self)
+
+    def lerp(self, quat1, time):
+        quatList = quat_lerp(self, quat1, time)
+        return Quaternion(quatList)
