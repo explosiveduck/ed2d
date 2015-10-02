@@ -173,20 +173,20 @@ def quat_to_matrix(quat):
 
     outputMatrix = matrix.Matrix(4)
 
-    outputMatrix.data[0][0] = 1.0 - 2.0 * y2 - 2.0 * z2
-    outputMatrix.data[0][1] = 2.0 * xy + 2.0 * wz
-    outputMatrix.data[0][2] = 2.0 * xz - 2.0 * wy
-    outputMatrix.data[0][3] = 0.0
+    outputMatrix.matrix[0][0] = 1.0 - 2.0 * y2 - 2.0 * z2
+    outputMatrix.matrix[0][1] = 2.0 * xy + 2.0 * wz
+    outputMatrix.matrix[0][2] = 2.0 * xz - 2.0 * wy
+    outputMatrix.matrix[0][3] = 0.0
 
-    outputMatrix.data[1][0] = 2.0 * xy - 2.0 * wz
-    outputMatrix.data[1][1] = 1.0 - 2.0 * x2 - 2.0 * z2
-    outputMatrix.data[1][2] = 2.0 * yz + 2.0 * wx
-    outputMatrix.data[1][3] = 0.0
+    outputMatrix.matrix[1][0] = 2.0 * xy - 2.0 * wz
+    outputMatrix.matrix[1][1] = 1.0 - 2.0 * x2 - 2.0 * z2
+    outputMatrix.matrix[1][2] = 2.0 * yz + 2.0 * wx
+    outputMatrix.matrix[1][3] = 0.0
 
-    outputMatrix.data[2][0] = 2.0 * xz + 2.0 * wy
-    outputMatrix.data[2][1] = 2.0 * yz - 2.0 * wx
-    outputMatrix.data[2][2] = 1.0 - 2.0 * x2 - 2.0 * y2
-    outputMatrix.data[2][3] = 0.0
+    outputMatrix.matrix[2][0] = 2.0 * xz + 2.0 * wy
+    outputMatrix.matrix[2][1] = 2.0 * yz - 2.0 * wx
+    outputMatrix.matrix[2][2] = 1.0 - 2.0 * x2 - 2.0 * y2
+    outputMatrix.matrix[2][3] = 0.0
 
     return outputMatrix
 
@@ -320,10 +320,10 @@ class Quaternion(object):
 
 def quat_from_matrix(matrix):
     ''' Converts a 4x4 rotational matrix to quaternion. '''
-    fourXSquaredMinus1 = matrix.data[0][0] - matrix.data[1][1] - matrix.data[2][2]
-    fourYSquaredMinus1 = matrix.data[1][1] - matrix.data[0][0] - matrix.data[2][2]
-    fourZSquaredMinus1 = matrix.data[2][2] - matrix.data[0][0] - matrix.data[1][1]
-    fourWSquaredMinus1 = matrix.data[0][0] + matrix.data[1][1] + matrix.data[2][2]
+    fourXSquaredMinus1 = matrix.matrix[0][0] - matrix.matrix[1][1] - matrix.matrix[2][2]
+    fourYSquaredMinus1 = matrix.matrix[1][1] - matrix.matrix[0][0] - matrix.matrix[2][2]
+    fourZSquaredMinus1 = matrix.matrix[2][2] - matrix.matrix[0][0] - matrix.matrix[1][1]
+    fourWSquaredMinus1 = matrix.matrix[0][0] + matrix.matrix[1][1] + matrix.matrix[2][2]
 
     biggestIndex = 0
 
@@ -343,28 +343,28 @@ def quat_from_matrix(matrix):
 
     if biggestIndex is 0:
         rquat.data[0] = biggestVal
-        rquat.data[1] = (matrix.data[1][2] - matrix.data[2][1]) * mult
-        rquat.data[2] = (matrix.data[2][0] - matrix.data[0][2]) * mult
-        rquat.data[3] = (matrix.data[0][1] - matrix.data[1][0]) * mult
+        rquat.data[1] = (matrix.matrix[1][2] - matrix.matrix[2][1]) * mult
+        rquat.data[2] = (matrix.matrix[2][0] - matrix.matrix[0][2]) * mult
+        rquat.data[3] = (matrix.matrix[0][1] - matrix.matrix[1][0]) * mult
         return rquat
 
     if biggestIndex is 1:
-        rquat.data[0] = (matrix.data[1][2] - matrix.data[2][1]) * mult
+        rquat.data[0] = (matrix.matrix[1][2] - matrix.matrix[2][1]) * mult
         rquat.data[1] = biggestVal
-        rquat.data[2] = (matrix.data[0][1] + matrix.data[1][0]) * mult
-        rquat.data[3] = (matrix.data[2][0] + matrix.data[0][2]) * mult
+        rquat.data[2] = (matrix.matrix[0][1] + matrix.matrix[1][0]) * mult
+        rquat.data[3] = (matrix.matrix[2][0] + matrix.matrix[0][2]) * mult
         return rquat
 
     if biggestIndex is 2:
-        rquat.data[0] = (matrix.data[2][0] - matrix.data[0][2]) * mult
-        rquat.data[1] = (matrix.data[0][1] + matrix.data[1][0]) * mult
+        rquat.data[0] = (matrix.matrix[2][0] - matrix.matrix[0][2]) * mult
+        rquat.data[1] = (matrix.matrix[0][1] + matrix.matrix[1][0]) * mult
         rquat.data[2] = biggestVal
-        rquat.data[3] = (matrix.data[1][2] + matrix.data[2][1]) * mult
+        rquat.data[3] = (matrix.matrix[1][2] + matrix.matrix[2][1]) * mult
         return rquat
 
     if biggestIndex is 3:
-        rquat.data[0] = (matrix.data[0][1] - matrix.data[1][0]) * mult
-        rquat.data[1] = (matrix.data[2][0] + matrix.data[0][2]) * mult
-        rquat.data[2] = (matrix.data[1][2] + matrix.data[2][1]) * mult
+        rquat.data[0] = (matrix.matrix[0][1] - matrix.matrix[1][0]) * mult
+        rquat.data[1] = (matrix.matrix[2][0] + matrix.matrix[0][2]) * mult
+        rquat.data[2] = (matrix.matrix[1][2] + matrix.matrix[2][1]) * mult
         rquat.data[3] = biggestVal
         return rquat
