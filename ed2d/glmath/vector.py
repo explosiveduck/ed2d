@@ -356,35 +356,36 @@ class Vector(object):
         return self
 
     # Return common components of the vector as a group
+    # Vector Swizzling, similar to GLSL
     def xy(self):
-        return [self.vector[0], self.vector[1]]
+        return Vector(2, [self.vector[0], self.vector[1]])
 
     def yz(self):
-        return [self.vector[1], self.vector[2]]
+        return Vector(2, [self.vector[1], self.vector[2]])
 
     def xz(self):
-        return [self.vector[0], self.vector[2]]
+        return Vector(2, [self.vector[0], self.vector[2]])
 
     def xw(self):
-        return [self.vector[0], self.vector[3]]
+        return Vector(2, [self.vector[0], self.vector[3]])
 
     def yw(self):
-        return [self.vector[1], self.vector[3]]
+        return Vector(2, [self.vector[1], self.vector[3]])
 
     def zw(self):
-        return [self.vector[2], self.vector[3]]
+        return Vector(2, [self.vector[2], self.vector[3]])
 
     def xyw(self):
-        return [self.vector[0], self.vector[1], self.vector[3]]
+        return Vector(3, [self.vector[0], self.vector[1], self.vector[3]])
 
     def yzw(self):
-        return [self.vector[1], self.vector[2], self.vector[3]]
+        return Vector(3, [self.vector[1], self.vector[2], self.vector[3]])
 
     def xzw(self):
-        return [self.vector[0], self.vector[2], self.vector[3]]
+        return Vector(3, [self.vector[0], self.vector[2], self.vector[3]])
 
     def xyz(self):
-        return [self.vector[0], self.vector[1], self.vector[2]]
+        return Vector(3, [self.vector[0], self.vector[1], self.vector[2]])
 
     # 3D vector identities
     def right(self):
