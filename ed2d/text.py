@@ -153,15 +153,17 @@ class Text(object):
                 self.basePos = fontData['bitmap_y']
 
             self.chrMap[char] = Glyph(self.program, self.texAtlas, fontData,
-                                      char)
+                                      char, self)
         print(self.basePos)
 
+
         self.texAtlas.gen_atlas()
+
+        self.vbo = mesh.buffer_object(self.data, gl.GLfloat)
 
         for glyph in self.chrMap.values():
             glyph.init_gl()
 
-        self.vbo = mesh.buffer_object(self.data, gl.GLfloat)
 
     def draw_text(self, text, xPos, yPos):
 
@@ -172,12 +174,6 @@ class Text(object):
         # Instead of taking a while on init to generate all
         # normal characters.
 
-        gl.glEnableVertexAttribArray(self.vertLoc)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0,
-                                  None)
-
-        gl.glEnableVertexAttribArray(self.UVLoc)
 
         textLines = text.split('\n')
 
@@ -191,19 +187,22 @@ class Text(object):
             penPosY += self.basePos + self.lineSpacing
             penPosX = xPos
 
-        gl.glDisableVertexAttribArray(self.UVLoc)
+        # gl.glDisableVertexAttribArray(self.UVLoc)
 
-        gl.glDisableVertexAttribArray(self.vertLoc)
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
+        # gl.glDisableVertexAttribArray(self.vertLoc)
+        # gl.glBindBuffer(gl.GL_ARRAY_BUFFER, 0)
+        gl.glBindVertexArray(0)
 
 
 class Glyph(object):
-    def __init__(self, program, atlas, fontData, char):
+    def __init__(self, program, atlas, fontData, char, parent):
         self.atlas = atlas
         self.fontData = fontData
         self.program = program
+        self.parent = parent
         self.nverts = 4
 
+        self.vertLoc = self.program.get_attribute(b'position')
         self.modelLoc = self.program.new_uniform(b'model')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
 
@@ -227,6 +226,9 @@ class Glyph(object):
                                                 self.pixelData)
 
     def init_gl(self):
+        self.vao = pgl.glGenVertexArrays(1)
+        gl.glBindVertexArray(self.vao)
+
         self._uvCoords = self.atlas.get_uvcoords(self.textureID)
         self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
 
@@ -239,7 +241,19 @@ class Glyph(object):
 
         self.uvbo = mesh.buffer_object(self._uvCoords, gl.GLfloat)
 
+        gl.glEnableVertexAttribArray(self.vertLoc)
+        gl.glEnableVertexAttribArray(self.UVLoc)
+
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.parent.vbo)
+        pgl.glVertexAttribPointer(self.vertLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
+        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, None)
+
+        gl.glBindVertexArray(0)
+
     def render(self, posX, posY):
+        gl.glBindVertexArray(self.vao)
 
         vecScale = cyglmath.Vector(
             3,
@@ -250,8 +264,8 @@ class Glyph(object):
                                         uniform=self.uniform,
                                         size=4)
 
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.uvbo)
-        pgl.glVertexAttribPointer(self.UVLoc, 2, gl.GL_FLOAT, gl.GL_FALSE, 0,
-                                  None)
 
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
+
+        self.x = posX
+        self.y = posY

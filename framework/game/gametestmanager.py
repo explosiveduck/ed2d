@@ -46,7 +46,6 @@ class GameManager(object):
         self.program.use()
         self.orthoID = self.program.new_uniform(b'ortho')
 
-        self.vao = pgl.glGenVertexArrays(1)
 
         fontPath = files.resolve_path('data', 'SourceCodePro-Regular.ttf')
         self.font = text.Font(12, fontPath)
@@ -98,10 +97,8 @@ class GameManager(object):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        gl.glBindVertexArray(self.vao)
 
         self.text.draw_text(self.data, 0, 10 + self.textScroll)
-        gl.glBindVertexArray(0)
 
     def exit(self):
         '''Commands to run before exit.'''

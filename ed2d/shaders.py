@@ -89,12 +89,13 @@ class ShaderProgram(object):
         if not size:
             size = value.size
 
+        # use non wrapped funcion for performance reasons
         if size == 4:
-            pgl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
+            gl.glUniformMatrix4fv(uniform, 1, gl.GL_FALSE, value.c_matrix[0])
         elif size == 3:
-            pgl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
+            gl.glUniformMatrix3fv(uniform, 1, gl.GL_FALSE, value.c_matrix[0])
         elif size == 2:
-            pgl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, value.c_matrix)
+            gl.glUniformMatrix2fv(uniform, 1, gl.GL_FALSE, value.c_matrix[0])
 
     def set_uniform_array(self, uniID, value):
         uniform = self.uniforms[uniID]
