@@ -151,13 +151,59 @@ def quat_lerp(quat0, quat1, t):
     k0 = 1.0 - t
     k1 = t
 
-    outList = [1.0, 0.0, 0.0, 0.0]
-    outList[0] = quat0.data[0] * k0 + quat1.data[0] * k1
-    outList[1] = quat0.data[1] * k0 + quat1.data[1] * k1
-    outList[2] = quat0.data[2] * k0 + quat1.data[2] * k1
-    outList[3] = quat0.data[3] * k0 + quat1.data[3] * k1
+    output = Quaternion()
+    output = (quat0 * k0) + (quat1 * k1)
 
-    return outList
+    return output
+
+def quat_slerp(quat0, quat1, t):
+    ''' Spherical interpolation between two quaternions. '''
+    k0 = 0.0
+    k1 = 0.0
+
+    output = Quaternion()
+    quat1Neg = Quaternion()
+    cosTheta = quat0.dot(quat1)
+
+    if cosTheta < 0.0:
+        quat1Neg = quat1.negate()
+        cosTheta = -cosTheta
+    else:
+        quat1Neg = quat1
+
+    if cosTheta > 0.999:
+        k0 = 1.0 - t
+        k1 = t 
+    else:
+        theta = math.acos(cosTheta)
+        oneOverSinTheta = 1.0 / math.sin(theta)
+        k0 = math.sin((1.0 - t) * theta) * oneOverSinTheta
+        k1 = math.sin(t * theta) * oneOverSinTheta
+
+    output = (quat0 * k0) + (quat1Neg * k1)
+
+    return output
+
+def quat_slerp_no_invert(quat0, quat1, t):
+    ''' Spherical interpolation between two quaternions, it does not check for theta > 90. Used by SQUAD. '''
+    dotP = quat0.dot(quat1)
+
+    output = Quaternion()
+
+    if (dotP > -0.95) and (dotP < 0.95):
+        angle = math.acos(dotP)
+        k0 = math.sin(angle * (1.0 - t)) / math.sin(angle)
+        k1 = math.sin(t * angle) / math.sin(angle)
+
+        output = (quat0 * k0) + (quat1 * k1)
+    else:
+        output = quat_lerp(quat0, quat1, t)
+
+    return output
+
+def quat_squad(quat0, quat1, quat2, t):
+    ''' Quaternion splines. '''
+    return quat_slerp_no_invert(quat_slerp_no_invert(quat0, quat2, t), quat_slerp_no_invert(quat0, quat1, t), 2 * t(1 - t))
 
 def quat_to_matrix(quat):
     ''' Converts a quaternion to a rotational 4x4 matrix. '''
@@ -310,8 +356,16 @@ class Quaternion(object):
         return quat_log(self)
 
     def lerp(self, quat1, time):
-        quatList = quat_lerp(self, quat1, time)
-        return Quaternion(quatList)
+        return quat_lerp(self, quat1, time)
+
+    def slerp(self, quat1, time):
+        return quat_slerp(self, quat1, time)
+
+    def slerp_no_invert(self, quat1, time):
+        return quat_slerp_no_invert(self, quat1, time)
+
+    def squad(self, quat1, quat2, time):
+        return quat_squad(self, quat1, quat2, time)
 
     def toMatrix(self):
         return quat_to_matrix(self)
