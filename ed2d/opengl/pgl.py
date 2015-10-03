@@ -30,6 +30,7 @@ def glGetInteger(pname):
 
     return valueList
 
+
 def glShaderSource(shader, string):
     if not typeutils.is_sequence(string):
         string = [string]
@@ -43,6 +44,7 @@ def glShaderSource(shader, string):
     cStrings = typeutils.conv_list(strings, ct.POINTER(ct.c_char))
 
     gl.glShaderSource(shader, count, cStrings, None)
+
 
 # target, size, data, usage
 def glBufferData(target, data, dataType, usage):
@@ -58,7 +60,7 @@ def glBufferData(target, data, dataType, usage):
 
     gl.glBufferData(target, dataSize, cDataPtr, usage)
 
-glTypeMap = {
+_glTypeMap = {
     gl.GL_BYTE: gl.GLbyte,
     gl.GL_UNSIGNED_BYTE: gl.GLubyte,
     gl.GL_SHORT: gl.GLshort,
@@ -74,7 +76,7 @@ glTypeMap = {
 def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
 
     if not data is None:
-        castType = glTypeMap[ptype]
+        castType = _glTypeMap[ptype]
         try:
             data[0][0]
         except TypeError:
@@ -89,6 +91,7 @@ def glVertexAttribPointer(index, size, ptype, normalized, stride, data):
 
     gl.glVertexAttribPointer(index, size, ptype, normalized, stride, cDataPtr)
 
+
 # n, arrays
 def glGenVertexArrays(n):
     if n > 1:
@@ -99,6 +102,7 @@ def glGenVertexArrays(n):
     gl.glGenVertexArrays(n, arrays)
     return arrays
 
+
 # (GLsizei n, GLuint *buffers);
 def glGenBuffers(n):
     if n > 1:
@@ -108,31 +112,35 @@ def glGenBuffers(n):
     gl.glGenBuffers(n, ct.pointer(buffers))
     return buffers
 
-def glGetShaderInfoLog(shader):
 
-    length = gl.GLsizei(0)
-    infoLog = (gl.GLchar * 2048)()
+def glGetShaderInfoLog(shader):
+    length = glGetShaderiv(shader, gl.GL_INFO_LOG_LENGTH)
+    infoLog = (gl.GLchar * length)()
     infoLogPtr = typeutils.cast_ptr(infoLog, gl.GLchar)
-    gl.glGetShaderInfoLog(shader, 2048, ct.pointer(length), infoLogPtr)
+    gl.glGetShaderInfoLog(shader, length, None, infoLogPtr)
     return infoLog.value
+
 
 def glGetProgramInfoLog(program):
 
-    length = gl.GLsizei(0)
-    infoLog = (gl.GLchar * 2048)()
+    length = int(glGetProgramiv(program, gl.GL_INFO_LOG_LENGTH))
+    infoLog = (gl.GLchar * length)()
     infoLogPtr = typeutils.cast_ptr(infoLog, gl.GLchar)
-    gl.glGetProgramInfoLog(program, 2048, ct.pointer(length), infoLogPtr)
+    gl.glGetProgramInfoLog(program, length, None, infoLogPtr)
     return infoLog.value
+
 
 def glGetShaderiv(shader, pname):
     params = gl.GLint(-1)
     gl.glGetShaderiv(shader, pname, ct.byref(params))
-    return params
+    return params.value
+
 
 def glGetProgramiv(program, pname):
     params = gl.GLint(-1)
     gl.glGetProgramiv(program, pname, ct.byref(params))
-    return params
+    return params.value
+
 
 def glUniformMatrix2fv(location, count, transpose, value):
 
@@ -149,6 +157,7 @@ def glUniformMatrix2fv(location, count, transpose, value):
 
     gl.glUniformMatrix2fv(location, count, transpose, cDataPtr)
 
+
 def glUniformMatrix3fv(location, count, transpose, value):
 
     # Check if its 2d or 1d
@@ -163,6 +172,7 @@ def glUniformMatrix3fv(location, count, transpose, value):
     cDataPtr = typeutils.cast_ptr(cData, gl.GLfloat)
 
     gl.glUniformMatrix3fv(location, count, transpose, cDataPtr)
+
 
 def glUniformMatrix4fv(location, count, transpose, value):
     try:
@@ -181,6 +191,7 @@ def glUniformMatrix4fv(location, count, transpose, value):
 
         gl.glUniformMatrix4fv(location, count, transpose, cDataPtr)
 
+
 def glGenTextures(n):
     textures = (gl.GLuint * n)()
     texPtr = typeutils.cast_ptr(textures, gl.GLuint)
@@ -190,7 +201,7 @@ def glGenTextures(n):
 
 def glTexImage2D(target, level, internalformat, width, height, border, formatGl, dataType, pixels):
     if not (pixels == 0 or pixels is None):
-        castType = glTypeMap[dataType]
+        castType = _glTypeMap[dataType]
         if typeutils.is_sequence(pixels[0]):
             cData = typeutils.conv_list_2d(pixels, castType)
         else:
@@ -201,8 +212,9 @@ def glTexImage2D(target, level, internalformat, width, height, border, formatGl,
         cPixelPtr = 0
     gl.glTexImage2D(target, level, internalformat, width, height, border, formatGl, dataType, cPixelPtr)
 
+
 def glTexSubImage2D(target, level, xoffset, yoffset, width, height, formatGl, dataType, pixels):
-    castType = glTypeMap[dataType]
+    castType = _glTypeMap[dataType]
     if typeutils.is_sequence(pixels[0]):
         cData = typeutils.conv_list_2d(pixels, castType)
     else:
