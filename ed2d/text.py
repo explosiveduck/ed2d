@@ -266,6 +266,3 @@ class Glyph(object):
 
 
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
-
-        self.x = posX
-        self.y = posY
