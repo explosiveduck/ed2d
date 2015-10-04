@@ -73,6 +73,15 @@ def quat_conjugate(quat):
     idquat[0] = -idquat[0]
     return idquat
 
+def quat_inverse(quat):
+    ''' Returns the inverse of a quaternion. '''
+    lengthSquared = quat[0] * quat[0] + quat[1] * quat[1] + quat[2] * quat[2] + quat[3] * quat[3]
+
+    return [quat[0] / lengthSquared,
+            quat[1] / lengthSquared,
+            quat[2] / lengthSquared,
+            quat[3] / lengthSquared]
+
 def quat_from_axis_angle(axis, theta):
     ''' Returns a quaternion from a given axis and a angle. '''
     thetaOver2 = theta * 0.5
@@ -376,6 +385,10 @@ class Quaternion(object):
 
     def conjugate(self):
         quatList = quat_conjugate(self.data)
+        return Quaternion(quatList)
+
+    def inverse(self):
+        quatList = quat_inverse(self.data)
         return Quaternion(quatList)
 
     def pow(self, e):
