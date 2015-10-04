@@ -1,5 +1,5 @@
 from ed2d.glmath import matrix
-
+from ed2d import idgen
 
 class BaseNode(object):
     def __init__(self, obj):
@@ -38,6 +38,10 @@ class BaseNode(object):
         self.detach()
         self.attach(parent)
 
+    def __repr__(self):
+        templ = (type(self).__name__, self.nodeID, hex(id(self)))
+        return "<SceneGraph {0} (NodeID {1}) object at {2}>".format(*templ)
+
 
 class RootNode(BaseNode):
     def __init__(self, obj):
@@ -46,8 +50,7 @@ class RootNode(BaseNode):
         self.children = [self]
         self.root = self
         self.isRoot = True
-        self.nodeCount = 0
-        self.reusableIDs = []
+        self.ids = idgen.IdGenerator()
 
     def reparent(self, parent):
         print('Error can\'t reparent root node.')
@@ -59,20 +62,20 @@ class RootNode(BaseNode):
         print('Error can\'t dettach root node.')
 
     def add_tree_child(self, obj):
-        if self.reusableIDs:
-            nodeID = self.reusableIDs.pop(0)
+        nodeID = self.ids.gen_id()
+
+        try:
             self.treeChildren[nodeID] = obj
-        else:
-            nodeID = len(self.treeChildren)
+        except IndexError:
             self.treeChildren.append(obj)
-        self.nodeCount += 1
+
         return nodeID
 
     def del_tree_child(self, obj):
         nodeID = obj.nodeID
         self.treeChildren[nodeID] = None
-        self.reusableIDs.append(nodeID)
-        self.nodeCount -= 1
+        obj.nodeID = None
+        self.ids.del_id(nodeID)
 
 
 class GraphicsNode(BaseNode):
