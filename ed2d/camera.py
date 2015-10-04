@@ -94,7 +94,7 @@ class Camera(object):
             self.doArcBallRotation(tick)
 
     def rotate(self, axis, angle):
-        self.rotation = self.rotation * quaternion.quat_rotate_from_axis_angle(axis, angle)
+        self.rotation = self.rotation * quaternion.quat_from_axis_angle(axis, angle)
         self.rotation.i_normalize()
 
     def move(self, direction, amount):
