@@ -1,7 +1,7 @@
 import math
 from ed2d.glmath import vector
 from ed2d.glmath import matrix
-from ed2d.glmath import quaternion # needs implementation
+from ed2d.glmath import quaternion
 
 class Camera(object):
     def __init__(self):
@@ -41,7 +41,7 @@ class Camera(object):
         self.orthographicProj = matrix.orthographic(left, right, bottom, top, znear, zfar)
 
     def calcViewMatrix(self):
-        self.cameraRotation = quaternion.toMatrix(quaternion.conjugate(self.rotation))
+        self.cameraRotation = quaternion.conjugate(self.rotation).toMatrix()
         self.cameraPosition = self.position * -1.0
         self.cameraTranslation.i_translate(self.cameraPosition)
 
@@ -52,28 +52,28 @@ class Camera(object):
         moveAmount = 0.5 * tick
 
         if 'W' in keys:
-            self.move(self.rotation.getForward(), -moveAmount)
+            self.move(self.rotation.getForward().vector, -moveAmount)
 
         if 'S' in keys:
-            self.move(self.rotation.getForward(), moveAmount)
+            self.move(self.rotation.getForward().vector, moveAmount)
 
         if 'A' in keys:
-            self.move(self.rotation.getLeft(), moveAmount)
+            self.move(self.rotation.getLeft().vector, moveAmount)
 
         if 'D' in keys:
-            self.move(self.rotation.getRight(), moveAmount)
+            self.move(self.rotation.getRight().vector, moveAmount)
 
         if 'Q' in keys:
-            self.move(self.rotation.getForward(), math.radians(moveAmount))
+            self.move(self.rotation.getForward().vector, math.radians(moveAmount))
 
         if 'E' in keys:
-            self.move(self.rotation.getForward(), math.radians(-moveAmount))
+            self.move(self.rotation.getForward().vector, math.radians(-moveAmount))
 
         if 'UP' in keys:
-            self.move(self.rotation.getUp(), moveAmount)
+            self.move(self.rotation.getUp().vector, moveAmount)
 
         if 'DOWN' in keys:
-            self.movie(self.rotation.getUp(), -moveAmount)
+            self.movie(self.rotation.getUp().vector, -moveAmount)
 
         # Mouse buttons
         # if 'MOUSE_LEFT' in keys:
@@ -94,7 +94,7 @@ class Camera(object):
             self.doArcBallRotation(tick)
 
     def rotate(self, axis, angle):
-        self.rotation = self.rotation * quaternion.QuatFromAxis(axis, angle)
+        self.rotation = self.rotation * quaternion.quat_rotate_from_axis_angle(axis, angle)
         self.rotation.i_normalize()
 
     def move(self, direction, amount):
