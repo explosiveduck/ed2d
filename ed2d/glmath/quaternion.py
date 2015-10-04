@@ -73,6 +73,33 @@ def quat_conjugate(quat):
     idquat[0] = -idquat[0]
     return idquat
 
+def quat_from_axis_angle(axis, theta):
+    ''' Returns a quaternion from a given axis and a angle. '''
+    thetaOver2 = theta * 0.5
+    sto2 = math.sin(math.radians(thetaOver2))
+    cto2 = math.cos(math.radians(thetaOver2))
+
+    quat1List = []
+    if isinstance(axis, vector.Vector):
+        axis.i_normalize()
+        quat1List = [cto2, axis.vector[0] * sto2, axis.vector[1] * sto2, axis.vector[2] * sto2]
+    elif isinstance(axis, list):
+        naxis = vector.normalize(axis)
+        quat1List = (cto2, naxis[0] * sto2, naxis[1] * sto2, naxis[2] * sto2)
+    else:
+        return NotImplemented
+
+    return Quaternion(data=quat1List)
+
+def quat_rotate(origin, axis, theta):
+    ''' Returns a vector that is rotated around an axis. '''
+    thetaOver2 = theta * 0.5
+    sinThetaOver2 = math.sin(math.radians(thetaOver2))
+    cosThetaOver2 = math.cos(math.radians(thetaOver2))
+    quat = Quaternion(data = [cosThetaOver2, axis[0] * sinThetaOver2, axis[1] * sinThetaOver2, axis[2] * sinThetaOver2)
+    rotation = (quat * origin) * quat.conjugate()
+    return vector.Vector(3, data=[rotation.data[1], rotation.data[2], rotation.data[3])
+
 def quat_roate_x_from_angle(theta):
     ''' Creates a quaternion that rotates around X axis given an angle. '''
     thetaOver2 = theta * 0.5
@@ -102,20 +129,22 @@ def quat_roate_from_axis_angle(axis, theta):
 
     quat1List = []
     if isinstance(axis, vector.Vector):
+        axis.i_normalize()
         quat1List = [cto2, axis.vector[0] * sto2, axis.vector[1] * sto2, axis.vector[2] * sto2]
     elif isinstance(axis, list):
-        quat1List = (cto2, axis[0] * sto2, axis[1] * sto2, axis[2] * sto2)
+        naxis = vector.normalize(axis)
+        quat1List = (cto2, naxis[0] * sto2, naxis[1] * sto2, naxis[2] * sto2)
     else:
         return NotImplemented
 
-    quat1 = Quaternion(quat1List)
+    quat1 = Quaternion(data=quat1List)
     rotation = (quat1 * axis) * quat1.conjugate()
     return rotation
 
-def quat_rotate_vector(quat, axis):
+def quat_rotate_vector(quat, vec):
     ''' Rotates a vector by a quaternion, returns a vector. '''
-    outQuat = (quat * axis) * quat.conjugate()
-    return [outQuat.data[1], outQuat.data[2], outQuat.data[3]]
+    outQuat = (quat * vec) * quat.conjugate()
+    return vector.Vector(3, data=[outQuat.data[1], outQuat.data[2], outQuat.data[3]])
 
 def quat_pow(quat, exp):
     ''' Returns a quaternion to the power of N. '''
