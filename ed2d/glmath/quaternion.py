@@ -113,8 +113,9 @@ def quat_roate_from_axis_angle(axis, theta):
     return rotation
 
 def quat_rotate_vector(quat, axis):
-    ''' Rotates a vector by a quaternion. '''
-    return (quat * axis) * quat.conjugate()
+    ''' Rotates a vector by a quaternion, returns a vector. '''
+    outQuat = (quat * axis) * quat.conjugate()
+    return [outQuat.data[1], outQuat.data[2], outQuat.data[3]]
 
 def quat_pow(quat, exp):
     ''' Returns a quaternion to the power of N. '''
@@ -370,7 +371,30 @@ class Quaternion(object):
     def toMatrix(self):
         return quat_to_matrix(self)
 
-        
+    # The following are used for orientation and motion
+    def getForward(self):
+        ''' Returns the forward vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[0.0, 0.0, 1.0]))
+
+    def getBack(self):
+        ''' Returns the backwards vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[0.0, 0.0, -1.0]))
+
+    def getLeft(self):
+        ''' Returns the left vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[-1.0, 0.0, 0.0]))
+
+    def getRight(self):
+        ''' Returns the right vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[1.0, 0.0, 0.0]))
+
+    def getUp(self):
+        ''' Returns the up vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[0.0, 1.0, 0.0]))
+
+    def getDown(self):
+        ''' Returns the down vector. '''
+        return quat_rotate_vector(self, vector.Vector(3, data[0.0, -1.0, 0.0]))
 
 def quat_from_matrix(matrix):
     ''' Converts a 4x4 rotational matrix to quaternion. '''
