@@ -98,7 +98,7 @@ def quat_rotate(origin, axis, theta):
     cosThetaOver2 = math.cos(math.radians(thetaOver2))
     quat = Quaternion(data = [cosThetaOver2, axis[0] * sinThetaOver2, axis[1] * sinThetaOver2, axis[2] * sinThetaOver2])
     rotation = (quat * origin) * quat.conjugate()
-    return vector.Vector(3, data=[rotation.data[1], rotation.data[2], rotation.data[3])
+    return vector.Vector(3, data=[rotation.data[1], rotation.data[2], rotation.data[3]])
 
 def quat_roate_x_from_angle(theta):
     ''' Creates a quaternion that rotates around X axis given an angle. '''
