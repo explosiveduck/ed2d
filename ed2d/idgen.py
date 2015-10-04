@@ -1,3 +1,11 @@
+
+def set_uid_list(uidList, uid, data):
+    try:
+        uidList[uid] = data
+    except IndexError:
+        uidList.append(data)
+
+
 class IdGenerator(object):
     def __init__(self):
         self.reusableIDs = []
@@ -18,3 +26,4 @@ class IdGenerator(object):
     def del_id(self, uid):
         self.allocatedIds -= 1
         self.reusableIDs.append(uid)
+

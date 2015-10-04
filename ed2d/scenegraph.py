@@ -64,10 +64,7 @@ class RootNode(BaseNode):
     def add_tree_child(self, obj):
         nodeID = self.ids.gen_id()
 
-        try:
-            self.treeChildren[nodeID] = obj
-        except IndexError:
-            self.treeChildren.append(obj)
+        idgen.set_uid_list(self.treeChildren, nodeID, obj)
 
         return nodeID
 
