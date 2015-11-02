@@ -28,6 +28,7 @@ https://www.libsdl.org/download-2.0.php
 
 Put both dll's in the deps folder within your project folder (framework in this repo)
 
-Install pysdl2 and freetype-py using pip
+Install gem, pysdl2 and freetype-py using pip
 pip install pysdl2
 pip install freetype-py
+pip install gem
