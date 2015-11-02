@@ -1,7 +1,7 @@
 from ed2d.opengl import gl, pgl
 from ed2d import files
 from ed2d import typeutils
-from ed2d.glmath import Vector
+from gem import vector
 
 
 class ShaderBase(object):
@@ -101,7 +101,7 @@ class ShaderProgram(object):
         uniform = self.uniforms[uniID]
         try:
 
-            if isinstance(value, Vector):
+            if isinstance(value, vector.Vector):
                 value = value.vector
             size = len(value)
             if isinstance(value[0], int):

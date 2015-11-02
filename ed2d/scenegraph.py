@@ -1,4 +1,4 @@
-from ed2d.glmath import matrix
+from gem import matrix
 from ed2d import idgen
 
 class BaseNode(object):

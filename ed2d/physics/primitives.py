@@ -1,7 +1,7 @@
 import math
 
-from ed2d.glmath import vector
-from ed2d.glmath import matrix
+from gem import vector
+from gem import matrix
 
 class Circle(object):
     def __init__(self, center, radius):

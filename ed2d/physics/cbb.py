@@ -1,5 +1,5 @@
 from ed2d.physics.collisiondata import*
-from ed2d.glmath import vector
+from gem import vector
 
 # Circle Bounding Box
 class CBB(object):

@@ -6,7 +6,8 @@ from ed2d import files
 from ed2d import shaders
 from ed2d.opengl import gl
 from ed2d.opengl import pgl
-from ed2d import glmath
+from gem import matrix
+from gem import vector
 from ed2d import texture
 from ed2d import mesh
 from ed2d.physics import rectangle
@@ -75,7 +76,7 @@ class GameManager(object):
         # Create a physics object to simulate
         # Create a mesh object to render
         self.cModelTest = cmodel.cModel(self.cModelTestRect)
-        self.physicsObjectTest = physobj.PhysObj(self.cModelTest, glmath.Vector(3, data=[0.0, 0.0, 1.0]))
+        self.physicsObjectTest = physobj.PhysObj(self.cModelTest, vector.Vector(3, data=[0.0, 0.0, 1.0]))
         self.physicsEngineTest.addObject(self.physicsObjectTest)
         self.meshObjectTest = mesh.Mesh()
 
@@ -93,7 +94,7 @@ class GameManager(object):
         ### End Player ###
 
         # Setup projection
-        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         # Update the uniforms in the shaders
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
@@ -107,7 +108,7 @@ class GameManager(object):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
-        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
     def process_event(self, event, data):

@@ -7,7 +7,8 @@ from ed2d import files
 from ed2d import shaders
 from ed2d.opengl import gl
 from ed2d.opengl import pgl
-from ed2d import glmath
+from gem import vector
+from gem import matrix
 from ed2d import texture
 from ed2d import mesh
 from ed2d.physics import rectangle
@@ -80,7 +81,7 @@ class GameManager(object):
         # Create a physics object to simulate
         # Create a mesh object to render
         self.cModelTest = cmodel.cModel(self.cModelTestRect)
-        self.physicsObjectTest = physobj.PhysObj(self.cModelTest, glmath.Vector(3, data=[0.0, 0.0, 1.0]))
+        self.physicsObjectTest = physobj.PhysObj(self.cModelTest, vector.Vector(3, data=[0.0, 0.0, 1.0]))
         self.physicsEngineTest.addObject(self.physicsObjectTest)
         self.meshObjectTest = mesh.Mesh()
         playerACSG = csg.CSG().cube([0, 0, 0], [1, 1, 1])
@@ -105,7 +106,7 @@ class GameManager(object):
             xRND = rnd.randrange(1, (self.width-32))
             yRND = rnd.randrange(1, (self.height-32))
             # The creating object stuff from above... One Liner... Yes I know. :|
-            self.physicsEngineTest.addObject(physobj.PhysObj(cmodel.cModel(rectangle.Rectangle(xRND, yRND, width=32.0, height=32.0)), glmath.Vector(3, data=[0.0, 0.0, 1.0])))
+            self.physicsEngineTest.addObject(physobj.PhysObj(cmodel.cModel(rectangle.Rectangle(xRND, yRND, width=32.0, height=32.0)), vector.Vector(3, data=[0.0, 0.0, 1.0])))
             tempObj = self.physicsEngineTest.getObject(i+1)
             tempObj.getCollisionModel().getModel().scale(32, 32)
             tempObj.getCollisionModel().getModel().update()
@@ -132,20 +133,20 @@ class GameManager(object):
         # Box A and Box B collistion test, should return False
         # Substract the origins and add the two rectangles together to form a bigger one
         # If it include the origin, collision happens
-        boxTestA = primitives.Box(glmath.Vector(3, data=[50, 50, 49]), 1, 1, 1, glmath.Matrix(4))
-        boxTestB = primitives.Box(glmath.Vector(3, data=[50, 50, 51]), 2, 2, 2, glmath.Matrix(4))
+        boxTestA = primitives.Box(vector.Vector(3, data=[50, 50, 49]), 1, 1, 1, matrix.Matrix(4))
+        boxTestB = primitives.Box(vector.Vector(3, data=[50, 50, 51]), 2, 2, 2, matrix.Matrix(4))
 
         # Rectangle A and Rectangle B collision test, should return False
         # Substract the origins and add the two boxes together to form a bigger one
         # If it include the origin, collision happens
-        rectTestA = primitives.Rectangle(glmath.Vector(3, data=[10, 10, 0]), 2, 2, glmath.Matrix(4))
-        rectTestB = primitives.Rectangle(glmath.Vector(3, data=[50, 50, 50]), 2, 2, glmath.Matrix(4))
+        rectTestA = primitives.Rectangle(vector.Vector(3, data=[10, 10, 0]), 2, 2, matrix.Matrix(4))
+        rectTestB = primitives.Rectangle(vector.Vector(3, data=[50, 50, 50]), 2, 2, matrix.Matrix(4))
 
         # Circle A and Cirlce B collision test, should return False
         # Substract the origins and add the radii
         # If the new circle includes the origin, collision happens
-        circleTestA = primitives.Circle(glmath.Vector(3, data=[50, 50, 50]), 1)
-        circleTestB = primitives.Circle(glmath.Vector(3, data=[50, 50, 53]), 1)
+        circleTestA = primitives.Circle(vector.Vector(3, data=[50, 50, 50]), 1)
+        circleTestB = primitives.Circle(vector.Vector(3, data=[50, 50, 53]), 1)
 
         print("Box A and Box B collision:", gjkTest.intersects(boxTestA, boxTestB))
         print("Rect A and Rect B collision:", gjkTest.intersects(rectTestA, rectTestB))
@@ -158,7 +159,7 @@ class GameManager(object):
         print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
 
 
-        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
@@ -170,7 +171,7 @@ class GameManager(object):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
-        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
     def process_event(self, event, data):

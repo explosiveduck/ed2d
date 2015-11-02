@@ -6,7 +6,7 @@ from ed2d import files
 from ed2d import shaders
 from ed2d.opengl import gl
 from ed2d.opengl import pgl
-from ed2d import glmath
+from gem import matrix
 from ed2d import text
 
 class GameManager(object):
@@ -53,7 +53,7 @@ class GameManager(object):
         self.textScroll = 0
         self.meshes = []
 
-        self.ortho = glmath.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
@@ -68,7 +68,7 @@ class GameManager(object):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
-        self.ortho = glmath.ortho(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
         self.program.set_uniform_matrix(self.orthoID, self.ortho)
 
     def process_event(self, event, data):

@@ -1,6 +1,6 @@
 import math
-from ed2d.glmath import vector
-from ed2d.glmath import plane
+from gem import vector
+from gem import plane
 
 class CSG(object):
     def __init__(self):
@@ -292,7 +292,7 @@ class csgPolygon(object):
     def __init__(self, vertices, shared):
         self.vertices = vertices
         self.shared = shared
-        self.plane = csgPlane(vector.Vector(3).zero(), 0)
+        self.plane = csgPlane(vector.Vector(3), 0)
         self.plane.fromPoints(vertices[0].pos, vertices[1].pos, vertices[2].pos)
 
     def __repr__(self):

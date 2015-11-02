@@ -1,4 +1,4 @@
-from ed2d.glmath import vector
+from gem import vector
 
 class PhysObj(object):
 

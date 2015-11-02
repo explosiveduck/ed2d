@@ -1,4 +1,5 @@
-from ed2d import glmath
+from gem import vector
+from gem import matrix
 from ed2d.physics import aabb
 
 class Rectangle(object):
@@ -26,7 +27,7 @@ class Rectangle(object):
         # Type of collision model, used by the physics engine
         self.type = "AABB"
 
-        self.modelMatrix = glmath.Matrix(4)
+        self.modelMatrix = matrix.Matrix(4)
 
         # Params processing
         if width is None and height is None:
@@ -48,15 +49,15 @@ class Rectangle(object):
     def make_aabb(self):
         '''Generate an AABB for this object'''
         # The collision data should be used by the collider to run an intersection test
-        aabbData10 = (self.modelMatrix.transpose() * glmath.Vector(4, data=[self.data[0][0], self.data[0][1], 0.0, 1.0])).xy()
-        aabbData11 = (self.modelMatrix.transpose() * glmath.Vector(4, data=[self.data[1][0], self.data[1][1], 0.0, 1.0])).xy()
-        aabbData12 = (self.modelMatrix.transpose() * glmath.Vector(4, data=[self.data[2][0], self.data[2][1], 0.0, 1.0])).xy()
-        aabbData13 = (self.modelMatrix.transpose() * glmath.Vector(4, data=[self.data[3][0], self.data[3][1], 0.0, 1.0])).xy()
+        aabbData10 = (self.modelMatrix.transpose() * vector.Vector(4, data=[self.data[0][0], self.data[0][1], 0.0, 1.0])).xy()
+        aabbData11 = (self.modelMatrix.transpose() * vector.Vector(4, data=[self.data[1][0], self.data[1][1], 0.0, 1.0])).xy()
+        aabbData12 = (self.modelMatrix.transpose() * vector.Vector(4, data=[self.data[2][0], self.data[2][1], 0.0, 1.0])).xy()
+        aabbData13 = (self.modelMatrix.transpose() * vector.Vector(4, data=[self.data[3][0], self.data[3][1], 0.0, 1.0])).xy()
 
-        box11 = aabb.AABB(glmath.Vector(2, aabbData10), glmath.Vector(2, aabbData11))
-        box12 = aabb.AABB(glmath.Vector(2, aabbData11), glmath.Vector(2, aabbData12))
-        box13 = aabb.AABB(glmath.Vector(2, aabbData12), glmath.Vector(2, aabbData13))
-        box14 = aabb.AABB(glmath.Vector(2, aabbData13), glmath.Vector(2, aabbData11))
+        box11 = aabb.AABB(vector.Vector(2, aabbData10), vector.Vector(2, aabbData11))
+        box12 = aabb.AABB(vector.Vector(2, aabbData11), vector.Vector(2, aabbData12))
+        box13 = aabb.AABB(vector.Vector(2, aabbData12), vector.Vector(2, aabbData13))
+        box14 = aabb.AABB(vector.Vector(2, aabbData13), vector.Vector(2, aabbData11))
 
         self.collisionData = [box11, box12, box13, box14]
 
@@ -95,12 +96,12 @@ class Rectangle(object):
     def update(self):
         '''Update all the vertices'''
         if self.scaleDeltaX or self.scaleDeltaY:
-            vecScale = glmath.Vector(3, data=[self.scaleDeltaX, self.scaleDeltaY, 0.0])
+            vecScale = vector.Vector(3, data=[self.scaleDeltaX, self.scaleDeltaY, 0.0])
             self.modelMatrix.i_scale(vecScale)
             self.scaleDeltaX = 0
             self.scaleDeltaY = 0
         if self.xPosDelta or self.yPosDelta:
-            vecTrans = glmath.Vector(3, data=[self.xPosDelta, self.yPosDelta, 0.0])
+            vecTrans = vector.Vector(3, data=[self.xPosDelta, self.yPosDelta, 0.0])
             self.modelMatrix.i_translate(vecTrans)
             self.xPosDelta = 0
             self.yPosDelta = 0
@@ -108,8 +109,8 @@ class Rectangle(object):
 
     def __findDim(self):
         '''Calculate the width and height based on the inputed data'''
-        self.width = glmath.Vector(2, [self.data[0] - self.data[2], self.data[1] - self.data[3]]).magnitude()
-        self.height = glmath.Vector(2, [self.data[2] - self.data[4], self.data[3] - self.data[5]]).magnitude()
+        self.width = vector.Vector(2, [self.data[0] - self.data[2], self.data[1] - self.data[3]]).magnitude()
+        self.height = vector.Vector(2, [self.data[2] - self.data[4], self.data[3] - self.data[5]]).magnitude()
 
 
     # Getters

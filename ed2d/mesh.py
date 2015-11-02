@@ -1,4 +1,5 @@
-from ed2d import glmath
+from gem import matrix
+from gem import vector
 from ed2d.opengl import gl, pgl
 
 
@@ -124,7 +125,7 @@ class Mesh(MeshBase):
         self._scale = 1
         self.scaleDelta = 0
 
-        self.modelMatrix = glmath.Matrix(4)
+        self.modelMatrix = matrix.Matrix(4)
 
         self.rect = None
         self.nverts = 0
@@ -230,7 +231,7 @@ class Mesh(MeshBase):
             self.modelMatrix = self.rect.getModelMatrix()
 
         if self.scaleDelta:
-            vecScale = glmath.Vector(
+            vecScale = vector.Vector(
                 3,
                 data=[self.scaleDelta, self.scaleDelta, 0.0])
 
@@ -238,7 +239,7 @@ class Mesh(MeshBase):
             self.scaleDelta = 0
 
         if self.xPosDelta or self.yPosDelta:
-            vecTrans = glmath.Vector(
+            vecTrans = vector.Vector(
                 3,
                 data=[self.xPosDelta, self.yPosDelta, 0.0])
 

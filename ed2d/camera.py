@@ -1,7 +1,7 @@
 import math
-from ed2d.glmath import vector
-from ed2d.glmath import matrix
-from ed2d.glmath import quaternion
+from gem import vector
+from gem import matrix
+from gem import quaternion
 
 class Camera(object):
     def __init__(self):
