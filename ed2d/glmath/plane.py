@@ -2,11 +2,11 @@ from ed2d.glmath import vector
 
 def flip(plane):
     ''' Flips the plane.'''
-    fA = -plane.a
-    fB = -plane.b
-    fC = -plane.c
-    fD = -plane.d
-    fNormal = -plane.normal
+    fA = -plane[0]
+    fB = -plane[1]
+    fC = -plane[2]
+    fD = -plane[3]
+    fNormal = -plane[4]
     return [fA, fB, fC, fD, fNormal]
 
 def normalize(pdata):
@@ -38,7 +38,7 @@ class Plane(object):
         nPlane.a = self.a
         nPlane.b = self.b
         nPlane.c = self.c
-        nPLane.d = self.d
+        nPlane.d = self.d
         return nPlane
 
     def fromCoeffs(self, a, b, c, d):
@@ -59,7 +59,7 @@ class Plane(object):
 
     def i_flip(self):
         ''' Flip the plane in its place. '''
-        self.data = flip(self)
+        data = flip([self.a, self.b, self.c, self.d, self.normal])
         self.a = data[0]
         self.b = data[1]
         self.c = data[2]
@@ -69,8 +69,8 @@ class Plane(object):
 
     def flip(self):
         ''' Return a flipped plane. '''
-        nPlane = PlaneL()
-        data = flip(self)
+        nPlane = Plane()
+        data = flip([self.a, self.b, self.c, self.d, self.normal])
         nPlane.a = data[0]
         nPlane.b = data[1]
         nPlane.c = data[2]
@@ -90,7 +90,7 @@ class Plane(object):
 
     def normalize(self):
         ''' Return the normalized plane.'''
-        nPlane = PlaneL().clone()
+        nPlane = Plane().clone()
         pdata = [self.a, self.b, self.c, self.d]
         nPlane.a, nPlane.b, nPlane.c, nPlane.d = normalize(pdata)
         return nPlane
