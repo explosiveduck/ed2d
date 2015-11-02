@@ -1,8 +1,30 @@
 from ed2d.glmath import vector
 
-class Plane(object):
+def flip(plane):
+    ''' Flips the plane.'''
+    fA = -plane.a
+    fB = -plane.b
+    fC = -plane.c
+    fD = -plane.d
+    fNormal = -plane.normal
+    return [fA, fB, fC, fD, fNormal]
 
+def normalize(pdata):
+    ''' Return the normalized plane.'''
+    vec = vector.Vector(3, data=pdata)
+    vecN = vec.normalize()
+
+    length = vecN.magnitude()
+
+    if length is not 0:
+        return vecN.vector[0], vecN.vector[1], vecN.vector[2], pdata[3] / length
+    else:
+        print("Plane fail to normalize due to zero division.")
+        return 0.0, 0.0, 0.0, 0.0
+
+class Plane(object):
     def __init__(self):
+        ''' Plane class constructor. '''
         self.normal = vector.Vector(3, data=[0.0, 0.0, 0.0])
         self.a = 0
         self.b = 0
@@ -10,25 +32,17 @@ class Plane(object):
         self.d = 0
 
     def clone(self):
-        '''Create a new Plane with similar propertise'''
-        newPlane = Plane()
-        newPlane.normal = self.normal.clone()
-        newPlane.a = self.a
-        newPlane.b = self.b
-        newPlane.c = self.c
-        newPlane.d = self.d
-        return newPlane
-
-    def flip(self):
-        '''Flip the plane.'''
-        self.normal = -self.normal
-        self.a = -self.a
-        self.b = -self.b
-        self.c = -self.c
-        self.d = -self.d
+        '''Create a new Plane with similar propertise.'''
+        nPlane = Plane()
+        nPlane.normal = self.normal.clone()
+        nPlane.a = self.a
+        nPlane.b = self.b
+        nPlane.c = self.c
+        nPLane.d = self.d
+        return nPlane
 
     def fromCoeffs(self, a, b, c, d):
-        '''Create the plane from A,B,C,D.'''
+        ''' Create the plane from A,B,C,D. '''
         self.a = a
         self.b = b
         self.c = c
@@ -43,56 +57,73 @@ class Plane(object):
         self.normal = vector.cross(b - a, c - a).normalize()
         self.d = self.normal.dot(self.a)
 
-    def dot(self, vector):
-        return self.a * vector.vector[0] + self.b * vector.vector[1] + self.c * vector.vector[2] + self.d * vector.vector[3]
+    def i_flip(self):
+        ''' Flip the plane in its place. '''
+        self.data = flip(self)
+        self.a = data[0]
+        self.b = data[1]
+        self.c = data[2]
+        self.d = data[3]
+        self.normal = data[4]
+        return self
+
+    def flip(self):
+        ''' Return a flipped plane. '''
+        nPlane = PlaneL()
+        data = flip(self)
+        nPlane.a = data[0]
+        nPlane.b = data[1]
+        nPlane.c = data[2]
+        nPlane.d = data[3]
+        nPlane.normal = data[4]
+        return nPlane
+
+    def dot(self, vec):
+        ''' Return the dot product between a plane and 4D vector. '''
+        return self.a * vec.vector[0] + self.b * vec.vector[1] + self.c * vec.vector[2] + self.d * vec.vector[3]
 
     def i_normalize(self):
-        ''' Return the normalized plane in-place.'''
-        vectorData = [self.a, self.b, self.c]
-        vectorNorm = vector.Vector(3, data=vectorData).i_normalize()
-        vectorLeng = vectorNorm.magnitude()
-
-        if vectorLeng is not 0:
-            self.a = vectorNorm.vector[0]
-            self.b = vectorNorm.vector[1]
-            self.c = vectorNorm.vector[2]
-            self.d = self.d / vectorLeng
+        ''' Normalize the vector in place. '''
+        pdata = [self.a, self.b, self.c, self.d]
+        self.a, self.b, self.c, self.d = normalize(pdata)
+        return self
 
     def normalize(self):
-        ''' Return a new normalized plane.'''
-        vectorData = [self.a, self.b, self.c]
-        vectorNorm = vector.Vector(3, data=vectorData).i_normalize()
-        vectorLeng = vectorNorm.magnitude()
+        ''' Return the normalized plane.'''
+        nPlane = PlaneL().clone()
+        pdata = [self.a, self.b, self.c, self.d]
+        nPlane.a, nPlane.b, nPlane.c, nPlane.d = normalize(pdata)
+        return nPlane
 
-        if vectorLeng is not 0:
-            return Plane().fromCoeffs(vectorNorm.vector[0], vectorNorm.vector[1], vectorNorm.vector[2], self.d/vectorLeng)
-
-    def bestFitNormal(self, normalList):
+    def bestFitNormal(self, vecList):
+        ''' Pass in a list of vectors to find the best fit normal. '''
         output = vector.Vector(3).zero()
+        for i in sm.range(len(vecList)):
+            output.vector[0] += (vecList[i].vector[2] + vecList[i + 1].vector[2]) * (vecList[i].vector[1] - vecList[i + 1].vector[1])
+            output.vector[1] += (vecList[i].vector[0] + vecList[i + 1].vector[0]) * (vecList[i].vector[2] - vecList[i + 1].vector[2])
+            output.vector[2] += (vecList[i].vector[1] + vecList[i + 1].vector[1]) * (vecList[i].vector[0] - vecList[i + 1].vector[0])
+        return output.normalize()
 
-        for i in range(len(output.size)):
-            output.vector[0] += (normalList[i].vector[2] + normalList[i + 1].vector[2]) * (normalList[i].vector[1] - normalList[i + 1].vector[1])
-            output.vector[1] += (normalList[i].vector[0] + normalList[i + 1].vector[0]) * (normalList[i].vector[2] - normalList[i + 1].vector[2])
-            output.vector[2] += (normalList[i].vector[1] + normalList[i + 1].vector[1]) * (normalList[i].vector[0] - normalList[i + 1].vector[0])
-
-        return output.i_normalize()
-
-    def bestFitD(self, vectorList, bestFitNormal):
+    def bestFitD(self, vecList, bestFitNormal):
+        ''' Returns the best fit D from a list of vectors using the best fit normal. '''
         val = 0.0
-        for vec in vectorList:
+        for vec in vecList:
             val += vec.dot(bestFitNormal)
-        return val / len(vectorList)
+        return val / len(vecList)
 
-    def point_location(self, point):
-        ''' Returns the location of the point. '''
+    def point_location(self, plane, point):
+        ''' Returns the location of the point. Point is a tuple. '''
         # If s > 0 then the point is on the same side as the normal. (front)
         # If s < 0 then the point is on the opposide side of the normal. (back)
         # If s = 0 then the point lies on the plane.
-        s = self.a * point[0] + self.b * point[1] + self.c * point[2] + self.d
+        s = plane.a * point[0] + plane.b * point[1] + plane.c * point[2] + plane.d
 
         if s > 0:
             return 1
         elif s < 0:
             return -1
-        else:
+        elif s == 0:
             return 0
+        else:
+            print("Not a clue where the point is.")
+
