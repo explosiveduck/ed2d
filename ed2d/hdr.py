@@ -49,7 +49,7 @@ class HDRLoader(object):
     def deCrunch(self, length, FILE):
         
         if length < self.MINELEN or length > self.MAXELEN:
-            return oldDeCrunch(length, FILE)
+            return self.oldDeCrunch(length, FILE)
 
         i = getValueFromStream(FILE)
         if i is not 2:
