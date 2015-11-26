@@ -70,19 +70,19 @@ class HDRLoader(object):
 
         # Read each component
         for i in range(4):
-            for j in range(length - 1):
+            for j in range(length):
                 code = getValueFromStream(FILE)
                 # Run
                 if code > 128:
                     code &= 127
                     val = getValueFromStream(FILE)
                     while code:
-                        self.scanline[j + 1][i] = val
+                        self.scanline[j][i] = val
                         code -= 1
                 # Non-Run
                 else:
                     while code:
-                        self.scanline[j + 1][i] = getValueFromStream(FILE)
+                        self.scanline[j][i] = getValueFromStream(FILE)
                         code -= 1
 
         if getValueFromStream(FILE) is None:
@@ -154,15 +154,13 @@ class HDRLoader(object):
 
         self.scanline = [[-1 for i in range(4)] for i in range(w)]
 
-        print("TURD", len(self.scanline))
-
         if not self.scanline:
             print("File closed because scanline not found.")
             f.close()
             return False
 
         # Convert image
-        for y in range(h - 1, 0, -1):
+        for y in range(h - 1, -1, -1):
             # If self.scanline doesn't update is because of this
             if (self.deCrunch(w, f) is False):
                 break
@@ -177,11 +175,10 @@ myhdrtest = HDR()
 myhdrtestloader = HDRLoader()
 myhdrtestloader.load("grace_probe.hdr", myhdrtest)
 
-shit = [0.0 for i in range(1000 * 1000 * 3)]
-print("FUCK", len(shit))
 print("HDR File Info")
 print(myhdrtest.width, myhdrtest.height)
 print("Size of the image: ", len(myhdrtest.cols))
+print("Random pixel", myhdrtest.cols[293499])
 
 
 
