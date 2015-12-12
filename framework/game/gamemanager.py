@@ -212,7 +212,7 @@ class GameManager(object):
     def update(self):
         pass
         #Disabled because it can get really annoying, really fast >:[
-        #self.physicsEngineTest.simulate(self.fpsTimer.tick())
+        # self.physicsEngineTest.simulate(self.fpsTimer.tickDelta)
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
@@ -220,7 +220,7 @@ class GameManager(object):
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.textProgram.use()
-        self.text.draw_text(str(self.fpsEstimate), 0, 10)
+        self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
 
         self.program.use()
         gl.glBindVertexArray(self.vao)
