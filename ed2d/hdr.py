@@ -14,8 +14,8 @@ def getValueFromStream(FILE):
 
 class HDR(object):
     def __init__(self):
-        self.width = -1
-        self.height = -1
+        self.width = 0
+        self.height = 0
         self.cols = []
 
 class HDRLoader(object):
@@ -46,7 +46,9 @@ class HDRLoader(object):
             length = length - 1
 
 
-    def deCrunch(self, length, FILE):
+    def deCrunch(self, scanIndex1, length, FILE):
+
+        scanIndex = scanIndex1
         
         if length < self.MINELEN or length > self.MAXELEN:
             return self.oldDeCrunch(length, FILE)
@@ -54,9 +56,8 @@ class HDRLoader(object):
         i = getValueFromStream(FILE)
         if i is not 2:
             # stuff about file parsing c style
-            return self.oldDeCrunch(length, FILE)
-
-        scanIndex = 0
+            FILE.seek(-1 ,1)
+            return self.oldDeCrunch(scanIndex, length, FILE)
 
         self.scanline[scanIndex][self.G] = getValueFromStream(FILE)
         self.scanline[scanIndex][self.B] = getValueFromStream(FILE)
@@ -66,12 +67,14 @@ class HDRLoader(object):
         if self.scanline[scanIndex][self.G] is not 2 or self.scanline[scanIndex][self.B] & 128:
             self.scanline[scanIndex][self.R] = 2
             self.scanline[scanIndex][self.E] = i
-            return self.oldDeCrunch(length - 1, FILE)
+            # The bug could be here
+            return self.oldDeCrunch(scanIndex, length - 1, FILE)
 
         # Read each component
         for i in range(4):
             for j in range(length):
                 code = getValueFromStream(FILE)
+
                 # Run
                 if code > 128:
                     code &= 127
@@ -88,8 +91,8 @@ class HDRLoader(object):
         if getValueFromStream(FILE) is None:
             return False
 
-    def oldDeCrunch(self,length, FILE):
-        scanIndex = 0
+    def oldDeCrunch(self, scanIndex1, length, FILE):
+        scanIndex = scanIndex1
         rshift = 0
 
         while length > 0:
@@ -114,15 +117,14 @@ class HDRLoader(object):
             return True
 
     def load(self, fileName, hdrf):
-        filePath = files.resolve_path('data', 'images', fileName)
-        f = open(filePath, 'rb')
+        f = open(fileName, 'rb')
 
         strf = ''.join(struct.unpack('10s', f.read(10)))
         if strf != '#?RADIANCE':
             f.close()
             return False
 
-        f.seek(1)
+        f.seek(1, 1)
 
         cmd = []
         c = 0
@@ -132,14 +134,14 @@ class HDRLoader(object):
             c = ord(f.read(1))
             if c is 0xa and oldc is 0xa:
                 break
-            cmd.append(c)
+            cmd.append(str(unichr(c)))
 
         reso = []
         while True:
             c = ord(f.read(1))
             cstr = str(unichr(c))
             reso.append(cstr)
-            if c == 0xa:
+            if c is 0xa:
                 break
 
         resoStr = "".join(reso)
@@ -159,26 +161,32 @@ class HDRLoader(object):
             f.close()
             return False
 
+        scnidx = 0
         # Convert image
         for y in range(h - 1, -1, -1):
             # If self.scanline doesn't update is because of this
-            if (self.deCrunch(w, f) is False):
+            if (self.deCrunch(scnidx, w, f) is False):
                 break
             # This should update the cols array in hdrf which is the HDR Class.
             # If hdrf.cols doesn't update is because of this
             self.workOnRGBE(hdrf, w)
+            scnidx = scnidx + 1
 
         f.close()
 
 
 myhdrtest = HDR()
 myhdrtestloader = HDRLoader()
-myhdrtestloader.load("grace_probe.hdr", myhdrtest)
+filePath = files.resolve_path('data', 'images', "grace_probe.hdr")
+myhdrtestloader.load(filePath, myhdrtest)
 
 print("HDR File Info")
 print(myhdrtest.width, myhdrtest.height)
 print("Size of the image: ", len(myhdrtest.cols))
-print("Random pixel", myhdrtest.cols[293499])
+print("Random pixel", myhdrtest.cols[0], myhdrtest.cols[1], myhdrtest.cols[2])
+
+#for i in range(len(myhdrtest.cols) / 3):
+#    print(myhdrtest.cols[i], myhdrtest.cols[i + 1], myhdrtest.cols[i + 2])
 
 
 
