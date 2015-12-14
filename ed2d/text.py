@@ -7,7 +7,8 @@ from ed2d import mesh
 from ed2d import typeutils
 from ed2d.opengl import gl, pgl
 # from ed2d import glmath as cyglmath
-from ed2d.glmath import cython as cyglmath
+# from ed2d.glmath import cython as cyglmath
+from gem import matrix, vector
 
 
 # Hack to verify that freetype is properly destructed after everything
@@ -206,7 +207,7 @@ class Glyph(object):
         self.modelLoc = self.program.new_uniform(b'model')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
 
-        self.modelMatrix = cyglmath.Matrix(4)
+        self.modelMatrix = matrix.Matrix(4)
 
         self.char = char
 
@@ -232,12 +233,12 @@ class Glyph(object):
         self._uvCoords = self.atlas.get_uvcoords(self.textureID)
         self.vertexScale = self.atlas.get_vertex_scale(self.textureID)
 
-        vecScale = cyglmath.Vector(
+        vecScale = vector.Vector(
             3,
             data=[self.atlas.maxSubTextureHeight * self.vertexScale[0],
                   self.atlas.maxSubTextureHeight * self.vertexScale[1], 0.0])
 
-        self.scaleMat = cyglmath.Matrix(4).i_scale(vecScale)
+        self.scaleMat = matrix.Matrix(4).i_scale(vecScale)
 
         self.uvbo = mesh.buffer_object(self._uvCoords, gl.GLfloat)
 
@@ -255,7 +256,7 @@ class Glyph(object):
     def render(self, posX, posY):
         gl.glBindVertexArray(self.vao)
 
-        vecScale = cyglmath.Vector(
+        vecScale = vector.Vector(
             3,
             data=[posX + self.bitX, posY - self.bitY, 0.0])
         self.modelMatrix = self.scaleMat.translate(vecScale)

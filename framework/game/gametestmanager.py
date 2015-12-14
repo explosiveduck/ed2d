@@ -8,6 +8,7 @@ from ed2d.opengl import gl
 from ed2d.opengl import pgl
 from gem import matrix
 from ed2d import text
+from ed2d import view
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -43,9 +44,6 @@ class GameManager(object):
         vertex = shaders.VertexShader(vsPath)
         fragment = shaders.FragmentShader(fsPath)
         self.program = shaders.ShaderProgram(vertex, fragment)
-        self.program.use()
-        self.orthoID = self.program.new_uniform(b'ortho')
-
 
         fontPath = files.resolve_path('data', 'SourceCodePro-Regular.ttf')
         self.font = text.Font(12, fontPath)
@@ -53,9 +51,10 @@ class GameManager(object):
         self.textScroll = 0
         self.meshes = []
 
+        self.view = view.View()
         self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-
-        self.program.set_uniform_matrix(self.orthoID, self.ortho)
+        self.view.new_projection('ortho', self.ortho)
+        self.view.register_shader('ortho', self.program)
 
         with open("./game/gametestmanager.py", "r") as myfile:
             self.data=myfile.read()
@@ -69,7 +68,7 @@ class GameManager(object):
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        self.program.set_uniform_matrix(self.orthoID, self.ortho)
+        self.view.set_projection('ortho', self.ortho)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':

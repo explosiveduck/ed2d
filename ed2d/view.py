@@ -15,57 +15,46 @@ class View(object):
         self.progPerProj = []
 
     def new_projection(self, name, projection):
-
         pid = self.pids.gen_id()
 
-        idgen.set_uid_list(self.projections, pid, projection)
         idgen.set_uid_list(self.projNames, pid, name)
+        idgen.set_uid_list(self.projections, pid, projection)
         idgen.set_uid_list(self.progPerProj, pid, [])
 
-        self.create_uniforms(name)
-        self.update_projection(name, projection)
-
-    def create_uniforms(self, name):
-        pid = self.projNames.index(name)
-        sids = self.progPerProj[pid]
-
-        for i in sids:
-            program = self.programs[i]
-            program.use()
-
-            uniformId = program.new_uniform(name)
-            self.uniformIds[i].append(uniformId)
-
-    def set_uniforms(self, name):
-        pid = self.projNames.index(name)
-        sids = self.progPerProj[pid]
-        projection = self.uniforms[pid]
-
-        for i in sids:
-            program = self.programs[i]
-            program.use()
-            uniformId = self.uniformIds[i]
-
-            program.set_uniform_matrix(uniformId, projection)
-
-    def update_projection(self, name, projection):
+    def set_projection(self, name, projection):
         pid = self.projNames.index(name)
         sids = self.progPerProj[pid]
 
         self.projections[pid] = projection
 
-        self.set_uniforms()
+        for i in sids:
+            program = self.programs[i-1]
+            program.use()
+            uniformId = self.uniformIds[i-1]
+            program.set_uniform_matrix(uniformId, projection)
+
+    def create_uniforms(self, name):
+        pid = self.projNames.index(name)
+        sids = self.progPerProj[pid]
+        projection = self.projections[pid]
+
+        for i in sids:
+            program = self.programs[i-1]
+            program.use()
+
+            uniformId = program.new_uniform(name.encode('utf-8'))
+            program.set_uniform_matrix(uniformId, projection)
+            self.uniformIds[i-1] = uniformId
 
 
-    def register_shader(self, projection, program, uniform):
-        pid = self.projNames.index(projection)
+    def register_shader(self, projName, program):
+        pid = self.projNames.index(projName)
         sid = self.sids.gen_id()
+        print (sid)
 
         self.progPerProj[pid].append(sid)
 
         idgen.set_uid_list(self.programs, sid, program)
-        idgen.set_uid_list(self.uniforms, sid, uniform)
         idgen.set_uid_list(self.uniformIds, sid, [])
 
-
-
+        self.create_uniforms(projName)

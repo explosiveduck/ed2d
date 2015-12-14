@@ -18,6 +18,8 @@ from ed2d.physics import physengine
 from ed2d.physics import primitives
 from ed2d.physics import gjk
 from ed2d.csg import csg
+from ed2d import view
+from ed2d import text
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -59,7 +61,6 @@ class GameManager(object):
         fragment = shaders.FragmentShader(fsPath)
         self.program = shaders.ShaderProgram(vertex, fragment)
         self.program.use()
-        self.orthoID = self.program.new_uniform(b'ortho')
 
         self.vao = pgl.glGenVertexArrays(1)
 
@@ -159,20 +160,37 @@ class GameManager(object):
         print("Circle A and Rect B collision:", gjkTest.intersects(circleTestA, rectTestB))
 
 
+        self.view = view.View()
         self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.view.new_projection('ortho', self.ortho)
+        self.view.register_shader('ortho', self.program)
 
-        self.program.set_uniform_matrix(self.orthoID, self.ortho)
+        self.loadText()
 
         glerr = gl.glGetError()
         if glerr != 0:
             print('GLError:', glerr)
+
+    def loadText(self):
+        vsPath = files.resolve_path('data', 'shaders', 'font.vs')
+        fsPath = files.resolve_path('data', 'shaders', 'font.fs')
+
+        vertex = shaders.VertexShader(vsPath)
+        fragment = shaders.FragmentShader(fsPath)
+        self.textProgram = shaders.ShaderProgram(vertex, fragment)
+
+        fontPath = files.resolve_path('data', 'SourceCodePro-Regular.ttf')
+        self.font = text.Font(12, fontPath)
+        self.text = text.Text(self.textProgram, self.font)
+
+        self.view.register_shader('ortho', self.textProgram)
 
     def resize(self, width, height):
         self.width = width
         self.height = height
         gl.glViewport(0, 0, self.width, self.height)
         self.ortho = matrix.orthographic(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        self.program.set_uniform_matrix(self.orthoID, self.ortho)
+        self.view.set_projection('ortho', self.ortho)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
@@ -194,20 +212,23 @@ class GameManager(object):
     def update(self):
         pass
         #Disabled because it can get really annoying, really fast >:[
-        #self.physicsEngineTest.simulate(self.fpsTimer.tick())
+        # self.physicsEngineTest.simulate(self.fpsTimer.tickDelta)
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        self.textProgram.use()
+        self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
+
+        self.program.use()
         gl.glBindVertexArray(self.vao)
 
         self.meshObjectTest.render()
 
         for obj in self.meshObjects:
             obj.render()
-
 
         gl.glBindVertexArray(0)
 

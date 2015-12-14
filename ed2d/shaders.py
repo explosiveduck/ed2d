@@ -79,8 +79,7 @@ class ShaderProgram(object):
     def new_uniform(self, name):
         uniID = len(self.uniforms)
         self.uniformNames[uniID] = name
-        self.uniforms.append(gl.glGetUniformLocation(self.program,
-                                                     bytes(name)))
+        self.uniforms.append(gl.glGetUniformLocation(self.program, name))
         return uniID
 
     def set_uniform_matrix(self, uniID, value, uniform=None, size=None):
