@@ -45,6 +45,7 @@ def unbind_object(dataLoc):
 
 
 class Indexer(object):
+    ''' This is needed for CSG.'''
     def __init__(self):
         self.unique = []
         self.indices = []
