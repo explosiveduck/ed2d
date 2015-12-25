@@ -68,6 +68,7 @@ class MeshBase(object):
         self.UVLoc = None
         self.colorLoc = None
         self.modelID = None
+        self.matrix = matrix.Matrix(4) # Model matrix
 
     def addProgram(self, program):
         self.program = program
@@ -81,7 +82,7 @@ class MeshBase(object):
 
     def render(self):
 
-        self.program.set_uniform_matrix(self.modelID, self.modelMatrix)
+        self.program.set_uniform_matrix(self.modelID, self.matrix)
 
         if self.texture is not None:
             self.texture.bind()
@@ -125,8 +126,6 @@ class Mesh(MeshBase):
 
         self._scale = 1
         self.scaleDelta = 0
-
-        self.modelMatrix = matrix.Matrix(4)
 
         self.rect = None
         self.nverts = 0
@@ -209,7 +208,7 @@ class Mesh(MeshBase):
         self.rect = physObj.getCollisionModel().getModel()
         self.data = self.rect.getVertices()
         self.texCoord = self.rect.getVertices()
-        self.modelMatrix = self.rect.getModelMatrix()
+        self.matrix = self.rect.getModelMatrix()
 
     def scale(self, value):
         self.scaleDelta = value / self._scale
@@ -229,14 +228,14 @@ class Mesh(MeshBase):
             pass
         else:
             self.rect = physicsObject.getCollisionModel().getModel()
-            self.modelMatrix = self.rect.getModelMatrix()
+            self.matrix = self.rect.getModelMatrix()
 
         if self.scaleDelta:
             vecScale = vector.Vector(
                 3,
                 data=[self.scaleDelta, self.scaleDelta, 0.0])
 
-            self.modelMatrix.i_scale(vecScale)
+            self.matrix.i_scale(vecScale)
             self.scaleDelta = 0
 
         if self.xPosDelta or self.yPosDelta:
@@ -244,6 +243,6 @@ class Mesh(MeshBase):
                 3,
                 data=[self.xPosDelta, self.yPosDelta, 0.0])
 
-            self.modelMatrix.i_translate(vecTrans)
+            self.matrix.i_translate(vecTrans)
             self.xPosDelta = 0
             self.yPosDelta = 0
