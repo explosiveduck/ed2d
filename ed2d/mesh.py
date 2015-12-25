@@ -167,6 +167,8 @@ class Mesh(MeshBase):
         else:
             self.colors = []
 
+        self.buffer_objects()
+
     def fromCSG(self, csg):
         '''
         This will take in a CSG object and convert it to mesh for
@@ -199,9 +201,6 @@ class Mesh(MeshBase):
 
         self.nverts = len(self.data)
         self.ntris = len(self.triangles)
-
-    def setBuffers(self):
-        self.buffer_objects()
 
     def addPhysicsObject(self, physObj):
         '''This will attach a physics object to the mesh.'''

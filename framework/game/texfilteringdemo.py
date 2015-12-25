@@ -86,7 +86,6 @@ class GameManager(object):
              [0.0, 0.0, 0.0],
              [1.0, 0.0, 0.0]])
 
-        self.meshObjectTest.setBuffers()
         self.meshObjectTest.addProgram(self.program)
         self.meshObjectTest.addTexture(self.texAtlas)
         self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)

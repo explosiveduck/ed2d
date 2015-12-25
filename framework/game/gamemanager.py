@@ -91,7 +91,6 @@ class GameManager(object):
         playerBCSG.setColor(1.0, 1.0, 0.0)
         playerFCSG = playerACSG.subtract(playerBCSG) #change to subtract, union, intersect for different outcome
         self.meshObjectTest.fromCSG(playerFCSG)
-        self.meshObjectTest.setBuffers()
         self.meshObjectTest.addProgram(self.program)
         self.meshObjectTest.addTexture(None)
         self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)
@@ -118,7 +117,6 @@ class GameManager(object):
              [0.0, 0.0, 0.0],
              [1.0, 0.0, 0.0]])
             #tempMesh.setColorAll(1.0, 0.0, 0.0)
-            tempMesh.setBuffers()
             tempMesh.addProgram(self.program)
             tempMesh.addTexture(self.texAtlas)
             tempMesh.addPhysicsObject(tempObj)
