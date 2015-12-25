@@ -9,7 +9,7 @@ osName = platform.system()
 # elif osName == 'Linux':
 #    from ed2d.window.x11 import Window
 if osName in ('Windows', 'Darwin', 'Linux'):
-    from ed2d.platforms.window.sdl import *
+    from ed2d.platforms.sdl2window import *
 else:
     pass
 

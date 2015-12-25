@@ -2,7 +2,7 @@ import ctypes as ct
 
 import sdl2 as sdl
 
-from ed2d.platforms.events import keymap
+from ed2d.platforms import sdl2keymap as keymap
 
 class Events(object):
     ''' Handles Event stuff... '''

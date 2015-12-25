@@ -9,7 +9,7 @@ osName = platform.system()
 # # elif osName == 'Linux':
 # 	# from ed2d.context.x11 import Context
 if osName in ('Windows', 'Darwin', 'Linux'):
-    from ed2d.platforms.context.sdl import Context
+    from ed2d.platforms.sdl2context import Context
 else:
     pass
 
