@@ -58,9 +58,6 @@ class GameManager(object):
         self.view.new_projection('ortho', self.ortho)
         self.view.register_shader('ortho', self.program)
 
-        with open("./game/gametestmanager.py", "r") as myfile:
-            self.data=myfile.read()
-
         glerr = gl.glGetError()
         if glerr != 0:
             print('GLError:', glerr)
@@ -87,11 +84,7 @@ class GameManager(object):
             self.keys.remove(data[0])
 
     def update(self):
-        if 'DOWN' in self.keys:
-            self.textScroll -= 6
-        elif 'UP' in self.keys:
-            self.textScroll += 6
-
+        pass
 
     def render(self):
         gl.glClearColor(0.5, 0.5, 0.5, 1.0)
@@ -99,7 +92,7 @@ class GameManager(object):
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        self.text.draw_text(self.data, 0, 10 + self.textScroll)
+        self.text.draw_text(str(self.fpsEstimate), 0, 10)
 
     def exit(self):
         '''Commands to run before exit.'''
