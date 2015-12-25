@@ -150,25 +150,22 @@ class Mesh(MeshBase):
             for i in range(self.nverts):
                 self.colors[i] = [r, g, b]
 
-    def fromData(self, **kwargs):
+    def fromData(self, data, texCoord=None, colors=None):
         '''
         This will take in any set of vertices, uv coordinates and colors arrays
         '''
-        if kwargs is not None:
-            for key, value in kwargs.items():
-                if key is 'data':
-                    self.data = value
-                    self.nverts = len(self.data)
+        self.data = data
+        self.nverts = len(self.data)
 
-                if key is 'texCoord':
-                    self.texCoord = value
-                else:
-                    self.texCoord = self.data
+        if texCoord is not None:
+            self.texCoord = texCoord
+        else:
+            self.texCoord = self.data
 
-                if key is 'colors':
-                    self.colors = value
-                else:
-                    self.colors = []
+        if colors is not None:
+            self.colors = colors
+        else:
+            self.colors = []
 
     def fromCSG(self, csg):
         '''
