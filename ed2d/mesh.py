@@ -202,6 +202,8 @@ class Mesh(MeshBase):
         self.nverts = len(self.data)
         self.ntris = len(self.triangles)
 
+        self.buffer_objects()
+
     def addPhysicsObject(self, physObj):
         '''This will attach a physics object to the mesh.'''
         self.rect = physObj.getCollisionModel().getModel()
