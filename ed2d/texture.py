@@ -3,6 +3,8 @@ from PIL import Image
 
 from ed2d.opengl import gl, pgl
 
+from ed2d.assets import hdr
+
 
 def load_image(path):
     img = Image.open(path)
@@ -16,6 +18,18 @@ def load_image(path):
 
     width, height = img.size
     return width, height, data
+
+def load_image_hdr(path):
+    myhdr = hdr.HDR()
+    myhdrloader = hdr.HDRLoader()
+    myhdrloader.load(path, myhdr)
+
+    test = []
+
+    for i in range(len(myhdr.cols) / 3):
+        test.append([myhdr.cols[i], myhdr.cols[i + 1], myhdr.cols[i + 2]])
+
+    return myhdr.width, myhdr.height, test
 
 
 class BaseTexture(object):
@@ -59,8 +73,8 @@ class BaseTexture(object):
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
 
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.texFormat, self.width, self.height,
-                         0, self.texFormat, gl.GL_UNSIGNED_BYTE, self.data)
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA16F, self.width, self.height,
+                         0, self.texFormat, gl.GL_FLOAT, self.data)
 
     def bind(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
@@ -76,7 +90,8 @@ class Texture(BaseTexture):
 
         self.texFormat = texFormat
 
-        self.width, self.height, self.data = load_image(self.path)
+        self.width, self.height, self.data = load_image_hdr(self.path)
+
         self.load_gl()
 
     def load_gl(self):
