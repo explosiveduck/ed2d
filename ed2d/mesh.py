@@ -43,6 +43,14 @@ def unbind_object(dataLoc):
     else:
         pass
 
+def calc_face_normal(vertex1, vertex2, vertex3):
+    ''' Calculate a face normal from 3 vertices. 3D Vector inputs. '''
+    vertex11 = vertex2 - vertex1
+    vertex22 = vertex3 - vertex1
+    normal = vertex11.cross(vertex22)
+    normal.i_normalize()
+    return normal
+
 
 class Indexer(object):
     ''' This is needed for CSG.'''
