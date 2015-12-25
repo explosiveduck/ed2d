@@ -12,6 +12,7 @@ class ShaderBase(object):
 
         status = pgl.glGetShaderiv(self.shader, gl.GL_COMPILE_STATUS)
 
+        # TODO - Implement this with logging when that is finished.
         if not status:
             print(self.shaderErrorMessage)
             print(pgl.glGetShaderInfoLog(self.shader))

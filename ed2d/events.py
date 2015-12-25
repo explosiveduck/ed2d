@@ -1,4 +1,7 @@
 
+# TODO - Add support for event filters so we dont have to rebroadcast everything
+# to listeners that wont use most of it.
+
 class EventQueue(object):
     def __init__(self):
         self.listeners = []
