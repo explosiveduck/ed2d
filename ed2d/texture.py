@@ -54,6 +54,7 @@ class BaseTexture(object):
 
         self.program = program
         self.texFormat = None
+        self.pixelType = None
 
         self._set_unit_id()
 
@@ -64,6 +65,8 @@ class BaseTexture(object):
 
         if self.texFormat is None:
             self.texFormat = gl.GL_RGBA
+        if self.pixelType is None:
+            self.pixelType = gl.GL_UNSIGNED_BYTE
 
         # Load image into new opengl texture
         self.texID = pgl.glGenTextures(1)
@@ -74,7 +77,7 @@ class BaseTexture(object):
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
 
         pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.texFormat, self.width, self.height,
-                         0, self.texFormat, gl.GL_UNSIGNED_BYTE, self.data)
+                         0, self.texFormat, self.pixelType, self.data)
 
     def bind(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
@@ -82,18 +85,33 @@ class BaseTexture(object):
         self.program.set_uniform(self.texSampID, self.texUnitID)
 
 
-class Texture(BaseTexture):
+class HDRTexture(BaseTexture):
 
-    def __init__(self, path, program, texFormat=None):
+    def __init__(self, path, program):
         super(Texture, self).__init__(program)
         self.path = path
 
-        self.texFormat = texFormat
+        self.texFormat = gl.GL_RGBA16F
+        self.pixelType = gl.GL_FLOAT
 
-        if '.hdr' in path:
-            self.width, self.height, self.data = load_image_hdr(self.path)
-        else:
-            self.width, self.height, self.data = load_image(self.path)
+        self.width, self.height, self.data = load_image_hdr(self.path)
+
+        self.load_gl()
+
+    def load_gl(self):
+        super(Texture, self).load_gl()
+        self.program.set_uniform_array(self.texResID, [float(self.width), float(self.height)])
+
+class Texture(BaseTexture):
+
+    def __init__(self, path, program):
+        super(Texture, self).__init__(program)
+        self.path = path
+
+        self.texFormat = gl.GL_RGBA
+        self.pixelType = gl.GL_UNSIGNED_BYTE
+
+        self.width, self.height, self.data = load_image(self.path)
 
         self.load_gl()
 
