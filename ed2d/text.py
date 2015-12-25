@@ -138,7 +138,7 @@ class Text(object):
         self.vertLoc = self.program.get_attribute(b'position')
         self.UVLoc = self.program.get_attribute(b'vertexUV')
 
-        self.data = [[0.0, 1.0], [1.0, 1.0], [0.0, 0.0], [1.0, 0.0], ]
+        self.data = [[0.0, 1.0], [1.0, 1.0], [0.0, 0.0], [1.0, 0.0] ]
 
         self.chrMap = {}
 
