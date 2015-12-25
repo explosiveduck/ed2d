@@ -1,5 +1,6 @@
 from ed2d import window
-from ed2d import events
+from ed2d import sysevents
+from ed2d.events import Events
 from ed2d import context
 from ed2d import timing
 from ed2d import files
@@ -9,6 +10,7 @@ from ed2d.opengl import pgl
 from gem import matrix
 from ed2d import text
 from ed2d import view
+from ed2d import menu
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -22,12 +24,12 @@ class GameManager(object):
         self.fpsTimer = timing.FpsCounter()
         self.fpsEstimate = 0
 
-        self.events = events.Events()
+        self.sysEvents = sysevents.SystemEvents()
         self.window = window.Window(self.title, self.width, self.height, window.WindowedMode)
         self.context = context.Context(3, 3, 2)
         self.context.window = self.window
 
-        self.events.add_listener(self.process_event)
+        Events.add_listener(self.process_event)
 
         self.keys = []
 
@@ -105,7 +107,7 @@ class GameManager(object):
 
     def do_run(self):
         ''' Process a single loop '''
-        self.events.process()
+        self.sysEvents.process()
         self.update()
         self.render()
         self.window.flip()

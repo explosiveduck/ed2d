@@ -1,16 +1,23 @@
-import platform
 
-# from ed2d.cmdargs import  CmdArgs
-# forceSDL = CmdArgs.add_arg('sdl', bool, 'Force sdl2 instead of native.')
+class EventQueue(object):
+    def __init__(self):
+        self.listeners = []
 
-osName = platform.system()
-# if osName == 'Windows':
-#     from ed2d.events.win32 import Events
-# elif osName == 'Linux':
-#     from ed2d.events.x11 import Events
-if osName in ('Windows', 'Darwin', 'Linux'):
-    from ed2d.platforms.sdl2events import Events
-else:
-    pass
+    def add_listener(self, listener):
+        '''
+        Add an event processing listener.
+        An event listener is just a function that accepts 2 arguments.
+        '''
+        self.listeners.append(listener)
 
-__all__ = ['Events']
+    def remove_listener(self, listener):
+        ''' Remove specified event listener '''
+        if listener not in self.listeners:
+            self.listener.remove()
+
+    def broadcast_event(self, event, args):
+        ''' Send out an event to all event listeners '''
+        for listener in self.listeners:
+            listener(event, args)
+
+Events = EventQueue()

@@ -3,30 +3,12 @@ import ctypes as ct
 import sdl2 as sdl
 
 from ed2d.platforms import sdl2keymap as keymap
+from ed2d.events import Events
 
-class Events(object):
+class SystemEvents(object):
     ''' Handles Event stuff... '''
     def __init__(self):
         sdl.SDL_InitSubSystem(sdl.SDL_INIT_EVENTS)
-
-        self.listeners = []
-
-    def add_listener(self, listener):
-        '''
-        Add an event processing listener.
-        An event listener is just a function that accepts 2 arguments.
-        '''
-        self.listeners.append(listener)
-
-    def remove_listener(self, listener):
-        ''' Remove specified event listener '''
-        if listener not in self.listeners:
-            self.listener.remove()
-
-    def broadcast_event(self, event, args):
-        ''' Send out an event to all event listeners '''
-        for listener in self.listeners:
-            listener(event, args)
 
     def process(self):
         '''
@@ -79,6 +61,6 @@ class Events(object):
                 pass
 
             if eventName is not None:
-                self.broadcast_event(eventName, data)
+                Events.broadcast_event(eventName, data)
 
 __all__ = ['Events']
