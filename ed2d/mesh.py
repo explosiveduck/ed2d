@@ -137,6 +137,8 @@ class Mesh(MeshBase):
         self.colors = []
         self.triangles = []
 
+        self.physObj = None
+
     def setColorAll(self, r, g, b):
         '''
         This will populate the colors array with same color for every vertex.
@@ -205,6 +207,7 @@ class Mesh(MeshBase):
 
     def addPhysicsObject(self, physObj):
         '''This will attach a physics object to the mesh.'''
+        self.physObj = physObj
         self.rect = physObj.getCollisionModel().getModel()
         self.data = self.rect.getVertices()
         self.texCoord = self.rect.getVertices()
@@ -222,12 +225,12 @@ class Mesh(MeshBase):
 
     # TODO - Implement rotation..
 
-    def update(self, physicsObject=None):
+    def update(self):
 
-        if physicsObject is None:
+        if self.physObj is None:
             pass
         else:
-            self.rect = physicsObject.getCollisionModel().getModel()
+            self.rect = self.physObj.getCollisionModel().getModel()
             self.matrix = self.rect.getModelMatrix()
 
         if self.scaleDelta:

@@ -21,6 +21,7 @@ from ed2d.physics import gjk
 from ed2d.csg import csg
 from ed2d import view
 from ed2d import text
+from ed2d.scenegraph import SceneGraph
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -65,6 +66,8 @@ class GameManager(object):
 
         self.vao = pgl.glGenVertexArrays(1)
 
+        self.scenegraph = SceneGraph()
+
         # Load character image into new opengl texture
         imagePath = files.resolve_path('data', 'images', 'cubix.png')
         self.texAtlas = texture.Texture(imagePath, self.program)
@@ -95,13 +98,13 @@ class GameManager(object):
         self.meshObjectTest.addProgram(self.program)
         self.meshObjectTest.addTexture(None)
         self.meshObjectTest.addPhysicsObject(self.physicsObjectTest)
+        self.meshObjectTestID = self.scenegraph.establish(self.meshObjectTest)
         # End Player
 
         # Scene objects
         # For now store all the mesh objects in here
         # We need some sort of rendering engine class
 
-        self.meshObjects = []
 
         for i in range(20):
             xRND = rnd.randrange(1, (self.width-32))
@@ -121,7 +124,7 @@ class GameManager(object):
             tempMesh.addProgram(self.program)
             tempMesh.addTexture(self.texAtlas)
             tempMesh.addPhysicsObject(tempObj)
-            self.meshObjects.append(tempMesh)
+            self.scenegraph.establish(tempMesh)
 
         # End Scene Objects
 
@@ -200,8 +203,8 @@ class GameManager(object):
         elif event == 'mouse_move':
             x, y = data
             # Translate and then update it, this can be handled better but for now, this will do
-            self.physicsObjectTest.translate(x,y)
-            self.meshObjectTest.update(self.physicsObjectTest)
+            motNode = self.scenegraph.aquire(self.meshObjectTestID)
+            motNode.obj.translate(x, y)
         elif event == 'key_down':
             self.keys.append(data[0])
             print(self.keys)
@@ -209,8 +212,8 @@ class GameManager(object):
             self.keys.remove(data[0])
 
     def update(self):
-        pass
-        #Disabled because it can get really annoying, really fast >:[
+        self.scenegraph.update()
+        # Disabled because it can get really annoying, really fast >:[
         # self.physicsEngineTest.simulate(self.fpsTimer.tickDelta)
 
     def render(self):
@@ -226,8 +229,7 @@ class GameManager(object):
 
         self.meshObjectTest.render()
 
-        for obj in self.meshObjects:
-            obj.render()
+        self.scenegraph.render()
 
         gl.glBindVertexArray(0)
 

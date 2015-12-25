@@ -167,7 +167,7 @@ class Text(object):
 
 
     def draw_text(self, text, xPos, yPos):
-
+        self.program.use()
         self.texAtlas.bind()
 
         # When you can dynamically add textures to an Atlas

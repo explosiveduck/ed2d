@@ -8,6 +8,7 @@ class BaseNode(object):
         self.root = None
         self.parent = None
         self.children = [self]
+        self.obj = obj
 
     def attach(self, parent):
         self.root = parent.root
@@ -76,14 +77,16 @@ class RootNode(BaseNode):
 
 
 class GraphicsNode(BaseNode):
-    def __init__(self, obj):
+    def __init__(self, obj, matrix=None):
         super(GraphicsNode, self).__init__(obj)
-        self.matrix = matrix.Matrix(4)
+        if matrix is None:
+            self.matrix = matrix.Matrix(4)
+        else:
+            self.matrix = matrix
         self.appliedMatrix = self.matrix
 
     def bind_matrix(self, matrix):
         self.matrix = matrix
-
 
 class SceneGraph(object):
     def __init__(self):
@@ -92,7 +95,11 @@ class SceneGraph(object):
         self.root.appliedMatrix = self.root.matrix
 
     def establish(self, obj, parent=None):
-        node = GraphicsNode(obj)
+        if hasattr(obj, 'matrix'):
+            node = GraphicsNode(obj, obj.matrix)
+        else:
+            node = GraphicsNode(obj)
+
         if parent is None:
             parent = self.root
         else:
@@ -112,11 +119,17 @@ class SceneGraph(object):
         return self.root
 
     @classmethod
-    def _recurse_mtx_apply(self, parent, obj):
+    def _recurse_update(self, parent, obj):
+        obj.obj.update()
+        obj.matrix = obj.obj.matrix
         obj.appliedMatrix = parent.appliedMatrix * obj.matrix
 
-    def apply_matrix(self):
-        self.root.recurse(self._recurse_mtx_apply)
+    def update(self):
+        self.root.recurse(self._recurse_update)
+
+    @classmethod
+    def _recurse_render(self, parent, obj):
+        obj.obj.render()
 
     def render(self):
-        self.apply_matrix()
+        self.root.recurse(self._recurse_render)
