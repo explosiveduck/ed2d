@@ -73,8 +73,8 @@ class BaseTexture(object):
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
 
-        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA16F, self.width, self.height,
-                         0, self.texFormat, gl.GL_FLOAT, self.data)
+        pgl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.texFormat, self.width, self.height,
+                         0, self.texFormat, gl.GL_UNSIGNED_BYTE, self.data)
 
     def bind(self):
         gl.glActiveTexture(gl.GL_TEXTURE0 + self.texUnitID)
@@ -90,7 +90,10 @@ class Texture(BaseTexture):
 
         self.texFormat = texFormat
 
-        self.width, self.height, self.data = load_image_hdr(self.path)
+        if '.hdr' in path:
+            self.width, self.height, self.data = load_image_hdr(self.path)
+        else:
+            self.width, self.height, self.data = load_image(self.path)
 
         self.load_gl()
 

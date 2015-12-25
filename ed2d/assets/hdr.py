@@ -49,7 +49,7 @@ class HDRLoader(object):
     def deCrunch(self, scanIndex1, length, FILE):
 
         scanIndex = scanIndex1
-        
+
         if length < self.MINELEN or length > self.MAXELEN:
             return self.oldDeCrunch(length, FILE)
 
@@ -175,19 +175,15 @@ class HDRLoader(object):
         f.close()
 
 
-myhdrtest = HDR()
-myhdrtestloader = HDRLoader()
-filePath = files.resolve_path('data', 'images', "grace_probe.hdr")
-myhdrtestloader.load(filePath, myhdrtest)
-
-print("HDR File Info")
-print(myhdrtest.width, myhdrtest.height)
-print("Size of the image: ", len(myhdrtest.cols))
-print("Random pixel", myhdrtest.cols[0], myhdrtest.cols[1], myhdrtest.cols[2])
+# myhdrtest = HDR()
+# myhdrtestloader = HDRLoader()
+# filePath = files.resolve_path('data', 'images', "grace_probe.hdr")
+# myhdrtestloader.load(filePath, myhdrtest)
+#
+# print("HDR File Info")
+# print(myhdrtest.width, myhdrtest.height)
+# print("Size of the image: ", len(myhdrtest.cols))
+# print("Random pixel", myhdrtest.cols[0], myhdrtest.cols[1], myhdrtest.cols[2])
 
 #for i in range(len(myhdrtest.cols) / 3):
 #    print(myhdrtest.cols[i], myhdrtest.cols[i + 1], myhdrtest.cols[i + 2])
-
-
-
-
