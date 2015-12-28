@@ -203,8 +203,7 @@ class GameManager(object):
         elif event == 'mouse_move':
             x, y = data
             # Translate and then update it, this can be handled better but for now, this will do
-            motNode = self.scenegraph.aquire(self.meshObjectTestID)
-            motNode.obj.translate(x, y)
+            self.physicsObjectTest.translate(x,y)
         elif event == 'key_down':
             self.keys.append(data[0])
             print(self.keys)
@@ -227,7 +226,7 @@ class GameManager(object):
         self.program.use()
         gl.glBindVertexArray(self.vao)
 
-        self.meshObjectTest.render()
+        #self.meshObjectTest.render()
 
         self.scenegraph.render()
 
