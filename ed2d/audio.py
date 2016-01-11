@@ -1,3 +1,4 @@
+from ed2d.openal import al
 
 class Audio(object):
     """Stub class for for Audio code"""

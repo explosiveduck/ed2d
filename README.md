@@ -28,6 +28,9 @@ https://www.libsdl.org/download-2.0.php
 
 Put both dll's in the deps folder within your project folder (framework in this repo)
 
+Download the OpenAL 1.1 installer from here and install it:
+http://www.openal.org/downloads/oalinst.zip
+
 Install gem, pysdl2 and freetype-py using pip
 pip install pysdl2
 pip install freetype-py
