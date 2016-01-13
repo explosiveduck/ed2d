@@ -85,10 +85,17 @@ class MeshBase(object):
         self.colorLoc = self.program.get_attribute(b'color')
         self.modelID = self.program.new_uniform(b'model')
 
+    def addMaterials(self, materList):
+        # Because there are different materials per mesh, a list needs to be provided
+        self.materials = materList
+
+    # This will get removed-------
     def addTexture(self, texture):
         self.texture = texture
+    #-----------------------------
 
     def render(self):
+        #NOTE: Need to implement rendering by materials
 
         self.program.set_uniform_matrix(self.modelID, self.matrix)
 
