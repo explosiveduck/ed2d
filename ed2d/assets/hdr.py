@@ -1,6 +1,7 @@
 import math
 import struct
 import re
+import six as sm
 from operator import itemgetter
 from ed2d import files
 
@@ -134,12 +135,12 @@ class HDRLoader(object):
             c = ord(f.read(1))
             if c is 0xa and oldc is 0xa:
                 break
-            cmd.append(str(unichr(c)))
+            cmd.append(str(sm.unichr(c)))
 
         reso = []
         while True:
             c = ord(f.read(1))
-            cstr = str(unichr(c))
+            cstr = str(sm.unichr(c))
             reso.append(cstr)
             if c is 0xa:
                 break
