@@ -3,8 +3,11 @@
 # Emission?
 # Need to setup so it can send outputs to a shader
 # Inputs need to be defined a lot better
+from ed2d import texture.py
+from ed2d import files.py
+
 class Material(object):
-    def __init__(self):
+    def __init__(self, program):
         self.diffuse = None
         self.idiffuse = 0 # Intensity parameter
 
@@ -14,6 +17,7 @@ class Material(object):
         self.specular = None
         self.roughness = None
 
+        # This is the diffuse texture
         self.albedo = None
 
         self.diffuseType = None
@@ -23,8 +27,8 @@ class Material(object):
         self.specularMap = None
         self.displacementMap = None
 
-        # Not sure if this is needed yet
-        self.shader = None
+        # Assign the shader that will render the Material
+        self.program = program
 
     def setDiffuseColor(self, r, g, b, intensity):
         ''' Sets the diffuse color of a material. '''
@@ -47,7 +51,24 @@ class Material(object):
     def specularType(self, shader):
         pass
 
+    def addTextures(self, textureDict):
+        # This will replace the crap underneath this function
+        pass
+
     # This will replace the texture assignment via Mesh class
-    def addTexture(self, texture):
+    def addTexture(self, textureFileName):
         ''' This sets the diffuse albeo/texture of the material. '''
-        self.albedo = texture
+        imagePath = files.resolve_path('data', 'images', textureFileName)
+        self.albedo = texture.Texture(imagePath, self.program)
+
+    def addNormalMap(self, textureFileName):
+        imagePath = files.resolve_path('data', 'images', textureFileName)
+        self.normalMap = texture.Texture(imagePath, self.program)
+
+    def addSpecularMap(self, textureFileName):
+        imagePath = files.resolve_path('data', 'images', textureFileName)
+        self.specularMap = texture.Texture(imagePath, self.program)
+
+    def addDisplacementMap(self, textureFileName):
+        imagePath = files.resolve_path('data', 'images', textureFileName)
+        self.displacementMap = texture.Texture(imagePath, self.program)
