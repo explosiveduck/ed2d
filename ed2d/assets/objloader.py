@@ -56,7 +56,7 @@ class OBJ(object):
         # Close the file
         objfile.close()
 
-    def __process_in_house(self, objfl):
+    def __process_in_house(self, filename):
         with open(filename, "r") as objfl:
 
             for line in objfl:
@@ -75,10 +75,10 @@ class OBJ(object):
 
                     for i in range(3):
                         if temp[i][1] != '':
-                            self.uvIndices[fnumber] = int(temp[i][1])
-                        self.vertexIndices[fnumber] = int(temp[i][0])
-                        self.normalIndices[fnumber] = int(temp[i][2])
-                        fnumber += 1
+                            self.uvIndices[self.fnumber] = int(temp[i][1])
+                        self.vertexIndices[self.fnumber] = int(temp[i][0])
+                        self.normalIndices[self.fnumber] = int(temp[i][2])
+                        self.fnumber += 1
 
                     continue
 
@@ -86,21 +86,21 @@ class OBJ(object):
 
                 if valueType == "v":
                     v = [value[0], value[1], value[2]]
-                    self.tempVertices[vnumber] = v
+                    self.tempVertices[self.vnumber] = v
                     self.vnumber += 1
 
                 elif valueType == "vt":
                     vt = [value[0], value[0]]
-                    self.tempUVs[vtnumber] = vt
+                    self.tempUVs[self.vtnumber] = vt
                     self.vtnumber += 1
 
                 elif valueType == "vn":
                     n = [value[0], value[1], value[2]]
-                    self.tempNormals[vnnumber] = n
+                    self.tempNormals[self.vnnumber] = n
                     self.vnnumber += 1
 
     def get_final_data(self):
-        for i in range(fcount):
+        for i in range(self.fcount):
             vertexIndex = int(self.vertexIndices[i]) - 1
             vertex = self.tempVertices[vertexIndex]
             self.finalVertices[i] = vertex
@@ -109,7 +109,7 @@ class OBJ(object):
             normal = self.tempNormals[int(normalIndex) - 1]
             self.finalNormals[i] = normal
 
-            if self.uvIndices[0] is None and vtcount != 0:
+            if self.uvIndices[0] is None and self.vtcount != 0:
                 uvIndex = self.uvIndices[i]
                 uv = self.tempUVs[int(uvIndex) - 1]
                 self.finalUVs[i] = uv
