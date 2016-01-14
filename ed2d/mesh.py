@@ -238,7 +238,10 @@ class Mesh(MeshBase):
         self.xPos = x
         self.yPos = y
 
-    # TODO - Implement rotation..
+    # TODO - Needs to be checked
+    def rotate(self, axis, angle):
+        self.rotationMatrix = matrix.Matrix().rotate(axis, angle)
+        self.matrix *= self.rotationMatrix
 
     def update(self):
 
