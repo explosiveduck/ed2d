@@ -3,8 +3,8 @@
 # Emission?
 # Need to setup so it can send outputs to a shader
 # Inputs need to be defined a lot better
-from ed2d import texture.py
-from ed2d import files.py
+from ed2d import texture
+from ed2d import files
 
 class Material(object):
     def __init__(self, program):
