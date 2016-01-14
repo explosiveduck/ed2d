@@ -3,7 +3,6 @@ import struct
 import re
 import six as sm
 from operator import itemgetter
-from ed2d import files
 
 def convertComponent(expo, val):
     v = val / 256.0
@@ -52,7 +51,7 @@ class HDRLoader(object):
         scanIndex = scanIndex1
 
         if length < self.MINELEN or length > self.MAXELEN:
-            return self.oldDeCrunch(length, FILE)
+            return self.oldDeCrunch(scanIndex, length, FILE)
 
         i = getValueFromStream(FILE)
         if i is not 2:
@@ -106,7 +105,7 @@ class HDRLoader(object):
                 return False
 
             if (self.scanline[scanIndex][self.R] is 1 and self.scanline[scanIndex][self.G] is 1 and self.scanline[scanIndex][self.B] is 1):
-                for i in range(self.scanline[scanIndex][self.E] << rshift, 0, -1):
+                for [] in range(self.scanline[scanIndex][self.E] << rshift, 0, -1):
                     self.scanline[scanIndex][0] = self.scanline[scanIndex - 1][0]
                     scanIndex = scanIndex + 1
                     length = length - 1
@@ -164,7 +163,7 @@ class HDRLoader(object):
 
         scnidx = 0
         # Convert image
-        for y in range(h - 1, -1, -1):
+        for [] in range(h - 1, -1, -1):
             # If self.scanline doesn't update is because of this
             if (self.deCrunch(scnidx, w, f) is False):
                 break
