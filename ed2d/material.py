@@ -45,10 +45,10 @@ class Material(object):
         self.specular = [r, g, b]
         self.roughness = roughness
 
-    def diffuseType(self, shader):
+    def setDiffuseType(self, shader):
         pass
 
-    def specularType(self, shader):
+    def setSpecularType(self, shader):
         pass
 
     def addTextures(self, textureDict):
