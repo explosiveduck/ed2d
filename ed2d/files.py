@@ -14,13 +14,11 @@ def get_path():
     else:
         return path0
 
+_originPath = get_path()
 
 def resolve_path(*location):
     '''Resolve path relative to current path.'''
-    path = get_path()
-    location = (path,) + location
-    location = os.sep.join(location)
-    return location
+    return os.sep.join((_originPath,) + location)
 
 
 def read_file(path):
