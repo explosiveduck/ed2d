@@ -17,8 +17,8 @@ class Material(object):
         self.specular = None
         self.roughness = None
 
-        # This is the diffuse texture
-        self.albedo = None
+        # This is the diffuse textures
+        self.albedoLayers = {}
 
         self.diffuseType = None
         self.specularType = None
@@ -52,23 +52,18 @@ class Material(object):
         pass
 
     def addTextures(self, textureDict):
+        # Format is {A: [albedo0, albedo1, ...], N: [normal1, normal2, ...], S: [specular1, specular2, ...]}
         # This will replace the crap underneath this function
-        pass
-
-    # This will replace the texture assignment via Mesh class
-    def addTexture(self, textureFileName):
-        ''' This sets the diffuse albeo/texture of the material. '''
-        imagePath = files.resolve_path('data', 'images', textureFileName)
-        self.albedo = texture.Texture(imagePath, self.program)
-
-    def addNormalMap(self, textureFileName):
-        imagePath = files.resolve_path('data', 'images', textureFileName)
-        self.normalMap = texture.Texture(imagePath, self.program)
-
-    def addSpecularMap(self, textureFileName):
-        imagePath = files.resolve_path('data', 'images', textureFileName)
-        self.specularMap = texture.Texture(imagePath, self.program)
-
-    def addDisplacementMap(self, textureFileName):
-        imagePath = files.resolve_path('data', 'images', textureFileName)
-        self.displacementMap = texture.Texture(imagePath, self.program)
+        for key, value in textureDict.iteritems():
+            if key is 'A':
+                for i in range(len(value)):
+                    imagePath = files.resolve_path('data', 'images', value[i])
+                    self.albedoLayers['Layer' + i] = texture.Texture(imagePath, self.program)
+            if key is 'N':
+                for i in range(len(value)):
+                    imagePath = files.resolve_path('data', 'images', value[i])
+                    self.normalMapLayers['Layer' + i] = texture.Texture(imagePath, self.program)
+            if key is 'S':
+                for i in range(len(value)):
+                    imagePath = files.resolve_path('data', 'images', value[i])
+                    self.specularMapLayers['Layer' + i] = texture.Texture(imagePath, self.program)
