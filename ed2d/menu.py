@@ -82,7 +82,7 @@ class ElementManager(object):
         return eid
 
     def update_element(self, eid, elmProp):
-        imgMesh = sel.elementData[eid]['mesh']
+        imgMesh = self.elementData[eid]['mesh']
 
         for key, value in elmProp.items():
             self.elementData[eid]['prop'][key] = value

@@ -13,4 +13,4 @@ if osName in ('Windows', 'Darwin', 'Linux'):
 else:
     pass
 
-__all__ = ['Events']
+__all__ = ['SystemEvents']
