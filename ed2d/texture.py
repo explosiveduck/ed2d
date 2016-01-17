@@ -88,7 +88,7 @@ class BaseTexture(object):
 class HDRTexture(BaseTexture):
 
     def __init__(self, path, program):
-        super(Texture, self).__init__(program)
+        super(HDRTexture, self).__init__(program)
         self.path = path
 
         self.texFormat = gl.GL_RGBA16F
@@ -99,7 +99,7 @@ class HDRTexture(BaseTexture):
         self.load_gl()
 
     def load_gl(self):
-        super(Texture, self).load_gl()
+        super(HDRTexture, self).load_gl()
         self.program.set_uniform_array(self.texResID, [float(self.width), float(self.height)])
 
 class Texture(BaseTexture):
