@@ -7,7 +7,7 @@ from ed2d import texture
 from ed2d import files
 
 class Material(object):
-    def __init__(self, program):
+    def __init__(self):
         self.diffuse = None
         self.idiffuse = 0 # Intensity parameter
 
@@ -23,12 +23,16 @@ class Material(object):
         self.diffuseType = None
         self.specularType = None
 
-        self.normalMap = None
-        self.specularMap = None
-        self.displacementMap = None
+        self.normalMapLayers = {}
+        self.specularMapLayers = {}
+        self.displacementMapLayers = {}
 
         # Assign the shader that will render the Material
         self.program = program
+
+    def addProgram(self, program):
+        ''' Adds a program to the Material class. '''
+        pass
 
     def setDiffuseColor(self, r, g, b, intensity):
         ''' Sets the diffuse color of a material. '''
@@ -45,6 +49,7 @@ class Material(object):
         self.specular = [r, g, b]
         self.roughness = roughness
 
+    # Leave these like this for now till I figure out the shaders
     def setDiffuseType(self, shader):
         pass
 
@@ -52,6 +57,7 @@ class Material(object):
         pass
 
     def addTextures(self, textureDict):
+        ''' Will add textures to the Material. It takes a dictionary as param. '''
         # Format is {A: [albedo0, albedo1, ...], N: [normal1, normal2, ...], S: [specular1, specular2, ...]}
         # This will replace the crap underneath this function
         for key, value in textureDict.iteritems():
