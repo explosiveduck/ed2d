@@ -78,6 +78,8 @@ class MeshBase(object):
         self.modelID = None
         self.matrix = matrix.Matrix(4) # Model matrix
 
+        self.materials = {}
+
     def addProgram(self, program):
         self.program = program
         self.vertLoc = self.program.get_attribute(b'position')
@@ -85,9 +87,9 @@ class MeshBase(object):
         self.colorLoc = self.program.get_attribute(b'color')
         self.modelID = self.program.new_uniform(b'model')
 
-    def addMaterials(self, materList):
+    def addMaterials(self, materialDict):
         # Because there are different materials per mesh, a list needs to be provided
-        self.materials = materList
+        self.materials = materialDict
 
     # This will get removed-------
     def addTexture(self, texture):
