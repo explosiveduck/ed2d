@@ -28,11 +28,11 @@ class Material(object):
         self.displacementMapLayers = {}
 
         # Assign the shader that will render the Material
-        self.program = program
+        self.program = None
 
     def addProgram(self, program):
         ''' Adds a program to the Material class. '''
-        pass
+        self.program = program
 
     def setDiffuseColor(self, r, g, b, intensity):
         ''' Sets the diffuse color of a material. '''
