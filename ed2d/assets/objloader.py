@@ -9,6 +9,7 @@ class OBJ(object):
         vcount = 0
         vtcount = 0
         vncount = 0
+        matcount = 0
 
         # Load the file
         objfile = open(fileName, "r")
@@ -24,6 +25,8 @@ class OBJ(object):
                 vtcount += 1
             elif value == 'vn':
                 vncount += 1
+            elif value == 'g ':
+                matcount += 1
 
         fcount *= 3
         vcount *= 3
@@ -32,8 +35,8 @@ class OBJ(object):
 
         self.tempVertices = [None] * vcount
         self.tempNormals = [None] * vncount
-
         self.tempUVs = [None] * fcount
+        self.tempMaterials = [None] * matcount
 
         self.vertexIndices = [None] * fcount
         self.normalIndices = [None] * fcount
@@ -42,11 +45,13 @@ class OBJ(object):
         self.finalVertices = [None] * fcount
         self.finalNormals = [None] * fcount
         self.finalUVs = [None] * fcount
+        self.usedMaterials = [None] * matcount
 
         self.fnumber = 0
         self.vnumber = 0
         self.vtnumber = 0
         self.vnnumber = 0
+        self.matnumber = 0
 
         # Process the data
         self.__process_in_house(objfile)
@@ -64,7 +69,7 @@ class OBJ(object):
                 value = line.split()
                 valueType = value[0]
 
-                if valueType not in ['f', 'v', 'vt', 'vn']:
+                if valueType not in ['f', 'v', 'vt', 'vn', 'g', 'usemtl']:
                     continue
 
                 value = value[1:]
@@ -98,6 +103,16 @@ class OBJ(object):
                     n = [value[0], value[1], value[2]]
                     self.tempNormals[self.vnnumber] = n
                     self.vnnumber += 1
+
+                elif valueType == "g":
+                    g = value[0]
+                    self.tempMaterials[self.matnumber] = g
+                    self.matnumber += 1
+                elif valueType == "usemtl":
+                    gs = value[0]
+                    # Need a way to generate which material per what face
+                    # In a specific order
+                    self.usedMaterials[sef.matnumber] = gs
 
     def get_final_data(self):
         for i in range(self.fcount):
