@@ -15,7 +15,12 @@ class Material(object):
         self.iambient = 0 # Intensity parameter
 
         self.specular = None
+        self.ispecular = 0 # Specular exponent
         self.roughness = None
+
+        self.emission = None
+
+        self.IOR = None
 
         # This is the diffuse textures
         self.albedoLayers = {}
