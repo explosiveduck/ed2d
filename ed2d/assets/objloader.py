@@ -11,7 +11,13 @@ class OBJ(object):
         vncount = 0
         matcount = 0
 
-        # Load the file
+        __objpath = files.resolve_path('data', 'models', 'fileName' + '.obj')
+        __mtlpath = files.resolve_path('data', 'models', 'fileName' + '.mtl')
+
+        # Load the mtl file
+        self.mtlfile = MTL(__mtlpath)
+
+        # Load the obj file
         objfile = open(fileName, "r")
 
         # Do a head count
@@ -27,6 +33,9 @@ class OBJ(object):
                 vncount += 1
             elif value == 'g ':
                 matcount += 1
+
+        # Close the file
+        objfile.close()
 
         fcount *= 3
         vcount *= 3
@@ -54,12 +63,9 @@ class OBJ(object):
         self.matnumber = 0
 
         # Process the data
-        self.__process_in_house(objfile)
+        self.__process_in_house(__objpath)
         # Finalize
         self.get_final_data()
-
-        # Close the file
-        objfile.close()
 
     def __process_in_house(self, filename):
         with open(filename, "r") as objfl:
@@ -69,9 +75,11 @@ class OBJ(object):
                 value = line.split()
                 valueType = value[0]
 
+                # Don't bother unless the following key words exist in the line
                 if valueType not in ['f', 'v', 'vt', 'vn', 'g', 'usemtl']:
                     continue
 
+                # Start ignoring the first word of the line to grab the values
                 value = value[1:]
 
                 # Check first and continue on early because of string splitting
@@ -79,6 +87,7 @@ class OBJ(object):
                     temp = [item.split("/") for item in value]
 
                     for i in range(3):
+                        # Make sure UV index exists
                         if temp[i][1] != '':
                             self.uvIndices[self.fnumber] = int(temp[i][1])
                         self.vertexIndices[self.fnumber] = int(temp[i][0])
@@ -87,6 +96,7 @@ class OBJ(object):
 
                     continue
 
+                # Map the values after the keyword to floats
                 value = list(map(float, value))
 
                 if valueType == "v":
