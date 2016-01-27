@@ -81,17 +81,27 @@ class OBJ(object):
 
                 # Start ignoring the first word of the line to grab the values
                 value = value[1:]
-
+                matname = None
                 # Check first and continue on early because of string splitting
+                if valueType == "usemtl":
+                    matname = value[1]
+                    # Material Vertex UV Normal Indices Group (Vertex, UV, Normal)
+                    self.mvnig[matname] = [[],[],[]]
+
+                    continue
+
                 if valueType == "f":
                     temp = [item.split("/") for item in value]
 
                     for i in range(3):
-                        # Make sure UV index exists
+                        # Make sure UV index data exists
                         if temp[i][1] != '':
-                            self.uvIndices[self.fnumber] = int(temp[i][1])
-                        self.vertexIndices[self.fnumber] = int(temp[i][0])
-                        self.normalIndices[self.fnumber] = int(temp[i][2])
+                            self.mvnig[matname][1][self.fnumber] = int(temp[i][1])
+                            #self.uvIndices[self.fnumber] = int(temp[i][1])
+                        #self.vertexIndices[self.fnumber] = int(temp[i][0])
+                        #self.normalIndices[self.fnumber] = int(temp[i][2])
+                        self.mvnig[matname][0][self.fnumber] = int(temp[i][0])
+                        self.mvnig[matname][2][self.fnumber] = int(temp[i][2])
                         self.fnumber += 1
 
                     continue
@@ -118,11 +128,6 @@ class OBJ(object):
                     g = value[0]
                     self.tempMaterials[self.matnumber] = g
                     self.matnumber += 1
-                elif valueType == "usemtl":
-                    gs = value[0]
-                    # Need a way to generate which material per what face
-                    # In a specific order
-                    self.usedMaterials[sef.matnumber] = gs
 
     def get_final_data(self):
         for i in range(self.fcount):
