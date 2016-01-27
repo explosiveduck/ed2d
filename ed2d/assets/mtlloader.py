@@ -2,8 +2,11 @@ from ed2d import material
 
 class MTL(object):
     def __init__(self, filename):
+        ''' Wavefront .mtl file parser. '''
         self.data = {}
         self.material = material.Material()
+
+        # The file name is passed in with the full path via OBJ parser.
         self.__load(filename)
 
     def __load(self, filename):
@@ -25,6 +28,7 @@ class MTL(object):
 
             # Check for material
             if valueType == 'newmtl':
+                # Store current material and make it active
                 self.material = self.data[value[1]] = material.Material()
                 materialName = value[1]
                 continue
