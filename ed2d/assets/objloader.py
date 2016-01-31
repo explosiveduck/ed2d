@@ -62,6 +62,9 @@ class OBJ(object):
         self.vnnumber = 0
         self.matnumber = 0
 
+        self.tmvnig = {}
+        self.fmvnig = {}
+
         # Process the data
         self.__process_in_house(__objpath)
         # Finalize
@@ -86,24 +89,23 @@ class OBJ(object):
                 if valueType == "usemtl":
                     matname = value[1]
                     # Material Vertex UV Normal Indices Group (Vertex, UV, Normal)
-                    self.mvnig[matname] = [[],[],[]]
-
+                    self.tmvnig[matname] = [[],[],[]]
+                    self.matnumber += 1
                     continue
 
                 if valueType == "f":
                     temp = [item.split("/") for item in value]
 
                     for i in range(3):
+                        # 0 - Vertex
+                        # 1 - UV
+                        # 2 - Normal
                         # Make sure UV index data exists
                         if temp[i][1] != '':
-                            self.mvnig[matname][1][self.fnumber] = int(temp[i][1])
-                            #self.uvIndices[self.fnumber] = int(temp[i][1])
-                        #self.vertexIndices[self.fnumber] = int(temp[i][0])
-                        #self.normalIndices[self.fnumber] = int(temp[i][2])
-                        self.mvnig[matname][0][self.fnumber] = int(temp[i][0])
-                        self.mvnig[matname][2][self.fnumber] = int(temp[i][2])
+                            self.tmvnig[matname][1][self.fnumber] = int(temp[i][1])
+                        self.tmvnig[matname][0][self.fnumber] = int(temp[i][0])
+                        self.tmvnig[matname][2][self.fnumber] = int(temp[i][2])
                         self.fnumber += 1
-
                     continue
 
                 # Map the values after the keyword to floats
@@ -130,19 +132,21 @@ class OBJ(object):
                     self.matnumber += 1
 
     def get_final_data(self):
-        for i in range(self.fcount):
-            vertexIndex = int(self.vertexIndices[i]) - 1
-            vertex = self.tempVertices[vertexIndex]
-            self.finalVertices[i] = vertex
+        for j in range(self.matnumber):
+            matrname = self.tmvnig.keys[j]
+            for i in range(self.fcount):
+                vertexIndex = int(self.tmvnig[matrname][0][i]) - 1
+                vertex = self.tempVertices[vertexIndex]
+                self.fmvnig[matrname][0][i] = vertex
 
-            normalIndex = self.normalIndices[i]
-            normal = self.tempNormals[int(normalIndex) - 1]
-            self.finalNormals[i] = normal
+                normalIndex = int(self.tmvnig[matrname][2][i]) - 1
+                normal = self.tempNormals[normalIndex]
+                self.fmvnig[matrname][2][i] = normal
 
-            if self.uvIndices[0] is None and self.vtcount != 0:
-                uvIndex = self.uvIndices[i]
-                uv = self.tempUVs[int(uvIndex) - 1]
-                self.finalUVs[i] = uv
+                if self.uvIndices[0] is None and self.vtcount != 0:
+                    uvIndex = int(self.tmvnig[matrname][1][i]) - 1
+                    uv = self.tempUVs[uvIndex]
+                    self.fmvnig[matrname][1][i] = uv
 
 class ObjMesh(MeshBase):
     def __init__(self, filePath, name, program, vertexLoc, normalLoc):
