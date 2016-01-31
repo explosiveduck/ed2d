@@ -51,11 +51,6 @@ class OBJ(object):
         self.normalIndices = [None] * fcount
         self.uvIndices = [None] * fcount
 
-        self.finalVertices = [None] * fcount
-        self.finalNormals = [None] * fcount
-        self.finalUVs = [None] * fcount
-        self.usedMaterials = [None] * matcount
-
         self.fnumber = 0
         self.vnumber = 0
         self.vtnumber = 0
