@@ -39,7 +39,7 @@ class AudioFile(object):
     def __init__(self, filePath):
         wav = wave.open(filePath, mode='rb')
         audioFormat = channelMap[wav.getnchannels()]
-        self.audioBitdepth = wav.getsampwidth() * 8
+        self.sampleSize = wav.getsampwidth()
         self.samplerate = wav.getframerate()
 
         self.source = al.ALuint()
@@ -53,14 +53,12 @@ class AudioFile(object):
 
         self.buffer = al.ALuint()
         al.alGenBuffers(1, ct.byref(self.buffer))
-        al.alSourcei(self.source, al.AL_BUFFER, al.ALint(self.buffer.value))
 
-        pyBuffer = wav.readframes(wav.getnframes())
-        print(len(pyBuffer), wav.getnframes())
+        samples = wav.getnframes()
+        bufferData = (ct.c_ubyte * (samples*2))(*wav.readframes(samples))
 
-        cBuffer = ct.create_string_buffer(pyBuffer)
-        bufferData = ct.cast(ct.pointer(cBuffer), ct.c_void_p)
-        al.alBufferData(self.buffer, audioFormat, bufferData, self.audioBitdepth // 8, self.samplerate)
+        al.alBufferData(self.buffer, audioFormat, ct.byref(bufferData), self.sampleSize * samples, self.samplerate)
+        al.alSourcei(self.source, al.AL_BUFFER, self.buffer.value)
         wav.close()
 
     def destroy(self):
