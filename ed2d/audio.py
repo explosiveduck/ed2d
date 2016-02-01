@@ -55,7 +55,8 @@ class AudioFile(object):
         al.alGenBuffers(1, ct.byref(self.buffer))
 
         samples = wav.getnframes()
-        bufferData = (ct.c_ubyte * (samples*2))(*wav.readframes(samples))
+        bufferData = (ct.c_ubyte * (samples*2))
+        bufferData = bufferData(*wav.readframes(samples))
 
         al.alBufferData(self.buffer, audioFormat, ct.byref(bufferData), self.sampleSize * samples, self.samplerate)
         al.alSourcei(self.source, al.AL_BUFFER, self.buffer.value)
@@ -75,6 +76,7 @@ class AudioFile(object):
         al.alSourcePause(self.source)
 
     def get_pos(self):
+        # this is super basic and will not work properly with stero audio files...
         byteoffset = al.ALint()
         al.alGetSourcei(self.source, al.AL_BYTE_OFFSET, ct.byref(byteoffset))
         byteoffset = byteoffset.value
