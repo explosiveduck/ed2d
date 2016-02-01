@@ -22,6 +22,7 @@ from ed2d.csg import csg
 from ed2d import view
 from ed2d import text
 from ed2d.scenegraph import SceneGraph
+from ed2d import audio
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -43,6 +44,13 @@ class GameManager(object):
         Events.add_listener(self.process_event)
 
         self.keys = []
+
+        self.audio = audio.Audio()
+        audioPath = files.resolve_path('data', 'sound', 'test.wav')
+        self.audioFile = audio.AudioFile(audioPath)
+        self.audioFile.play()
+        print(self.audioFile.get_pos())
+        print(self.audioFile.get_pos())
 
         gl.init()
         major = pgl.glGetInteger(gl.GL_MAJOR_VERSION)
@@ -105,6 +113,7 @@ class GameManager(object):
         # For now store all the mesh objects in here
         # We need some sort of rendering engine class
 
+        print(self.audioFile.get_pos())
 
         for i in range(20):
             xRND = rnd.randrange(1, (self.width-32))
@@ -239,6 +248,8 @@ class GameManager(object):
         self.render()
         self.window.flip()
         self.fpsTimer.tick()
+
+        print(self.audioFile.get_pos())
         if self.fpsTimer.fpsTime >= 2000:
             self.fpsEstimate = self.fpsTimer.get_fps()
             print("{:.2f} fps".format(self.fpsEstimate))
@@ -248,3 +259,5 @@ class GameManager(object):
         self.running = True
         while self.running:
             self.do_run()
+        self.audioFile.destroy()
+        self.audio.destroy()
