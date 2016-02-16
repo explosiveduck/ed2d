@@ -4,6 +4,7 @@ import sdl2 as sdl
 
 from ed2d.platforms import sdl2keymap as keymap
 from ed2d.events import Events
+from ed2d import cursor
 
 MOUSE_LEFT = 1
 MOUSE_MIDDLE = 2
@@ -34,7 +35,10 @@ class SystemEvents(object):
                 data = ()
             elif event.type == sdl.SDL_MOUSEMOTION:
                 eventName = 'mouse_move'
-                data = (event.motion.x, event.motion.y)
+                if cursor.is_relative():
+                    data = (event.motion.xrel, event.motion.yrel)
+                else:
+                    data = (event.motion.x, event.motion.y)
             elif event.type == sdl.SDL_WINDOWEVENT:
                 winEvent = event.window
                 wEventName = event.window.event

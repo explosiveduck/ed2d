@@ -23,6 +23,7 @@ from ed2d import view
 from ed2d import text
 from ed2d.scenegraph import SceneGraph
 from ed2d import audio
+from ed2d import cursor
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -45,6 +46,10 @@ class GameManager(object):
 
         self.keys = []
         self.mouseButtons = []
+        self.mousePosX = 0
+        self.mousePosY = 0
+        cursor.set_relative_mode(True)
+        cursor.show_cursor()
 
         self.audio = audio.Audio()
         audioPath = files.resolve_path('data', 'sound', 'test.wav')
@@ -211,10 +216,19 @@ class GameManager(object):
             winID, x, y = data
             self.resize(x, y)
         elif event == 'mouse_move':
-            x, y = data
-            # Translate and then update it, this can be handled better but for now, this will do
-            self.physicsObjectTest.translate(x,y)
+            print (data)
+
+            if cursor.is_relative():
+                xrel, yrel = data
+                self.mousePosX += xrel
+                self.mousePosY += yrel
+            else:
+                self.mousePosX, self.mousePosY = data
         elif event == 'key_down':
+            if data[0] == 'r':
+                cursor.set_relative_mode(True)
+            elif data[0] == 'd':
+                cursor.set_relative_mode(False)
             self.keys.append(data[0])
             print(self.keys)
         elif event == 'key_up':
@@ -227,6 +241,10 @@ class GameManager(object):
 
     def update(self):
         self.scenegraph.update()
+
+        # Translate and then update it, this can be handled better but for now, this will do
+        self.physicsObjectTest.translate(self.mousePosX, self.mousePosY)
+
         # Disabled because it can get really annoying, really fast >:[
         # self.physicsEngineTest.simulate(self.fpsTimer.tickDelta)
 
