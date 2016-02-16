@@ -44,6 +44,7 @@ class GameManager(object):
         Events.add_listener(self.process_event)
 
         self.keys = []
+        self.mouseButtons = []
 
         self.audio = audio.Audio()
         audioPath = files.resolve_path('data', 'sound', 'test.wav')
@@ -218,6 +219,11 @@ class GameManager(object):
             print(self.keys)
         elif event == 'key_up':
             self.keys.remove(data[0])
+        elif event == 'mouse_button_down':
+            self.mouseButtons.append(data[0])
+            print(self.mouseButtons)
+        elif event == 'mouse_button_up':
+            self.mouseButtons.remove(data[0])
 
     def update(self):
         self.scenegraph.update()
@@ -249,7 +255,7 @@ class GameManager(object):
         self.window.flip()
         self.fpsTimer.tick()
 
-        print(self.audioFile.get_pos())
+        # print(self.audioFile.get_pos())
         if self.fpsTimer.fpsTime >= 2000:
             self.fpsEstimate = self.fpsTimer.get_fps()
             print("{:.2f} fps".format(self.fpsEstimate))

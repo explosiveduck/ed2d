@@ -5,6 +5,12 @@ import sdl2 as sdl
 from ed2d.platforms import sdl2keymap as keymap
 from ed2d.events import Events
 
+MOUSE_LEFT = 1
+MOUSE_MIDDLE = 2
+MOUSE_RIGHT = 3
+MOUSE_EX1 = 4
+MOUSE_EX2 = 5
+
 class SystemEvents(object):
     ''' Handles Event stuff... '''
     def __init__(self):
@@ -56,6 +62,12 @@ class SystemEvents(object):
                     keyName = keymap.process_key_char(event.key.keysym.sym)
                     modKeys = keymap.process_modkeys(event.key.keysym.mod)
                     data = (keyName, keyID, modKeys)
+            elif event.type == sdl.SDL_MOUSEBUTTONUP:
+                eventName = 'mouse_button_up'
+                data = (event.button.button, event.button.clicks, event.button.x, event.button.y)
+            elif event.type == sdl.SDL_MOUSEBUTTONDOWN:
+                eventName = 'mouse_button_down'
+                data = (event.button.button, event.button.clicks, event.button.x, event.button.y)
             else:
                 # Will add more event types later
                 pass
