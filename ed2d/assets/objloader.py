@@ -1,7 +1,5 @@
 from ed2d.assets.mtlloader import MTL
 from ed2d import files
-import copy
-import itertools
 
 def merge_dicts(d1, d2):
     dict1Keys = set(d1.keys())
@@ -27,13 +25,13 @@ def merge_dicts(d1, d2):
             pass
 
     for key in dictKeys:
-            try:
-                # Vertices
-                finalDictionary[key][0] += d2[key][0]
-                finalDictionary[key][1] += d2[key][1]
-                finalDictionary[key][2] += d2[key][2]
-            except KeyError:
-                pass
+        try:
+            # Vertices
+            finalDictionary[key][0] += d2[key][0]
+            finalDictionary[key][1] += d2[key][1]
+            finalDictionary[key][2] += d2[key][2]
+        except KeyError:
+            pass
 
     return finalDictionary
 
@@ -155,8 +153,6 @@ class OBJ(object):
 
         start = []
         end = []
-        startVal = 0
-        endVal = 0
         # Do an object count in the file
         for i in range(lineslen):
             value = lines[i][:2]
@@ -164,11 +160,9 @@ class OBJ(object):
             # Look for 'o ' at the begining of the line and count them
             if value1 == 'o ':
                 # Create a layout of where all the lines starting with o start
-                startVal = i
                 ocount +=1
                 start.append((i - 1))
             if (value1 == 'f ' or value1 == 'l ') and value == 'o ':
-                endVal = i + 1
                 end.append((i + 1))
         end.append(lineslen)
 
