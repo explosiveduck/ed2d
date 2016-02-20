@@ -37,7 +37,7 @@ def glShaderSource(shader, string):
     count = len(string)
 
     strings = []
-    
+
     for item in string:
          strings.append(typeutils.to_c_str(item))
 
@@ -51,7 +51,6 @@ def glBufferData(target, data, dataType, usage):
 
     if typeutils.is_sequence(data[0]):
         cData = typeutils.conv_list_2d(data, dataType)
-
     else:
         cData = typeutils.conv_list(data, dataType)
 

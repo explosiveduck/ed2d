@@ -430,4 +430,6 @@ def init():
 
     gl.glEnable = gl_func('glEnable', None, (GLenum,))
 
+    gl.glDisable = gl_func('glDisable', None, (GLenum,))
+
     gl.glPolygonOffset = gl_func('glPolygonOffset', None, (GLfloat, GLfloat))
