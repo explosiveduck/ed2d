@@ -2,12 +2,13 @@ import math
 from gem import vector
 from gem import matrix
 from gem import quaternion
+from ed2d import view
 
 class Camera(object):
     def __init__(self):
 
         # Camera information
-        self.yAxis = [0.0, 1.0, 0.0]
+        self.yAxis = vector.Vector(3, data=[0.0, 1.0, 0.0])
         self.position = vector.Vector(3)
         self.rotation = quaternion.Quaternion()
         self.sensitivity = 0.05
@@ -33,72 +34,100 @@ class Camera(object):
         self.cur_y = 0
         self.arcball_on = False
 
+        # Initialize view mode
+        self.view = view.View()
+
+        # Modes
+        self.MODE_ORTHOGRAPHIC = 1
+        self.MODE_PERSPECTIVE = 2
+        self.currentMode = 0
+
 
     def perspectiveProjection(self, fov, aspect, znear, zfar):
         self.perspectiveProj = matrix.perspective(fov, aspect, znear, zfar)
+        self.view.new_projection('persp', self.perspectiveProj)
 
     def orthographicProjection(self, left, right, bottom, top, znear, zfar):
         self.orthographicProj = matrix.orthographic(left, right, bottom, top, znear, zfar)
+        self.view.new_projection('ortho', self.orthographicProj)
+
+    def set_program(self, mtype, program):
+        if mtype is 1:
+            self.currentMode = self.MODE_ORTHOGRAPHIC
+            self.view.register_shader('ortho', program)
+        elif mtype is 2:
+            self.currentMode = self.MODE_PERSPECTIVE
+            self.view.register_shader('persp', program)
+        else:
+            self.currentMode = 0
+            return NotImplemented
+
+    def set_mode(self, mtype):
+        if mtype is 1:
+            self.currentMode = self.MODE_ORTHOGRAPHIC
+            self.view.set_projection('ortho', self.orthographicProj)
+        elif mtype is 2:
+            self.currentMode = self.MODE_PERSPECTIVE
+            self.view.set_projection('persp', self.perspectiveProj)
+        else:
+            self.currentMode = 0
+            return NotImplemented
 
     def calcViewMatrix(self):
-        self.cameraRotation = quaternion.conjugate(self.rotation).toMatrix()
+        self.cameraRotation = self.rotation.conjugate().toMatrix()
         self.cameraPosition = self.position * -1.0
-        self.cameraTranslation.i_translate(self.cameraPosition)
+        self.cameraTranslation = matrix.Matrix(4).translate(self.cameraPosition)
 
         self.viewMatrix = self.cameraTranslation * self.cameraRotation
-        self.viewMatrixInverse = matrix.inverse4(self.viewMatrix)
+        self.viewMatrixInverse = self.viewMatrix.inverse()
+
 
     def onKeys(self, keys, tick):
         moveAmount = 0.5 * tick
 
-        if 'W' in keys:
-            self.move(self.rotation.getForward().vector, -moveAmount)
+        if 'w' in keys:
+            self.move(self.rotation.getForward(), -moveAmount)
 
-        if 'S' in keys:
-            self.move(self.rotation.getForward().vector, moveAmount)
+        if 's' in keys:
+            self.move(self.rotation.getForward(), moveAmount)
 
-        if 'A' in keys:
-            self.move(self.rotation.getLeft().vector, moveAmount)
+        if 'a' in keys:
+            self.move(self.rotation.getLeft(), moveAmount)
 
-        if 'D' in keys:
-            self.move(self.rotation.getRight().vector, moveAmount)
+        if 'd' in keys:
+            self.move(self.rotation.getRight(), moveAmount)
 
-        if 'Q' in keys:
-            self.move(self.rotation.getForward().vector, math.radians(moveAmount))
+        if 'q' in keys:
+            self.move(self.rotation.getUp(), moveAmount)
 
-        if 'E' in keys:
-            self.move(self.rotation.getForward().vector, math.radians(-moveAmount))
+        if 'e' in keys:
+            self.move(self.rotation.getUp(), -moveAmount)
 
         if 'UP' in keys:
-            self.move(self.rotation.getUp().vector, moveAmount)
+            self.rotate(self.rotation.getRight(), moveAmount * 0.05)
 
         if 'DOWN' in keys:
-            self.movie(self.rotation.getUp().vector, -moveAmount)
+            self.rotate(self.rotation.getRight(), -moveAmount * 0.05)
 
-        # Mouse buttons
-        # if 'MOUSE_LEFT' in keys:
-        #     self.arcball_on = True
-        # else:
-        #     self.arcball_on = False
+        if 'LEFT' in keys:
+            self.rotate(self.rotation.getUp(), moveAmount * 0.05)
+
+        if 'RIGHT' in keys:
+            self.rotate(self.rotation.getUp(), -moveAmount * 0.05)
 
     def onMouseMove(self, deltaX, deltaY, tick):
+        sensitivity = 0.5
         if deltaX != 0:
-            self.rotate(self.yAxis, math.radians(deltaX * self.sensitivity * tick))
+            self.rotate(self.yAxis, math.radians(deltaX * sensitivity * tick))
 
         if deltaY != 0:
-            self.rotate(self.rotation.getRight(), math.radians(-deltaY * self.sensitivity * tick))
-
-        if self.arcball_on:
-            self.cur_x = deltaX
-            self.cur_y = deltaY
-            self.doArcBallRotation(tick)
+            self.rotate(self.rotation.getRight(), math.radians(deltaY * sensitivity * tick))
 
     def rotate(self, axis, angle):
-        self.rotation = self.rotation * quaternion.quat_from_axis_angle(axis, angle)
-        self.rotation.i_normalize()
+        self.rotation = (quaternion.quat_from_axis_angle(axis, angle) * self.rotation).normalize()
 
     def move(self, direction, amount):
-        self.position = self.position + (direction * amount)
+        self.position = self.position + (direction * amount * self.sensitivity)
 
     def setPosition(self, position):
         self.position = position
@@ -106,33 +135,3 @@ class Camera(object):
     def getViewMatrix(self):
         self.calcViewMatrix()
         return self.viewMatrix
-
-    def doArcBallRotation(self, tick):
-
-        last_x = 0
-        last_y = 0
-
-        def get_vector(x, y):
-            point = vector.Vector(3, data=[1.0 * x / self.screen_width * 2 - 1.0, -(1.0 * y / self.screen_height * 2 - 1.0), 0.0])
-
-            pointSqred = point[0] * point[0] + point[1] * point[1]
-
-            if pointSqred <= 1 * 1:
-                point[2] = math.sqrt(1*1 - pointSqred)
-            else:
-                point.i_normalize()
-
-            return point
-
-        if (self.cur_x is not last_x) or (self.cur_y is not last_y):
-            va = get_vector(last_x, last_y)
-            vb = get_vector(self.cur_x, self.cur_y)
-
-            angle = math.acos(math.min(1.0, va.dot(vb)))
-
-            axis_in_camera_coord = va.cross(vb)
-
-            self.rotate(axis_in_camera_coord, angle * self.sensitivity * tick)
-
-            last_x = self.cur_x
-            last_y = self.cur_y
