@@ -1,4 +1,3 @@
-import math
 from ed2d import window
 from ed2d import sysevents
 from ed2d.events import Events
@@ -10,9 +9,7 @@ from ed2d.opengl import gl
 from ed2d.opengl import pgl
 from gem import vector
 from gem import matrix
-from ed2d import texture
 from ed2d import mesh
-from ed2d import view
 from ed2d import text
 from ed2d import camera
 from ed2d.scenegraph import SceneGraph
