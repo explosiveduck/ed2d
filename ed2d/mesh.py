@@ -1,6 +1,7 @@
 from gem import matrix
 from gem import vector
 from ed2d.opengl import gl, pgl
+from ed2d.assets import objloader
 
 
 def buffer_object(data, typeM):
@@ -51,6 +52,21 @@ def calc_face_normal(vertex1, vertex2, vertex3):
     normal.i_normalize()
     return normal
 
+# Conver matrix 4x4 to 3x3
+def convertM4to3(mat):
+    ''' Convert a 4x4 Matrix to 3x3. '''
+    temp = [[0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0]]
+
+    for i in range(3):
+        for j in range(3):
+            temp[i][j] = mat[i][j]
+
+    out = matrix.Matrix(3)
+    out.matrix = temp
+    return out
+
 
 class Indexer(object):
     ''' This is needed for CSG.'''
@@ -75,62 +91,60 @@ class MeshBase(object):
         self.vertLoc = None
         self.UVLoc = None
         self.colorLoc = None
+        self.normLoc = None
         self.modelID = None
+        self.texture = None
+        self.obj2world = matrix.Matrix(4)
         self.matrix = matrix.Matrix(4) # Model matrix
+        self.modelInverseTranspose = matrix.Matrix(4)
 
-        self.materials = {}
+        self.vbos = []
+        self.cbos = []
+        self.nbos = []
 
     def addProgram(self, program):
         self.program = program
-        self.vertLoc = self.program.get_attribute(b'position')
-        self.UVLoc = self.program.get_attribute(b'vertexUV')
-        self.colorLoc = self.program.get_attribute(b'color')
-        self.modelID = self.program.new_uniform(b'model')
+        self.vertLoc = self.program.get_attribute(b'vertexPosition_modelspace')
+        self.normLoc = self.program.get_attribute(b'normal_modelspace')
+        #self.UVLoc = self.program.get_attribute(b'vertexUV')
+        self.colorLoc = self.program.get_attribute(b'vertexColor')
+        self.modelID = self.program.new_uniform(b'model_matrix')
+        self.invModelLoc = self.program.new_uniform(b'gMdVw')
 
-    def addMaterials(self, materialDict):
-        # Because there are different materials per mesh, a list needs to be provided
-        self.materials = materialDict
-
-    # This will get removed-------
-    def addTexture(self, texture):
-        self.texture = texture
-    #-----------------------------
 
     def render(self):
-        #NOTE: Need to implement rendering by materials
-
         self.program.set_uniform_matrix(self.modelID, self.matrix)
+        self.program.set_uniform_matrix(self.invModelLoc, self.modelInverseTranspose)
 
-        if self.texture is not None:
-            self.texture.bind()
-        else:
-            gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
+        i = 0
+        for key in self.materials:
+            try:
+                bind_object(self.vertLoc, self.vbos[i], 3)
+                bind_object(self.normLoc, self.nbos[i], 3)
+                bind_object(self.colorLoc, self.cbos[i], 3)
 
-        self.cbo = buffer_object(self.colors, gl.GLfloat)
+                gl.glDrawArrays(gl.GL_TRIANGLES, 0, len(self.verData[key]))
 
-        bind_object(self.vertLoc, self.vbo, 3)
-        bind_object(self.UVLoc, self.uvbo, 3)
-        bind_object(self.colorLoc, self.cbo, 3)
-
-        if self.ibo:
-            gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, self.ibo)
-
-            gl.glDrawElements(gl.GL_TRIANGLES, self.ntris * 3,
-                              gl.GL_UNSIGNED_INT, 0)
-
-            gl.glBindBuffer(gl.GL_ELEMENT_ARRAY_BUFFER, 0)
-        else:
-            gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, self.nverts)
-
-        unbind_object(self.colorLoc)
-        unbind_object(self.UVLoc)
-        unbind_object(self.vertLoc)
+                unbind_object(self.colorLoc)
+                unbind_object(self.normLoc)
+                unbind_object(self.vertLoc)
+                i += 1
+            except KeyError:
+                pass
 
     def buffer_objects(self):
-        self.vbo = buffer_object(self.data, gl.GLfloat)
-        self.uvbo = buffer_object(self.texCoord, gl.GLfloat)
-        self.ibo = index_buffer_object(self.triangles, gl.GLuint)
-
+        if self.importedModel:
+            for key in self.materials:
+                try:
+                    self.vbos.append(buffer_object(self.verData[key], gl.GLfloat))
+                    self.nbos.append(buffer_object(self.norData[key], gl.GLfloat))
+                    self.cbos.append(buffer_object(self.colData[key], gl.GLfloat))
+                except KeyError:
+                    pass
+        else:
+            self.vbo = buffer_object(self.vertices, gl.GLfloat)
+            self.uvbo = buffer_object(self.texCoord, gl.GLfloat)
+            self.ibo = index_buffer_object(self.triangles, gl.GLuint)
 
 class Mesh(MeshBase):
     def __init__(self):
@@ -138,29 +152,35 @@ class Mesh(MeshBase):
 
         self.xPos = 0
         self.yPos = 0
+        self.zPos = 0
         self.xPosDelta = 0
         self.yPosDelta = 0
+        self.zPosDelta = 0
 
         self._scale = 1
         self.scaleDelta = 0
 
+        self.verData = {}
+        self.norData = {}
+        self.colData = {}
         self.rect = None
         self.nverts = 0
         self.ntris = 0
-        self.data = []
-        self.texCoord = []
 
+        self.vertices = []
+        self.texCoord = []
         self.normals = []
         self.colors = []
         self.triangles = []
+        self.materials = {}
 
         self.physObj = None
+        self.importedModel = False
 
     def setColorAll(self, r, g, b):
         '''
         This will populate the colors array with same color for every vertex.
         '''
-
         if not self.colors:
             for i in range(self.nverts):
                 self.colors.append([r, g, b])
@@ -168,22 +188,44 @@ class Mesh(MeshBase):
             for i in range(self.nverts):
                 self.colors[i] = [r, g, b]
 
-    def fromData(self, data, texCoord=None, colors=None):
+    def addMaterial(self, name, material):
+        # Add a material to the mesh
+        self.materials[name] = material
+
+    def fromData(self, data, normals=None, texCoord=None):
         '''
         This will take in any set of vertices, uv coordinates and colors arrays
         '''
-        self.data = data
-        self.nverts = len(self.data)
 
-        if texCoord is not None:
-            self.texCoord = texCoord
-        else:
-            self.texCoord = self.data
+        if isinstance(data, objloader.OBJ):
+            self.importedModel = True
+            self.materials = data.mtlfile.data
 
-        if colors is not None:
-            self.colors = colors
+            for key, value in data.fmvnig.items():
+                # Vertices
+                self.verData[key] = value[0]
+                # Normals
+                self.norData[key] = value[2]
+
+            for key, value in self.materials.items():
+                try:
+                    self.colData[key] = []
+                    for i in range(len(self.verData[key])):
+                            self.colData[key].append(value.diffuse)
+                except KeyError:
+                    pass
         else:
-            self.colors = []
+            self.importedModel = False
+            self.vertices = data
+            self.nverts = len(self.vertices)
+
+            if normals is not None:
+                self.normals = normals
+
+            if texCoord is not None:
+                self.texCoord = texCoord
+            else:
+                self.texCoord = self.vertices
 
         self.buffer_objects()
 
@@ -208,16 +250,16 @@ class Mesh(MeshBase):
 
         for i in range(len(indexer.unique)):
             v = indexer.unique[i]
-            self.data.append(v.pos.vector)
+            self.vertices.append(v.pos.vector)
             self.normals.append(v.normal.vector)
             self.colors.append(v.color)
 
         # print("Indexer Unique Count: ", len(indexer.unique))
         # print("Polygon Count: ", len(polygons))
         # print("Triangles Count: ", len(self.triangles))
-        # print("Vertices Count: ", len(self.data))
+        # print("Vertices Count: ", len(self.vertices))
 
-        self.nverts = len(self.data)
+        self.nverts = len(self.vertices)
         self.ntris = len(self.triangles)
 
         self.buffer_objects()
@@ -226,7 +268,7 @@ class Mesh(MeshBase):
         '''This will attach a physics object to the mesh.'''
         self.physObj = physObj
         self.rect = physObj.getCollisionModel().getModel()
-        self.data = self.rect.getVertices()
+        self.vertices = self.rect.getVertices()
         self.texCoord = self.rect.getVertices()
         self.matrix = self.rect.getModelMatrix()
 
@@ -234,11 +276,13 @@ class Mesh(MeshBase):
         self.scaleDelta = value / self._scale
         self._scale = value
 
-    def translate(self, x, y):
+    def translate(self, x, y, z):
         self.xPosDelta += x - self.xPos
         self.yPosDelta += y - self.yPos
+        self.zPosDelta += z - self.yPos
         self.xPos = x
         self.yPos = y
+        self.zPos = z
 
     # TODO - Needs to be checked
     def rotate(self, axis, angle):
@@ -261,11 +305,16 @@ class Mesh(MeshBase):
             self.matrix.i_scale(vecScale)
             self.scaleDelta = 0
 
-        if self.xPosDelta or self.yPosDelta:
+        if self.xPosDelta or self.yPosDelta or self.zPosDelta:
             vecTrans = vector.Vector(
                 3,
-                data=[self.xPosDelta, self.yPosDelta, 0.0])
+                data=[self.xPosDelta, self.yPosDelta, self.zPosDelta])
 
+            #self.matrix.i_translate(vecTrans)
             self.matrix.i_translate(vecTrans)
             self.xPosDelta = 0
             self.yPosDelta = 0
+            self.zPosDelta = 0
+
+        temp4x4 = self.matrix.inverse().transpose()
+        self.modelInverseTranspose = convertM4to3(temp4x4.matrix)
