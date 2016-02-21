@@ -1,38 +1,26 @@
 from ed2d.assets.mtlloader import MTL
 from ed2d import files
 
-def merge_dicts(d1, d2):
-    dict1Keys = set(d1.keys())
-    dict2Keys = set(d2.keys())
-    in_sec_but_not_in_frst = dict2Keys - dict1Keys
-    dictKeys = d1.keys() + list(in_sec_but_not_in_frst)
+def merge_dicts(dicts):
+    dictKeys = set()
+    for dic in dicts:
+        dictKeys.update(dic.keys())
+    
     finalDictionary = {}
 
     for key in dictKeys:
-        try:
-            # Vertices
-            finalDictionary[key] = [ [], [], [] ]
-        except KeyError:
-            pass
-
-    for key in dictKeys:
-        try:
-            # Vertices
-            finalDictionary[key][0] += d1[key][0]
-            finalDictionary[key][1] += d1[key][1]
-            finalDictionary[key][2] += d1[key][2]
-        except KeyError:
-            pass
-
-    for key in dictKeys:
-        try:
-            # Vertices
-            finalDictionary[key][0] += d2[key][0]
-            finalDictionary[key][1] += d2[key][1]
-            finalDictionary[key][2] += d2[key][2]
-        except KeyError:
-            pass
-
+        # Vertices
+        finalDictionary[key] = [ [], [], [] ]
+     
+    for dic in dicts:
+        for key in dictKeys:
+            try:
+                # Vertices
+                for i, data in enumerate(dic[key]):
+                    finalDictionary[key][i].extend(data)
+            except KeyError:
+                pass
+            
     return finalDictionary
 
 
@@ -136,42 +124,30 @@ class OBJ(object):
         self.mtlfile = MTL(__mtlpath)
 
         # Load the obj file
-        objfile = open(__objpath, "r")
+        with open(__objpath, 'r') as objfile:
+            lines = objfile.readlines()
+            lineslen = len(lines)
 
-        lines = objfile.readlines()
-        lineslen = len(lines)
-        line_offset = []
+            self.objects = []
+            self.fmvnig = {}
+            
+            start = []
+            end = []
+            # Do an object count in the file
+            for i in range(lineslen):
+                value = lines[i][:2]
+                value1 = lines[i - 1][:2]
+                # Look for 'o ' at the begining of the line and count them
+                if value1 == 'o ':
+                    # Create a layout of where all the lines starting with o start
+                    ocount +=1
+                    start.append((i - 1))
+                if (value1 == 'f ' or value1 == 'l ') and value == 'o ':
+                    end.append((i + 1))
+            end.append(lineslen)
 
-        self.objects = []
-        self.fmvnig = {}
-
-        # Run once to build a layout of the file
-        offset = 0
-        for line in objfile:
-            line_offset.append(offset)
-            offset += len(line)
-
-        start = []
-        end = []
-        # Do an object count in the file
-        for i in range(lineslen):
-            value = lines[i][:2]
-            value1 = lines[i - 1][:2]
-            # Look for 'o ' at the begining of the line and count them
-            if value1 == 'o ':
-                # Create a layout of where all the lines starting with o start
-                ocount +=1
-                start.append((i - 1))
-            if (value1 == 'f ' or value1 == 'l ') and value == 'o ':
-                end.append((i + 1))
-        end.append(lineslen)
-
-        for i in range(len(end)):
-            self.objects.append(OBJObject(lines[start[i]:end[i]]))
-
-
-        # Close the file
-        objfile.close()
+            for i in range(len(end)):
+                self.objects.append(OBJObject(lines[start[i]:end[i]]))
 
         vertNumberOffset = 0
         normNumberOffset = 0
@@ -195,7 +171,7 @@ class OBJ(object):
         objfile = open(filename, "w")
         for j in range(self.matnumber):
             objfile.write('\n')
-            matrname = self.tmvnig.keys()[j]
+            matrname = list(self.tmvnig.keys())[j]
             objfile.write(matrname + '\n')
             objfile.write('VERTICES\n')
             for i in range(len(self.fmvnig[matrname][0]) - 1):
@@ -263,7 +239,7 @@ class OBJ(object):
 
     def get_final_data(self, obj):
         for j in range(obj.matnumber):
-            matrname = obj.tmvnig.keys()[j]
+            matrname = list(obj.tmvnig.keys())[j]
             for i in range(len(obj.tmvnig[matrname][0])):
                 vertexIndex = int(obj.tmvnig[matrname][0][i]) - 1
                 vertex = obj.tempVertices[vertexIndex]
@@ -279,8 +255,5 @@ class OBJ(object):
                     obj.fmvnig[matrname][1][i] = uv
 
     def combine_data(self):
-        for i in range(len(self.objects)):
-            if i == 0:
-                self.fmvnig = self.objects[i].fmvnig
-            else:
-                self.fmvnig = merge_dicts(self.fmvnig, self.objects[i].fmvnig)
+        obj = [obj.fmvnig for obj in self.objects]
+        self.fmvnig = merge_dicts(obj)
