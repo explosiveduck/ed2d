@@ -35,8 +35,8 @@ def conv_list_2d(listIn, cType):
 
     arrayOut = (cType * ylength * xlength)()
 
-    for x in range(xlength):
-        for y in range(ylength):
+    for y in range(ylength):
+        for x in range(xlength):
             arrayOut[x][y] = listIn[x][y]
 
     return arrayOut
