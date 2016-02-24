@@ -294,6 +294,8 @@ class GameManager(object):
         self.scenegraph.update()
 
     def render(self):
+        
+        gl.glEnable(gl.GL_DEPTH_TEST)
         self.vpManager.make_current(self.vpFull)
         gl.glClearColor(0.3, 0.3, 0.3, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
@@ -316,6 +318,7 @@ class GameManager(object):
         gl.glBindVertexArray(0)
 
         gl.glEnable(gl.GL_BLEND)
+        gl.glDisable(gl.GL_DEPTH_TEST)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         # Change to orthographic projection to draw the text
@@ -325,6 +328,7 @@ class GameManager(object):
         self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
 
         gl.glDisable(gl.GL_BLEND)
+        gl.glEnable(gl.GL_DEPTH_TEST)
 
 
     def do_run(self):
