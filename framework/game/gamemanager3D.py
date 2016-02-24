@@ -155,8 +155,8 @@ class GameManager(object):
             if 1 in self.mouseButtons:
                 self.camera.onMouseMove(self.mouseRelX, self.mouseRelY, self.fpsTimer.tickDelta)
 
-        self.oldMouseX = self.mousePosX
-        self.oldMouseY = self.mousePosY
+            
+            self.mouseRelX, self.mouseRelY = 0, 0
 
     def update(self):
         self.scenegraph.update()
