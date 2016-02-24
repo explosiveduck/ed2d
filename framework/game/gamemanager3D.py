@@ -40,8 +40,8 @@ class GameManager(object):
         # Mouse Information
         self.mousePos = [0.0, 0.0]
         self.mouseButtons = []
-        self.oldMouseX = 0
-        self.oldMouseY = 0
+        self.mouseRelX = 0
+        self.mouseRelY = 0
         self.mousePosX = 0
         self.mousePosY = 0
         cursor.set_relative_mode(False)
@@ -128,9 +128,7 @@ class GameManager(object):
             self.resize(x, y)
         elif event == 'mouse_move':
             if cursor.is_relative():
-                xrel, yrel = data
-                self.mousePosX += xrel
-                self.mousePosY += yrel
+                self.mouseRelX, self.mouseRelY = data
             else:
                 self.mousePosX, self.mousePosY = data
         elif event == 'key_down':
@@ -138,6 +136,7 @@ class GameManager(object):
                 cursor.set_relative_mode(True)
             elif data[0] == 'r':
                 cursor.set_relative_mode(False)
+                cursor.move_cursor(self.mousePosX, self.mousePosY)
             self.keys.append(data[0])
             print(self.keys)
         elif event == 'key_up':
@@ -154,7 +153,7 @@ class GameManager(object):
     def mouseUpdate(self):
         if cursor.is_relative():
             if 1 in self.mouseButtons:
-                self.camera.onMouseMove(self.oldMouseX - self.mousePosX, self.oldMouseY - self.mousePosY, self.fpsTimer.tickDelta)
+                self.camera.onMouseMove(self.mouseRelX, self.mouseRelY, self.fpsTimer.tickDelta)
 
         self.oldMouseX = self.mousePosX
         self.oldMouseY = self.mousePosY
