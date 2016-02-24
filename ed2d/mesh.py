@@ -279,14 +279,14 @@ class Mesh(MeshBase):
     def translate(self, x, y, z):
         self.xPosDelta += x - self.xPos
         self.yPosDelta += y - self.yPos
-        self.zPosDelta += z - self.yPos
+        self.zPosDelta += z - self.zPos
         self.xPos = x
         self.yPos = y
         self.zPos = z
 
     # TODO - Needs to be checked
     def rotate(self, axis, angle):
-        self.rotationMatrix = matrix.Matrix().rotate(axis, angle)
+        self.rotationMatrix = matrix.Matrix(4).rotate(axis, angle)
         self.matrix *= self.rotationMatrix
 
     def update(self):
@@ -300,7 +300,7 @@ class Mesh(MeshBase):
         if self.scaleDelta:
             vecScale = vector.Vector(
                 3,
-                data=[self.scaleDelta, self.scaleDelta, 0.0])
+                data=[self.scaleDelta, self.scaleDelta, self.scaleDelta])
 
             self.matrix.i_scale(vecScale)
             self.scaleDelta = 0
