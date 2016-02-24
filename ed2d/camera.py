@@ -2,11 +2,16 @@ import math
 from gem import vector
 from gem import matrix
 from gem import quaternion
-from ed2d import view
+
+# Modes
+MODE_ORTHOGRAPHIC = 1
+MODE_PERSPECTIVE = 2
 
 class Camera(object):
-    def __init__(self):
-
+    def __init__(self, camType):
+        
+        self.camType = camType
+        
         # Camera information
         self.yAxis = vector.Vector(3, data=[0.0, 1.0, 0.0])
         self.position = vector.Vector(3)
@@ -20,8 +25,7 @@ class Camera(object):
         self.cameraTranslation = matrix.Matrix(4)
 
         # These are required for rendering
-        self.perspectiveProj = matrix.Matrix(4)
-        self.orthographicProj = matrix.Matrix(4)
+        self.projection = matrix.Matrix(4)
         self.viewMatrix = matrix.Matrix(4)
         self.viewMatrixInverse = matrix.Matrix(4)
 
@@ -29,48 +33,47 @@ class Camera(object):
         self.originVisiblity = True
         self.originPosition = [0.0, 0.0, 0.0]
 
-        # Arcball propertise
+        # Arcball properties
         self.cur_x = 0
         self.cur_y = 0
         self.arcball_on = False
 
+    def set_view(self, view):
         # Initialize view mode
-        self.view = view.View()
+        self.view = view
+        
+        # set proper function to setup projection
+        if self.camType is MODE_ORTHOGRAPHIC:
+            self.set_projection = self._proj_ortho
+            if not self.view.if_projection('ortho'):
+                self.view.new_projection('ortho', self.projection)
+        elif self.camType is MODE_PERSPECTIVE:
+            self.set_projection = self._proj_persp
+            if not  self.view.if_projection('persp'):
+                self.view.new_projection('persp', self.projection)
+        else:
+            self.set_projection = None
 
-        # Modes
-        self.MODE_ORTHOGRAPHIC = 1
-        self.MODE_PERSPECTIVE = 2
-        self.currentMode = 0
+    def _proj_ortho(self, left, right, bottom, top, znear, zfar):
+        self.projection = matrix.orthographic(left, right, bottom, top, znear, zfar)
 
+    def _proj_persp(self, fov, aspect, znear, zfar):
+        self.projection = matrix.perspective(fov, aspect, znear, zfar)
 
-    def perspectiveProjection(self, fov, aspect, znear, zfar):
-        self.perspectiveProj = matrix.perspective(fov, aspect, znear, zfar)
-        self.view.new_projection('persp', self.perspectiveProj)
-
-    def orthographicProjection(self, left, right, bottom, top, znear, zfar):
-        self.orthographicProj = matrix.orthographic(left, right, bottom, top, znear, zfar)
-        self.view.new_projection('ortho', self.orthographicProj)
-
-    def set_program(self, mtype, program):
-        if mtype is 1:
-            self.currentMode = self.MODE_ORTHOGRAPHIC
+    def set_program(self, program):
+        if self.camType is MODE_ORTHOGRAPHIC:
             self.view.register_shader('ortho', program)
-        elif mtype is 2:
-            self.currentMode = self.MODE_PERSPECTIVE
+        elif self.camType is MODE_PERSPECTIVE:
             self.view.register_shader('persp', program)
         else:
-            self.currentMode = 0
             return NotImplemented
 
-    def set_mode(self, mtype):
-        if mtype is 1:
-            self.currentMode = self.MODE_ORTHOGRAPHIC
-            self.view.set_projection('ortho', self.orthographicProj)
-        elif mtype is 2:
-            self.currentMode = self.MODE_PERSPECTIVE
-            self.view.set_projection('persp', self.perspectiveProj)
+    def make_current(self):
+        if self.camType is MODE_ORTHOGRAPHIC:
+            self.view.set_projection('ortho', self.projection)
+        elif self.camType is MODE_PERSPECTIVE:
+            self.view.set_projection('persp', self.projection)
         else:
-            self.currentMode = 0
             return NotImplemented
 
     def calcViewMatrix(self):
@@ -81,47 +84,29 @@ class Camera(object):
         self.viewMatrix = self.cameraTranslation * self.cameraRotation
         self.viewMatrixInverse = self.viewMatrix.inverse()
 
+    @property
+    def vec_up(self):
+        return self.rotation.getUp()
 
-    def onKeys(self, keys, tick):
-        moveAmount = 0.5 * tick
+    @property
+    def vec_down(self):
+        return self.rotation.getDown()
 
-        if 'w' in keys:
-            self.move(self.rotation.getForward(), -moveAmount)
+    @property
+    def vec_left(self):
+        return self.rotation.getLeft()
 
-        if 's' in keys:
-            self.move(self.rotation.getForward(), moveAmount)
+    @property
+    def vec_right(self):
+        return self.rotation.getRight()
 
-        if 'a' in keys:
-            self.move(self.rotation.getLeft(), moveAmount)
+    @property
+    def vec_forward(self):
+        return self.rotation.getForward()
 
-        if 'd' in keys:
-            self.move(self.rotation.getRight(), moveAmount)
-
-        if 'q' in keys:
-            self.move(self.rotation.getUp(), moveAmount)
-
-        if 'e' in keys:
-            self.move(self.rotation.getUp(), -moveAmount)
-
-        if 'UP' in keys:
-            self.rotate(self.rotation.getRight(), moveAmount * 0.05)
-
-        if 'DOWN' in keys:
-            self.rotate(self.rotation.getRight(), -moveAmount * 0.05)
-
-        if 'LEFT' in keys:
-            self.rotate(self.rotation.getUp(), moveAmount * 0.05)
-
-        if 'RIGHT' in keys:
-            self.rotate(self.rotation.getUp(), -moveAmount * 0.05)
-
-    def onMouseMove(self, deltaX, deltaY, tick):
-        sensitivity = 0.5
-        if deltaX != 0:
-            self.rotate(self.yAxis, math.radians(deltaX * sensitivity * tick))
-
-        if deltaY != 0:
-            self.rotate(self.rotation.getRight(), math.radians(deltaY * sensitivity * tick))
+    @property
+    def vec_back(self):
+        return self.rotation.getBack()
 
     def rotate(self, axis, angle):
         self.rotation = (quaternion.quat_from_axis_angle(axis, angle) * self.rotation).normalize()

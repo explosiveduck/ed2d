@@ -1,3 +1,5 @@
+import math
+
 from ed2d import window
 from ed2d import sysevents
 from ed2d.events import Events
@@ -15,13 +17,46 @@ from ed2d import camera
 from ed2d.scenegraph import SceneGraph
 from ed2d.assets import objloader
 from ed2d import cursor
+from ed2d import view
 
+class Viewport(object):
+    '''Basic data container to allow changing the viewport to simpler.'''
+    def __init__(self, name, camera):
+        self.name = name
+        self.camera = camera
+        self.width = 0
+        self.height = 0
+        self.x = 0
+        self.y = 0
+    
+    def set_rect(self, x, y, width, height):
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+
+class ViewportManager(object):
+    def __init__(self):
+        self.view = view.View()
+    
+    def create_viewport(self, name, camera):
+        if camera is not None:
+            camera.set_view(self.view)
+        return Viewport(name, camera)
+    
+    def make_current(self, vp):
+        if vp.camera is not None:
+            vp.camera.make_current()
+            vp.camera.set_projection(75.0, float(vp.width) / float(vp.height), 1.0, 1000.0)
+        
+        gl.glViewport(vp.x, vp.y, vp.width, vp.height)
+    
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
     def __init__(self):
 
-        self.width = 800
-        self.height = 600
+        self.width = 1920
+        self.height = 1080
         self.title = "ed2d"
         self.running = False
 
@@ -86,13 +121,61 @@ class GameManager(object):
         self.meshTestID = self.scenegraph.establish(self.meshTest)
         self.meshTest.translate(0.0, 0.0, 0.0)
 
-        self.camera = camera.Camera()
-        self.camera.orthographicProjection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
-        self.camera.perspectiveProjection(75.0, float(self.width) / float(self.height), 0.1, 10000.0)
+
+        objBox = objloader.OBJ('box')
+        self.boxMesh = mesh.Mesh()
+        self.boxMesh.fromData(objBox)
+        self.boxMesh.addProgram(self.program)
+        self.boxMesh.scale(0.25)
+        self.boxMeshID = self.scenegraph.establish(self.boxMesh)
+
+        self.vpManager = ViewportManager()
+        self.vpFull = self.vpManager.create_viewport('full', None)
+        
+        self.cameraOrtho = camera.Camera(camera.MODE_ORTHOGRAPHIC)
+        self.cameraOrtho.set_view(self.vpManager.view)
+        self.cameraOrtho.set_projection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        
+        self.camera = camera.Camera(camera.MODE_PERSPECTIVE)
+        self.viewport = self.vpManager.create_viewport('scene', self.camera)
+        
         self.camera.setPosition(vector.Vector(3, data=[0.5, -2.0, 10.0]))
-        self.camera.set_program(2, self.program)
+        self.camera.set_program( self.program)
+        
+        self.camera2 = camera.Camera(camera.MODE_PERSPECTIVE)
+        self.viewport2 = self.vpManager.create_viewport('scene2', self.camera2)
+        
+        self.camera2.setPosition(vector.Vector(3, data=[0.5, 0.0, 12.0]))
+        self.camera2.set_program( self.program)
+        
+        self.camera3 = camera.Camera(camera.MODE_PERSPECTIVE)
+        self.viewport3 = self.vpManager.create_viewport('scene3', self.camera3)
+        
+        self.camera3.setPosition(vector.Vector(3, data=[30, 30.0, 15.0]))
+        self.camera3.set_program(self.program)
+        
+        self.camera4 = camera.Camera(camera.MODE_PERSPECTIVE)
+        self.viewport4 = self.vpManager.create_viewport('scene4', self.camera4)
+        
+        self.camera4.setPosition(vector.Vector(3, data=[-39, 35.0, 128.0]))
+        self.camera4.set_program(self.program)
+        
+        self.halfWidth = int(self.width /2)
+        self.halfHeight = int(self.height/2)
+        
+        self.viewport.set_rect (0,              0,               self.halfWidth, self.halfHeight)
+        self.viewport2.set_rect(self.halfWidth, 0,               self.halfWidth, self.halfHeight)
+        self.viewport3.set_rect(self.halfWidth, self.halfHeight, self.halfWidth, self.halfHeight)
+        self.viewport4.set_rect(0,              self.halfHeight, self.halfWidth, self.halfHeight)
+        
+        self.vpFull.set_rect(0, 0, self.width, self.height)
+        
+        self.viewports = [self.viewport, self.viewport2, self.viewport3, self.viewport4]
+        
         self.model = matrix.Matrix(4)
         #self.model = matrix.Matrix(4).translate(vector.Vector(3, data=[4.0, -2.0, -8]))
+        
+        
         self.loadText()
 
         glerr = gl.glGetError()
@@ -111,14 +194,21 @@ class GameManager(object):
         self.font = text.Font(12, fontPath)
         self.text = text.Text(self.textProgram, self.font)
 
-        self.camera.set_program(1, self.textProgram)
+        self.cameraOrtho.set_program(self.textProgram)
 
     def resize(self, width, height):
         self.width = width
         self.height = height
-        gl.glViewport(0, 0, self.width, self.height)
-        self.camera.perspectiveProjection(75.0, float(self.width) / float(self.height), 0.1, 10000.0)
-        self.camera.orthographicProjection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+
+        self.halfWidth = int(self.width /2)
+        self.halfHeight = int(self.height/2)
+        
+        self.viewport.set_rect (0,              0,               self.halfWidth, self.halfHeight)
+        self.viewport2.set_rect(self.halfWidth, 0,               self.halfWidth, self.halfHeight)
+        self.viewport3.set_rect(self.halfWidth, self.halfHeight, self.halfWidth, self.halfHeight)
+        self.viewport4.set_rect(0,              self.halfHeight, self.halfWidth, self.halfHeight)
+        self.vpFull.set_rect(0, 0, self.width, self.height)
+        self.cameraOrtho.set_projection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
@@ -148,35 +238,80 @@ class GameManager(object):
             self.mouseButtons.remove(data[0])
 
     def keyUpdate(self):
-        self.camera.onKeys(self.keys, self.fpsTimer.tickDelta)
+
+        moveAmount = 0.5 * self.fpsTimer.tickDelta
+        
+        for key in self.keys:
+            if key == 'w':
+                self.camera.move(self.camera.vec_back, moveAmount)
+
+            elif key == 's':
+                self.camera.move(self.camera.vec_forward, moveAmount)
+
+            elif key == 'a':
+                self.camera.move(self.camera.vec_left, moveAmount)
+
+            elif key == 'd':
+                self.camera.move(self.camera.vec_right, moveAmount)
+
+            elif key == 'q':
+                self.camera.move(self.camera.vec_up, moveAmount)
+
+            elif key == 'e':
+                self.camera.move(self.camera.vec_down, moveAmount)
+
+            elif key == 'UP':
+                self.camera.rotate(self.camera.vec_right, moveAmount * 0.05)
+
+            elif key == 'DOWN':
+                self.camera.rotate(self.camera.vec_left, moveAmount * 0.05)
+
+            elif key == 'LEFT':
+                self.camera.rotate(self.camera.vec_up, moveAmount * 0.05)
+
+            elif key == 'RIGHT':
+                self.camera.rotate(self.camera.vec_down, moveAmount * 0.05)
 
     def mouseUpdate(self):
         if cursor.is_relative():
             if 1 in self.mouseButtons:
-                self.camera.onMouseMove(self.mouseRelX, self.mouseRelY, self.fpsTimer.tickDelta)
+                tick = self.fpsTimer.tickDelta
+                sensitivity = 0.5
+                if self.mouseRelX != 0:
+                    self.camera.rotate(self.camera.yAxis, math.radians(-self.mouseRelX * sensitivity * tick))
 
+                if self.mouseRelY != 0:
+                    self.camera.rotate(self.camera.vec_right, math.radians(-self.mouseRelY * sensitivity * tick))
             
             self.mouseRelX, self.mouseRelY = 0, 0
 
     def update(self):
+        posVec = self.camera.position.vector
+        self.boxMesh.translate(posVec[0], posVec[1], posVec[2]-2.0)
+        self.mouseUpdate()
+        self.keyUpdate()
+        
         self.scenegraph.update()
 
     def render(self):
+        self.vpManager.make_current(self.vpFull)
         gl.glClearColor(0.3, 0.3, 0.3, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         # Change view to perspective projection
         gl.glDisable(gl.GL_BLEND)
+        
+        for vp in self.viewports:
 
-        self.program.use()
-        self.camera.set_mode(2)
-        view = self.camera.getViewMatrix()
-        self.program.set_uniform_matrix(self.testID2, view)
+            self.vpManager.make_current(vp)
+            self.program.use()
+            view = vp.camera.getViewMatrix()
+            self.program.set_uniform_matrix(self.testID2, view)
 
-        # Draw 3D stuff
-        gl.glBindVertexArray(self.vao)
+            # Draw 3D stuff
+            gl.glBindVertexArray(self.vao)
 
-        self.scenegraph.render()
+            self.scenegraph.render()
 
         gl.glBindVertexArray(0)
 
@@ -184,8 +319,9 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         # Change to orthographic projection to draw the text
+        self.vpManager.make_current(self.vpFull) 
         self.textProgram.use()
-        self.camera.set_mode(1)
+        self.cameraOrtho.make_current()
         self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
 
         gl.glDisable(gl.GL_BLEND)
@@ -194,8 +330,6 @@ class GameManager(object):
     def do_run(self):
         ''' Process a single loop '''
         self.sysEvents.process()
-        self.mouseUpdate()
-        self.keyUpdate()
         self.update()
         self.render()
         self.window.flip()

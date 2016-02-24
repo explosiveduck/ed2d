@@ -13,7 +13,10 @@ class View(object):
         self.projections = []
         self.projNames = []
         self.progPerProj = []
-
+    
+    def if_projection(self, name):
+        return name in self.projNames
+    
     def new_projection(self, name, projection):
         pid = self.pids.gen_id()
 
