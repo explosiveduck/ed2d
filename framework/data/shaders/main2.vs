@@ -8,6 +8,9 @@ layout(location = 2) in vec3 normal_modelspace;
 // Output data ; will be interpolated for each fragment.
 out vec4 fragmentColor;
 
+// Output the interpolant to the pixel shader
+out float logz;
+
 // Values that stay constant for the whole mesh.
 uniform mat4 view;
 uniform mat4 persp;
@@ -32,6 +35,8 @@ const vec3 L20  = vec3(-0.028667, -0.024926, -0.020998);
 const vec3 L21  = vec3(-0.077539, -0.086325, -0.091591);
 const vec3 L22  = vec3(-0.161784, -0.191783, -0.219152);
 
+// Constant used in logarithmic depth buffer calculation
+const float  Fcoef = 2.0 / log2(1e27 + 1.0);
 
 // Local Variables
 vec3 vertNormal;
@@ -43,6 +48,12 @@ void main(){
 
 	// Output normal of the vertex: Transpose Inverse Model Matrix * normal
 	vertNormal = gMdVw * normal_modelspace;
+
+	// logarithmic Depth equation (optimized)
+	gl_Position.z = (log2(max(1e-7, 1.0 + gl_Position.w)) * Fcoef - 1.0);
+
+	// Interpolant for the logarithmic depth buffer, used in the pixel shader
+	logz = 1.0 + gl_Position.w;
 
 	fragmentColor =  vec4(C1 * L22 * (vertNormal.x * vertNormal.x - vertNormal.y * vertNormal.y) +
 								C3 * L20 * vertNormal.z * vertNormal.z +
@@ -56,6 +67,7 @@ void main(){
 								2.0 * C2 * L10  * vertNormal.z, 1.0);
 
 	fragmentColor *= 0.9;
+	
 	// The color of each vertex will be interpolated
 	// to produce the color of each fragment
 	fragmentColor *= vec4(vertexColor,1.0);
