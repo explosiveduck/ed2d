@@ -38,6 +38,18 @@ class Camera(object):
         self.cur_y = 0
         self.arcball_on = False
 
+    def get_mode(self):
+        return self.camType
+        
+    def clone(self):
+        camNew = Camera(self.camType)
+        camNew.set_view(self.view)
+        camNew.set_program(self.program)
+        camNew.projection = self.projection
+        camNew.position = self.position
+        camnew.rotation = self.rotation
+        return camNew
+
     def set_view(self, view):
         # Initialize view mode
         self.view = view
@@ -61,6 +73,7 @@ class Camera(object):
         self.projection = matrix.perspective(fov, aspect, znear, zfar)
 
     def set_program(self, program):
+        self.program = program
         if self.camType is MODE_ORTHOGRAPHIC:
             self.view.register_shader('ortho', program)
         elif self.camType is MODE_PERSPECTIVE:

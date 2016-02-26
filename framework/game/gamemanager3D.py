@@ -28,6 +28,7 @@ class Viewport(object):
         self.height = 0
         self.x = 0
         self.y = 0
+        self.screenSize = None
 
     def set_rect(self, x, y, width, height):
         self.width = width
@@ -35,21 +36,34 @@ class Viewport(object):
         self.x = x
         self.y = y
 
+    def make_current(self):
+        if self.camera:
+            if self.camera.get_mode() == camera.MODE_PERSPECTIVE:
+                self.camera.set_projection(75.0, float(self.width) / float(self.height), 1e-6, 1e27)
+            else:
+                self.camera.set_projection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+            self.camera.make_current()
+
+        gl.glViewport(self.x, self.screenSize[1]-self.y-self.height, self.width, self.height)
+
 class ViewportManager(object):
+    '''Viewport Manager is for handling multiple split views '''
     def __init__(self):
         self.view = view.View()
+        self.viewports = []
+        self.screenSize = (0, 0)
+    
+    def update_screen(self, width, height):
+        self.screenSize = (width, height)
+        for vp in self.viewports:
+            vp.screenSize = self.screenSize
 
     def create_viewport(self, name, camera):
-        if camera is not None:
-            camera.set_view(self.view)
-        return Viewport(name, camera)
-
-    def make_current(self, vp):
-        if vp.camera is not None:
-            vp.camera.make_current()
-            vp.camera.set_projection(75.0, float(vp.width) / float(vp.height), 1e-6, 1e27)
-
-        gl.glViewport(vp.x, vp.y, vp.width, vp.height)
+        camera.set_view(self.view)
+        vp = Viewport(name, camera)
+        vp.screenSize = self.screenSize
+        self.viewports.append(vp)
+        return vp
 
 class GameManager(object):
     ''' Entry point into the game, and manages the game in general '''
@@ -129,54 +143,40 @@ class GameManager(object):
         self.boxMesh.scale(0.25)
         self.boxMeshID = self.scenegraph.establish(self.boxMesh)
 
+
+        self.loadText()
+
         self.vpManager = ViewportManager()
-        self.vpFull = self.vpManager.create_viewport('full', None)
+        self.vpManager.update_screen(self.width, self.height)
 
         self.cameraOrtho = camera.Camera(camera.MODE_ORTHOGRAPHIC)
         self.cameraOrtho.set_view(self.vpManager.view)
-        self.cameraOrtho.set_projection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
+        self.cameraOrtho.set_program(self.textProgram)
+        self.vpFull = Viewport('full', self.cameraOrtho)
+        self.vpFull.screenSize = (self.width, self.height)
+        
+        for i in range(4):
+            cam = camera.Camera(camera.MODE_PERSPECTIVE)
+            vp = self.vpManager.create_viewport('sceneview{0}'.format(i), cam)
 
-        self.camera = camera.Camera(camera.MODE_PERSPECTIVE)
-        self.viewport = self.vpManager.create_viewport('scene', self.camera)
+            cam.setPosition(vector.Vector(3, data=[0.5, -2.0, 10.0]))
+            cam.set_program( self.program)
 
-        self.camera.setPosition(vector.Vector(3, data=[0.5, -2.0, 10.0]))
-        self.camera.set_program( self.program)
-
-        self.camera2 = camera.Camera(camera.MODE_PERSPECTIVE)
-        self.viewport2 = self.vpManager.create_viewport('scene2', self.camera2)
-
-        self.camera2.setPosition(vector.Vector(3, data=[0.5, 0.0, 12.0]))
-        self.camera2.set_program( self.program)
-
-        self.camera3 = camera.Camera(camera.MODE_PERSPECTIVE)
-        self.viewport3 = self.vpManager.create_viewport('scene3', self.camera3)
-
-        self.camera3.setPosition(vector.Vector(3, data=[30, 30.0, 15.0]))
-        self.camera3.set_program(self.program)
-
-        self.camera4 = camera.Camera(camera.MODE_PERSPECTIVE)
-        self.viewport4 = self.vpManager.create_viewport('scene4', self.camera4)
-
-        self.camera4.setPosition(vector.Vector(3, data=[-39, 35.0, 128.0]))
-        self.camera4.set_program(self.program)
-
-        self.halfWidth = int(self.width /2)
-        self.halfHeight = int(self.height/2)
-
-        self.viewport.set_rect (0,              0,               self.halfWidth, self.halfHeight)
-        self.viewport2.set_rect(self.halfWidth, 0,               self.halfWidth, self.halfHeight)
-        self.viewport3.set_rect(self.halfWidth, self.halfHeight, self.halfWidth, self.halfHeight)
-        self.viewport4.set_rect(0,              self.halfHeight, self.halfWidth, self.halfHeight)
+        halfWidth = int(self.width /2)
+        halfHeight = int(self.height/2)
+        
+        vps = self.vpManager.viewports
+        vps[0].set_rect(0,         0,          halfWidth, halfHeight)
+        vps[1].set_rect(0,         halfHeight, halfWidth, halfHeight)
+        vps[2].set_rect(halfWidth, halfHeight, halfWidth, halfHeight)
+        vps[3].set_rect(halfWidth, 0,          halfWidth, halfHeight)
+        self.camera = vps[0].camera
 
         self.vpFull.set_rect(0, 0, self.width, self.height)
-
-        self.viewports = [self.viewport, self.viewport2, self.viewport3, self.viewport4]
 
         self.model = matrix.Matrix(4)
         #self.model = matrix.Matrix(4).translate(vector.Vector(3, data=[4.0, -2.0, -8]))
 
-
-        self.loadText()
 
         glerr = gl.glGetError()
         if glerr != 0:
@@ -194,21 +194,23 @@ class GameManager(object):
         self.font = text.Font(12, fontPath)
         self.text = text.Text(self.textProgram, self.font)
 
-        self.cameraOrtho.set_program(self.textProgram)
-
     def resize(self, width, height):
         self.width = width
         self.height = height
+        
+        self.vpManager.update_screen(self.width, self.height)
+        self.vpFull.screenSize = (self.width, self.height)
 
-        self.halfWidth = int(self.width /2)
-        self.halfHeight = int(self.height/2)
+        halfWidth = int(self.width /2)
+        halfHeight = int(self.height/2)
 
-        self.viewport.set_rect (0,              0,               self.halfWidth, self.halfHeight)
-        self.viewport2.set_rect(self.halfWidth, 0,               self.halfWidth, self.halfHeight)
-        self.viewport3.set_rect(self.halfWidth, self.halfHeight, self.halfWidth, self.halfHeight)
-        self.viewport4.set_rect(0,              self.halfHeight, self.halfWidth, self.halfHeight)
+        vps = self.vpManager.viewports
+        vps[0].set_rect(0,         0,          halfWidth, halfHeight)
+        vps[1].set_rect(halfWidth, 0,          halfWidth, halfHeight)
+        vps[2].set_rect(halfWidth, halfHeight, halfWidth, halfHeight)
+        vps[3].set_rect(0,         halfHeight, halfWidth, halfHeight)
+        
         self.vpFull.set_rect(0, 0, self.width, self.height)
-        self.cameraOrtho.set_projection(0.0, self.width, self.height, 0.0, -1.0, 1.0)
 
     def process_event(self, event, data):
         if event == 'quit' or event == 'window_close':
@@ -273,39 +275,61 @@ class GameManager(object):
                 self.camera.rotate(self.camera.vec_down, moveAmount * 0.05)
 
     def mouseUpdate(self):
-        if cursor.is_relative():
-            if 1 in self.mouseButtons:
-                tick = self.fpsTimer.tickDelta
-                sensitivity = 0.5
-                if self.mouseRelX != 0:
-                    self.camera.rotate(self.camera.yAxis, math.radians(-self.mouseRelX * sensitivity * tick))
+        
+        if 1 in self.mouseButtons:
+            if not cursor.is_relative():
+                cursor.set_relative_mode(True)
+            tick = self.fpsTimer.tickDelta
+            sensitivity = 0.5
+            if self.mouseRelX != 0:
+                self.camera.rotate(self.camera.yAxis, math.radians(-self.mouseRelX * sensitivity * tick))
 
-                if self.mouseRelY != 0:
-                    self.camera.rotate(self.camera.vec_right, math.radians(-self.mouseRelY * sensitivity * tick))
+            if self.mouseRelY != 0:
+                self.camera.rotate(self.camera.vec_right, math.radians(-self.mouseRelY * sensitivity * tick))
 
             self.mouseRelX, self.mouseRelY = 0, 0
+        else:
+            if cursor.is_relative():
+                cursor.set_relative_mode(False)
+                cursor.move_cursor(self.mousePosX, self.mousePosY)
 
     def update(self):
         posVec = self.camera.position.vector
         self.boxMesh.translate(posVec[0], posVec[1], posVec[2]-2.0)
+        if not cursor.is_relative():
+            for vp in self.vpManager.viewports:
+                w = vp.width
+                h = vp.height
+                x = vp.x
+                y = vp.y
+                
+                
+                if (self.mousePosX >= x and self.mousePosX < x+w and
+                    self.mousePosY >= y and self.mousePosY < y+h):
+                    self.camera = vp.camera
+                    break
+                
+            
+        
         self.mouseUpdate()
         self.keyUpdate()
 
         self.scenegraph.update()
 
     def render(self):
+        # We need this viewport clear the whole screen (I think) 
+        self.vpFull.make_current()
         
         gl.glEnable(gl.GL_DEPTH_TEST)
-        self.vpManager.make_current(self.vpFull)
         gl.glClearColor(0.3, 0.3, 0.3, 1.0)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
         # Change view to perspective projection
         gl.glDisable(gl.GL_BLEND)
 
-        for vp in self.viewports:
+        for vp in self.vpManager.viewports:
 
-            self.vpManager.make_current(vp)
+            vp.make_current()
             self.program.use()
             view = vp.camera.getViewMatrix()
             self.program.set_uniform_matrix(self.testID2, view)
@@ -322,7 +346,7 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         # Change to orthographic projection to draw the text
-        self.vpManager.make_current(self.vpFull)
+        self.vpFull.make_current()
         self.textProgram.use()
         self.cameraOrtho.make_current()
         self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
