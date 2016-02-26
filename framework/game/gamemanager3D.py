@@ -346,9 +346,8 @@ class GameManager(object):
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         # Change to orthographic projection to draw the text
-        self.vpFull.make_current()
         self.textProgram.use()
-        self.cameraOrtho.make_current()
+        self.vpFull.make_current()
         self.text.draw_text(str(self.fpsEstimate) + ' FPS', 0, 10)
 
         gl.glDisable(gl.GL_BLEND)
