@@ -1,4 +1,3 @@
-import math
 from gem import vector
 from gem import matrix
 from gem import quaternion
@@ -9,9 +8,9 @@ MODE_PERSPECTIVE = 2
 
 class Camera(object):
     def __init__(self, camType):
-        
+
         self.camType = camType
-        
+
         # Camera information
         self.yAxis = vector.Vector(3, data=[0.0, 1.0, 0.0])
         self.position = vector.Vector(3)
@@ -40,20 +39,20 @@ class Camera(object):
 
     def get_mode(self):
         return self.camType
-        
+
     def clone(self):
         camNew = Camera(self.camType)
         camNew.set_view(self.view)
         camNew.set_program(self.program)
         camNew.projection = self.projection
         camNew.position = self.position
-        camnew.rotation = self.rotation
+        camNew.rotation = self.rotation
         return camNew
 
     def set_view(self, view):
         # Initialize view mode
         self.view = view
-        
+
         # set proper function to setup projection
         if self.camType is MODE_ORTHOGRAPHIC:
             self.set_projection = self._proj_ortho
